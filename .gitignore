@@ -79,3 +79,5 @@ local.properties
 
 .idea/
 
+# No need to store this one
+dependency-reduced-pom.xml 
