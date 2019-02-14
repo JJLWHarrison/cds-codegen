@@ -7,7 +7,8 @@ import org.apache.velocity.Template;
 import org.apache.velocity.VelocityContext;
 import org.apache.velocity.app.Velocity;
 import org.apache.velocity.app.VelocityEngine;
-import au.csiro.data61.cds.models.api.CommonApi;
+
+import au.org.consumerdatastandards.interfaces.api.CommonApi;
 
 /**
  * Hello world!
