@@ -1,4 +1,4 @@
-package au.csiro.data61.cds.cge;
+package au.org.consumerdatastandards.cge;
 
 import java.io.StringWriter;
 import java.util.Properties;
@@ -7,8 +7,6 @@ import org.apache.velocity.Template;
 import org.apache.velocity.VelocityContext;
 import org.apache.velocity.app.Velocity;
 import org.apache.velocity.app.VelocityEngine;
-
-import au.org.consumerdatastandards.interfaces.api.CommonApi;
 
 /**
  * Hello world!
@@ -26,7 +24,7 @@ public class TemplateTest
     	VelocityContext context = new VelocityContext();           
     	Template template = Velocity.getTemplate("test.vm");
     	
-    	context.put("api", CommonApi.class);
+    	context.put("api", au.org.consumerdatastandards.interfaces.api.CommonApi.class);
     	
     	StringWriter writer = new StringWriter();
     	template.merge( context, writer );

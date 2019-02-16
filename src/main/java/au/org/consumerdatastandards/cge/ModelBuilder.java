@@ -1,4 +1,4 @@
-package au.csiro.data61.cds.cge;
+package au.org.consumerdatastandards.cge;
 
 /**
  * Accepts a defined class then processes annotations and methods to produce
@@ -12,6 +12,10 @@ public class ModelBuilder {
 	
 	public ModelBuilder(Class inputModel) {
 		this.model = inputModel;
+	}
+	
+	public void getJsonStructure() {
+		
 	}
 	
 	
