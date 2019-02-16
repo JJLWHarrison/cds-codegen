@@ -26,8 +26,8 @@ public class TemplateTest
     	VelocityContext context = new VelocityContext();           
     	Template template = Velocity.getTemplate("test.vm");
     	
-    	ModelBuilder modelBuilder = new ModelBuilder(CDRApi.class);
-    	context.put("api", modelBuilder.getObjectForest());
+    	ModelBuilder modelBuilder = new ModelBuilder(new CDRApi());
+    	context.put("api", modelBuilder.getModelForest());
     	
     	StringWriter writer = new StringWriter();
     	template.merge( context, writer );

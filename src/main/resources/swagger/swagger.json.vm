@@ -1,0 +1,51 @@
+{
+  "swagger": "2.0",
+  "info": {
+    "title": "Consumer Data Standards",
+    "description": "API sets created by the Australian Consumer Data Standards to meet the needs of the Consumer Data Right",
+    "version": "1",
+    "license": {
+      "name": "MIT Licence",
+      "url": "https://opensource.org/licenses/MIT"
+    }
+  },
+  "host": "data.provider.com.au",
+  "basePath": "/cds-au/v1",
+  "schemes": [
+    "https"
+  ],
+  "consumes": [
+    "application/json"
+  ],
+  "produces": [
+    "application/json"
+  ],
+  "paths": {
+   "/common/customer": {
+      "get": {
+        "summary": "Get Customer",
+        "description": "Obtain basic information on the customer that has authorised the current session",
+        "operationId": "getCustomer",
+        "x-scopes": [
+          "common_basic_customer"
+        ],
+        "tags": [
+          "Customer"
+        ],
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "schema": {
+              "$ref": "#/definitions/ResponseCommonCustomer"
+            }
+          }
+        },
+        "x-version": "1"
+      }
+    }
+  },
+  "parameters": {
+    
+  }
+}
