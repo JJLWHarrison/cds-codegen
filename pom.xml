@@ -39,7 +39,7 @@
 								<!-- add Main-Class to manifest file -->
 								<transformer
 									implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
-									<mainClass>au.csiro.data61.cds.cge.TemplateTest</mainClass>
+									<mainClass>au.org.consumerdatastandards.cge.TemplateTest</mainClass>
 								</transformer>
 							</transformers>
 						</configuration>

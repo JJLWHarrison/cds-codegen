@@ -8,6 +8,8 @@ import org.apache.velocity.VelocityContext;
 import org.apache.velocity.app.Velocity;
 import org.apache.velocity.app.VelocityEngine;
 
+import au.org.consumerdatastandards.interfaces.api.CDRApi;
+
 /**
  * Hello world!
  *
@@ -24,7 +26,8 @@ public class TemplateTest
     	VelocityContext context = new VelocityContext();           
     	Template template = Velocity.getTemplate("test.vm");
     	
-    	context.put("api", au.org.consumerdatastandards.interfaces.api.CommonApi.class);
+    	ModelBuilder modelBuilder = new ModelBuilder(CDRApi.class);
+    	context.put("api", modelBuilder.getObjectForest());
     	
     	StringWriter writer = new StringWriter();
     	template.merge( context, writer );
