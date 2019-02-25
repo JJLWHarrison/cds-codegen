@@ -35,7 +35,7 @@ $endpoint
         "operationId": "tbd",
         "tags": [
 #foreach ($oneTag in $section.definition.tags())
-            "$oneTag"#commaIfNeeded( $velocityCount $section.definition.tags() )
+            "$oneTag"#if( $foreach.hasNext ),#end
 #end
 
         ],
@@ -44,7 +44,7 @@ $endpoint
           "$endpointResponse.responseCode()": {
             "description": "$endpointResponse.description()",
             "schema": {
-$endpointResponse.content()
+$endpointResponse.content().getSimpleName()
               "$ref": "tbd"
             }
           }
