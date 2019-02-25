@@ -18,6 +18,7 @@ import org.apache.logging.log4j.Logger;
 
 import au.org.consumerdatastandards.interfaces.api.ModelInterface;
 import au.org.consumerdatastandards.models.types.support.Endpoint;
+import au.org.consumerdatastandards.models.types.support.Section;
 
 /**
  * Accepts a defined class then processes annotations and methods to produce a
@@ -44,6 +45,7 @@ public class ModelBuilder {
 		 */
 		modelMap.put("sections", getSectionForest(model.getSections()));
 		
+		
 		return modelMap;
 	}
 	
@@ -60,6 +62,7 @@ public class ModelBuilder {
 	}
 
 	private Map<String,Object> getSection(Class inputSection) {
+		
 		Map<String,Object> oneSection = new HashMap<String,Object>();
 		ArrayList<Object> myEndpoints = new ArrayList<Object>();
 		
@@ -67,6 +70,11 @@ public class ModelBuilder {
 		 * Pull the section class name
 		 */
 		oneSection.put("model", inputSection.getName());
+		
+		/**
+		 * Pull the section name from annotation
+		 */
+		oneSection.put("definition", inputSection.getAnnotation(Section.class));
 		
 		/**
 		 * Now build methods

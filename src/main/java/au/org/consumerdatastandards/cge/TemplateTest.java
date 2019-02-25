@@ -23,8 +23,8 @@ public class TemplateTest
     	p.setProperty("resource.loader", "class");
     	p.setProperty("class.resource.loader.class", "org.apache.velocity.runtime.resource.loader.ClasspathResourceLoader");
     	Velocity.init( p );
-    	VelocityContext context = new VelocityContext();           
-    	Template template = Velocity.getTemplate("test.vm");
+    	VelocityContext context = new VelocityContext();
+    	Template template = Velocity.getTemplate("swagger/swagger.json.vm");
     	
     	ModelBuilder modelBuilder = new ModelBuilder(new CDRApi());
     	context.put("api", modelBuilder.getModelForest());

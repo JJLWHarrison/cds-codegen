@@ -1,3 +1,5 @@
+#parse( "common/shared.vm" )
+
 {
   "swagger": "2.0",
   "info": {
@@ -21,31 +23,38 @@
     "application/json"
   ],
   "paths": {
-   "/common/customer": {
+  
+#foreach($section in $api.sections)
+
+#foreach($endpoint in $section.endpoints)
+$endpoint
+   "$endpoint.path()": {
       "get": {
-        "summary": "Get Customer",
-        "description": "Obtain basic information on the customer that has authorised the current session",
-        "operationId": "getCustomer",
-        "x-scopes": [
-          "common_basic_customer"
-        ],
+        "summary": "$endpoint.summary()",
+        "description": "$endpoint.description()",
+        "operationId": "tbd",
         "tags": [
-          "Customer"
+#foreach ($oneTag in $section.definition.tags())
+            "$oneTag"#commaIfNeeded( $velocityCount $section.definition.tags() )
+#end
+
         ],
-        "parameters": [],
         "responses": {
-          "200": {
-            "description": "Success",
+#foreach($endpointResponse in $endpoint.responseList())        
+          "$endpointResponse.responseCode()": {
+            "description": "$endpointResponse.description()",
             "schema": {
-              "$ref": "#/definitions/ResponseCommonCustomer"
+$endpointResponse.content()
+              "$ref": "tbd"
             }
           }
+#end          
         },
         "x-version": "1"
       }
     }
   },
-  "parameters": {
-    
-  }
+#end
+#end
+
 }
