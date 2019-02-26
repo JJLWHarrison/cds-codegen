@@ -22,17 +22,13 @@
   "produces": [
     "application/json"
   ],
-  "paths": {
-  
-#foreach($section in $api.sections)
-
-#foreach($endpoint in $section.endpoints)
-$endpoint
+  "paths": {  
+#foreach($section in $api.sections)#foreach($endpoint in $section.endpoints)
    "$endpoint.path()": {
       "get": {
         "summary": "$endpoint.summary()",
         "description": "$endpoint.description()",
-        "operationId": "tbd",
+        "operationId": "$endpoint.operationId()",
         "tags": [
 #foreach ($oneTag in $section.definition.tags())
             "$oneTag"#if( $foreach.hasNext ),#end
@@ -44,17 +40,19 @@ $endpoint
           "$endpointResponse.responseCode()": {
             "description": "$endpointResponse.description()",
             "schema": {
-$endpointResponse.content().getSimpleName()
-              "$ref": "tbd"
+              "$ref": "#/definitions/$endpointResponse.content().getSimpleName()"
             }
           }
 #end          
         },
-        "x-version": "1"
+        "x-version": "$endpoint.firstVersion()"
       }
-    }
+    }#if( $foreach.hasNext ),#end
+#end
+#end
+  
   },
-#end
-#end
-
+  "definitions": {
+  	$api.models
+  }
 }
