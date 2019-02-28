@@ -1,4 +1,4 @@
-package au.org.consumerdatastandards.cge;
+package au.org.consumerdatastandards.codegen;
 
 import java.io.StringWriter;
 import java.util.Properties;

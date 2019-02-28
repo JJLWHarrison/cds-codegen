@@ -3,12 +3,12 @@
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 
-	<groupId>au.csiro.data61.cds</groupId>
-	<artifactId>cdr-cge</artifactId>
+	<groupId>au.org.consumerdatastandards</groupId>
+	<artifactId>cdr-codegen</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
 	<packaging>jar</packaging>
 
-	<name>cdr-cge</name>
+	<name>cdr-codegen</name>
 
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -39,7 +39,7 @@
 								<!-- add Main-Class to manifest file -->
 								<transformer
 									implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
-									<mainClass>au.org.consumerdatastandards.cge.TemplateTest</mainClass>
+									<mainClass>au.org.consumerdatastandards.codegen.TemplateTest</mainClass>
 								</transformer>
 							</transformers>
 						</configuration>

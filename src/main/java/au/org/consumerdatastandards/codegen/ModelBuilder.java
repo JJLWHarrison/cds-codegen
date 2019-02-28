@@ -1,4 +1,4 @@
-package au.org.consumerdatastandards.cge;
+package au.org.consumerdatastandards.codegen;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.AnnotatedElement;
