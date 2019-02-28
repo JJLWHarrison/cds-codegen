@@ -4,11 +4,11 @@
 	<modelVersion>4.0.0</modelVersion>
 
 	<groupId>au.org.consumerdatastandards</groupId>
-	<artifactId>cdr-codegen</artifactId>
+	<artifactId>cds-codegen</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
 	<packaging>jar</packaging>
 
-	<name>cdr-codegen</name>
+	<name>cds-codegen</name>
 
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -67,8 +67,8 @@
 			<version>2.0</version>
 		</dependency>
 		<dependency>
-			<groupId>au.csiro.data61.cds</groupId>
-			<artifactId>cdr-models</artifactId>
+			<groupId>au.org.consumerdatastandards</groupId>
+			<artifactId>cds-models</artifactId>
 			<version>0.0.1-SNAPSHOT</version>
 		</dependency>
 		<dependency>

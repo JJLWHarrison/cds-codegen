@@ -8,7 +8,7 @@ import org.apache.velocity.VelocityContext;
 import org.apache.velocity.app.Velocity;
 import org.apache.velocity.app.VelocityEngine;
 
-import au.org.consumerdatastandards.interfaces.api.CDRApi;
+import au.org.consumerdatastandards.interfaces.api.CDSApi;
 
 /**
  * Hello world!
@@ -26,7 +26,7 @@ public class TemplateTest
     	VelocityContext context = new VelocityContext();
     	Template template = Velocity.getTemplate("swagger/swagger.json.vm");
     	
-    	ModelBuilder modelBuilder = new ModelBuilder(new CDRApi());
+    	ModelBuilder modelBuilder = new ModelBuilder(new CDSApi());
     	context.put("api", modelBuilder.getModelForest());
     	
     	StringWriter writer = new StringWriter();

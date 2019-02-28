@@ -1,8 +1,8 @@
-# CDR Codegen
+# CDS Codegen
 
-This repository contains the CDR Code Generator.
+This repository contains the CDS Code Generator.
 
-The main purpose of the Code Generator is to process the programmatic definition contained in the [CDR Models](https://github.com/ConsumerDataStandardsAustralia/cdr-models) and output code based on a series of templates.
+The main purpose of the Code Generator is to process the programmatic definition contained in the [CDS Models](https://github.com/ConsumerDataStandardsAustralia/cds-models) and output code based on a series of templates.
 
 # BETA WARNING
 
