@@ -16,8 +16,7 @@ import au.org.consumerdatastandards.interfaces.api.CDSApi;
  */
 public class TemplateTest 
 {
-    public static void main( String[] args )
-    {
+    public static void main( String[] args ) {
     	
     	Properties p = new Properties();
     	p.setProperty("resource.loader", "class");
