@@ -9,7 +9,6 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.lang.annotation.Annotation;
-import java.lang.reflect.Array;
 import java.lang.reflect.Method;
 import java.util.*;
 
@@ -69,8 +68,8 @@ public class ModelBuilder {
 		Map<String,ModelDefinition> modelMap = new HashMap<>();
 		
 		logger.info("Parsing for {}", content);
-		Method[] methodList = content.getDeclaredMethods();
-		for (Method method : methodList) {
+		Method[] declaredMethods = content.getDeclaredMethods();
+		for (Method method : declaredMethods) {
             Class<?> returnType = method.getReturnType();
             String modelName = returnType.getCanonicalName();
 			Map<String, Object> attributeMap = new HashMap<>();
@@ -79,7 +78,7 @@ public class ModelBuilder {
                 attributeMap.put(method.getName(), returnType.getSimpleName());
             } else {
                 logger.info("The response list says: {}", returnType);
-                //modelMap.put(modelName, getModelMap(methodList[k].getReturnType()));
+                //modelMap.put(modelName, getModelMap(declaredMethods[k].getReturnType()));
             }
 		}
 		
@@ -108,10 +107,10 @@ public class ModelBuilder {
 		oneSection.put(DEFINITION, inputSection.getAnnotation(Section.class));
 		
 		// Now build methods
-		Method[] fields = inputSection.getDeclaredMethods();
-		for (int j = 0; j < Array.getLength(fields); j++) {
-			logger.info("Method: {}", fields[j]);
-			Endpoint myEndpoint = getEndpoint(fields[j]);
+		Method[] declaredMethods = inputSection.getDeclaredMethods();
+		for (Method method : declaredMethods) {
+			logger.info("Method: {}", method);
+			Endpoint myEndpoint = getEndpoint(method);
 			if(myEndpoint != null) {
 				myEndpoints.add(myEndpoint);
 			}
