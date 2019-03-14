@@ -1,26 +1,17 @@
 package au.org.consumerdatastandards.codegen;
 
-import java.lang.annotation.Annotation;
-import java.lang.reflect.AnnotatedElement;
-import java.lang.reflect.AnnotatedType;
-import java.lang.reflect.Array;
-import java.lang.reflect.Field;
-import java.lang.reflect.Method;
-import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-
 import au.org.consumerdatastandards.interfaces.api.ModelInterface;
 import au.org.consumerdatastandards.models.types.support.Endpoint;
 import au.org.consumerdatastandards.models.types.support.EndpointResponse;
 import au.org.consumerdatastandards.models.types.support.ModelDefinition;
 import au.org.consumerdatastandards.models.types.support.Section;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
+import java.lang.annotation.Annotation;
+import java.lang.reflect.Array;
+import java.lang.reflect.Method;
+import java.util.*;
 
 /**
  * Accepts a defined class then processes annotations and methods to produce a
@@ -31,9 +22,9 @@ import au.org.consumerdatastandards.models.types.support.Section;
  */
 public class ModelBuilder {
 	
-    public Logger logger = LogManager.getLogger(ModelBuilder.class);
+    private Logger logger = LogManager.getLogger(this.getClass());
 
-	ModelInterface model;
+	private final ModelInterface model;
 
 	public ModelBuilder(ModelInterface inputModel) {
 		this.model = inputModel;
@@ -53,21 +44,19 @@ public class ModelBuilder {
 	
 	private List<Object> getModelForest(ArrayList<Map<String, Object>> sectionList) {
 		Map<String,ModelDefinition> modelMap = new HashMap<String,ModelDefinition>();
-		
-		for(int i = 0; i < sectionList.size(); i++) {
-			Map<String,Object> oneSection = sectionList.get(i);
-			
+
+		for (Map<String, Object> oneSection : sectionList) {
 			ArrayList<Endpoint> myEndpoints = (ArrayList<Endpoint>) oneSection.get("endpoints");
-			
+
 			myEndpoints.forEach((oneEndpoint) -> {
 				EndpointResponse[] responseList = oneEndpoint.responseList();
-				for(int j = 0; j < responseList.length; j++) {
-					modelMap.putAll(getModelMap(responseList[j].content()));
+				for (EndpointResponse endpointResponse : responseList) {
+					modelMap.putAll(getModelMap(endpointResponse.content()));
 				}
 			});
 		}
 		
-		return List.copyOf(modelMap.values());
+		return Arrays.asList(modelMap.values());
 		
 	}
 	
@@ -76,20 +65,17 @@ public class ModelBuilder {
 		
 		System.out.println("Parsing for " + content);
 		Method[] methodList = content.getDeclaredMethods();
-		for(int k = 0; k < methodList.length; k++) {
-			String modelName = methodList[k].getReturnType().getCanonicalName();
-			Map<String,Object> attributeMap = new HashMap<String,Object>();
-			
-			if(modelMap.containsKey(modelName)) {
+		for (Method method : methodList) {
+			String modelName = method.getReturnType().getCanonicalName();
+			Map<String, Object> attributeMap = new HashMap<>();
+
+			if (modelMap.containsKey(modelName)) {
 				System.out.println(String.format("Duplicate model definition found for %s", modelName));
-				continue;
-			} else if(methodList[k].getReturnType().isPrimitive() || methodList[k].getReturnType().equals(String.class) || methodList[k].getReturnType().isEnum() ) {
+			} else if (method.getReturnType().isPrimitive() || method.getReturnType().equals(String.class) || method.getReturnType().isEnum()) {
 				System.out.println(String.format("Writing primitive variable type for: %s", modelName));
-				attributeMap.put(methodList[k].getName(), methodList[k].getReturnType().getSimpleName());
-				continue;
+				attributeMap.put(method.getName(), method.getReturnType().getSimpleName());
 			} else {
-				
-				System.out.println("The response list says: " + methodList[k].getReturnType());
+				System.out.println("The response list says: " + method.getReturnType());
 				//modelMap.put(modelName, getModelMap(methodList[k].getReturnType()));
 			}
 		}
@@ -143,10 +129,9 @@ public class ModelBuilder {
 	
 	private Endpoint getEndpoint(Method method) {
 		Annotation[] annotations = method.getAnnotations();
-		for(int k = 0; k < annotations.length; k++) {
-			if(annotations[k].annotationType().equals(Endpoint.class)) {
-				Endpoint myAnnotation = (Endpoint) annotations[k];
-				return myAnnotation;
+		for (Annotation annotation : annotations) {
+			if (annotation.annotationType().equals(Endpoint.class)) {
+				return (Endpoint) annotation;
 			}
 		}
 
