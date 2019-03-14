@@ -32,10 +32,8 @@ public class ModelBuilder {
 	
 	public Map<String, Object> getModelForest() {
 		Map<String,Object> modelMap = new HashMap<String,Object>();
-		
-		/**
-		 * Process sections
-		 */
+
+		// Process sections
 		modelMap.put("sections", getSectionForest(model.getSections()));
 		modelMap.put("models", getModelForest((ArrayList<Map<String,Object>>) modelMap.get("sections")));
 		
@@ -46,7 +44,7 @@ public class ModelBuilder {
 		Map<String,ModelDefinition> modelMap = new HashMap<String,ModelDefinition>();
 
 		for (Map<String, Object> oneSection : sectionList) {
-			ArrayList<Endpoint> myEndpoints = (ArrayList<Endpoint>) oneSection.get("endpoints");
+			List<Endpoint> myEndpoints = (ArrayList<Endpoint>) oneSection.get("endpoints");
 
 			myEndpoints.forEach((oneEndpoint) -> {
 				EndpointResponse[] responseList = oneEndpoint.responseList();
@@ -57,25 +55,24 @@ public class ModelBuilder {
 		}
 		
 		return Arrays.asList(modelMap.values());
-		
 	}
 	
 	private Map<String, ModelDefinition> getModelMap(Class content) {
 		Map<String,ModelDefinition> modelMap = new HashMap<String,ModelDefinition>();
 		
-		System.out.println("Parsing for " + content);
+		logger.info("Parsing for {}", content);
 		Method[] methodList = content.getDeclaredMethods();
 		for (Method method : methodList) {
 			String modelName = method.getReturnType().getCanonicalName();
 			Map<String, Object> attributeMap = new HashMap<>();
 
 			if (modelMap.containsKey(modelName)) {
-				System.out.println(String.format("Duplicate model definition found for %s", modelName));
+				logger.info("Duplicate model definition found for {}", modelName);
 			} else if (method.getReturnType().isPrimitive() || method.getReturnType().equals(String.class) || method.getReturnType().isEnum()) {
-				System.out.println(String.format("Writing primitive variable type for: %s", modelName));
+				logger.info("Writing primitive variable type for: {}", modelName);
 				attributeMap.put(method.getName(), method.getReturnType().getSimpleName());
 			} else {
-				System.out.println("The response list says: " + method.getReturnType());
+				logger.info("The response list says: {}", method.getReturnType());
 				//modelMap.put(modelName, getModelMap(methodList[k].getReturnType()));
 			}
 		}
@@ -85,10 +82,10 @@ public class ModelBuilder {
 
 	private ArrayList<Map<String,Object>> getSectionForest(Class[] sections) {
 		ArrayList<Map<String,Object>> sectionList = new ArrayList<Map<String,Object>>();
-		
-		for(int i = 0; i < sections.length; i++) {
-			sectionList.add(getSection(sections[i]));
-		}
+
+        for (Class section : sections) {
+            sectionList.add(getSection(section));
+        }
 		
 		return sectionList;
 		
@@ -97,21 +94,15 @@ public class ModelBuilder {
 	private Map<String,Object> getSection(Class inputSection) {
 		
 		Map<String,Object> oneSection = new HashMap<String,Object>();
-		ArrayList<Endpoint> myEndpoints = new ArrayList<Endpoint>();
-		
-		/**
-		 * Pull the section class name
-		 */
+		List<Endpoint> myEndpoints = new ArrayList<Endpoint>();
+
+		// Pull the section class name
 		oneSection.put("model", inputSection.getName());
-		
-		/**
-		 * Pull the section name from annotation
-		 */
+
+		// Pull the section name from annotation
 		oneSection.put("definition", inputSection.getAnnotation(Section.class));
 		
-		/**
-		 * Now build methods
-		 */
+		// Now build methods
 		Method[] fields = inputSection.getDeclaredMethods();
 		for (int j = 0; j < Array.getLength(fields); j++) {
 			System.out.println("Method: " + fields[j].toString());
