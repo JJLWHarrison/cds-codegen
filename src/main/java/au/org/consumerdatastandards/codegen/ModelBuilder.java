@@ -15,9 +15,8 @@ import java.util.*;
 /**
  * Accepts a defined class then processes annotations and methods to produce a
  * data model.
- * 
- * @author stuart
  *
+ * @author stuart
  */
 public class ModelBuilder {
 
@@ -26,53 +25,53 @@ public class ModelBuilder {
     private static final String ENDPOINTS = "endpoints";
     private static final String MODEL = "model";
     private static final String DEFINITION = "definition";
-	
+
     private Logger logger = LogManager.getLogger(this.getClass());
 
-	private final ModelInterface model;
+    private final ModelInterface model;
 
-	public ModelBuilder(ModelInterface inputModel) {
-		this.model = inputModel;
-	}
-
-	@SuppressWarnings("unchecked")
-	public Map<String, Object> getModelForest() {
-		Map<String,Object> modelMap = new HashMap<>();
-
-		// Process sections
-		modelMap.put(SECTIONS, getSectionForest(model.getSections()));
-		modelMap.put(MODELS, getModelForest((List<Map<String,Object>>) modelMap.get(SECTIONS)));
-		
-		return modelMap;
-	}
+    public ModelBuilder(ModelInterface inputModel) {
+        this.model = inputModel;
+    }
 
     @SuppressWarnings("unchecked")
-	private List<Object> getModelForest(List<Map<String, Object>> sectionList) {
-		Map<String,ModelDefinition> modelMap = new HashMap<>();
+    public Map<String, Object> getModelForest() {
+        Map<String, Object> modelMap = new HashMap<>();
 
-		for (Map<String, Object> oneSection : sectionList) {
-			List<Endpoint> myEndpoints = (ArrayList<Endpoint>) oneSection.get(ENDPOINTS);
+        // Process sections
+        modelMap.put(SECTIONS, getSectionForest(model.getSections()));
+        modelMap.put(MODELS, getModelForest((List<Map<String, Object>>) modelMap.get(SECTIONS)));
 
-			myEndpoints.forEach((oneEndpoint) -> {
-				EndpointResponse[] responseList = oneEndpoint.responseList();
-				for (EndpointResponse endpointResponse : responseList) {
-					modelMap.putAll(getModelMap(endpointResponse.content()));
-				}
-			});
-		}
-		
-		return Collections.singletonList(modelMap.values());
-	}
-	
-	private Map<String, ModelDefinition> getModelMap(Class content) {
-		Map<String,ModelDefinition> modelMap = new HashMap<>();
-		
-		logger.info("Parsing for {}", content);
-		Method[] declaredMethods = content.getDeclaredMethods();
-		for (Method method : declaredMethods) {
+        return modelMap;
+    }
+
+    @SuppressWarnings("unchecked")
+    private List<Object> getModelForest(List<Map<String, Object>> sectionList) {
+        Map<String, ModelDefinition> modelMap = new HashMap<>();
+
+        for (Map<String, Object> oneSection : sectionList) {
+            List<Endpoint> myEndpoints = (ArrayList<Endpoint>) oneSection.get(ENDPOINTS);
+
+            myEndpoints.forEach((oneEndpoint) -> {
+                EndpointResponse[] responseList = oneEndpoint.responseList();
+                for (EndpointResponse endpointResponse : responseList) {
+                    modelMap.putAll(getModelMap(endpointResponse.content()));
+                }
+            });
+        }
+
+        return Collections.singletonList(modelMap.values());
+    }
+
+    private Map<String, ModelDefinition> getModelMap(Class content) {
+        Map<String, ModelDefinition> modelMap = new HashMap<>();
+
+        logger.info("Parsing for {}", content);
+        Method[] declaredMethods = content.getDeclaredMethods();
+        for (Method method : declaredMethods) {
             Class<?> returnType = method.getReturnType();
             String modelName = returnType.getCanonicalName();
-			Map<String, Object> attributeMap = new HashMap<>();
+            Map<String, Object> attributeMap = new HashMap<>();
             if (returnType.isPrimitive() || returnType.equals(String.class) || returnType.isEnum()) {
                 logger.info("Writing primitive variable type for: {}", modelName);
                 attributeMap.put(method.getName(), returnType.getSimpleName());
@@ -80,59 +79,59 @@ public class ModelBuilder {
                 logger.info("The response list says: {}", returnType);
                 //modelMap.put(modelName, getModelMap(declaredMethods[k].getReturnType()));
             }
-		}
-		
-		return modelMap;		
-	}
+        }
 
-	private ArrayList<Map<String,Object>> getSectionForest(Class[] sections) {
-		ArrayList<Map<String,Object>> sectionList = new ArrayList<>();
+        return modelMap;
+    }
+
+    private ArrayList<Map<String, Object>> getSectionForest(Class[] sections) {
+        ArrayList<Map<String, Object>> sectionList = new ArrayList<>();
 
         for (Class section : sections) {
             sectionList.add(getSection(section));
         }
-		
-		return sectionList;
-	}
 
-	private Map<String,Object> getSection(Class inputSection) {
-		
-		Map<String,Object> oneSection = new HashMap<>();
-		List<Endpoint> myEndpoints = new ArrayList<>();
+        return sectionList;
+    }
 
-		// Pull the section class name
-		oneSection.put(MODEL, inputSection.getName());
+    private Map<String, Object> getSection(Class inputSection) {
 
-		// Pull the section name from annotation
-		oneSection.put(DEFINITION, inputSection.getAnnotation(Section.class));
-		
-		// Now build methods
-		Method[] declaredMethods = inputSection.getDeclaredMethods();
-		for (Method method : declaredMethods) {
-			logger.info("Method: {}", method);
-			Endpoint myEndpoint = getEndpoint(method);
-			if(myEndpoint != null) {
-				myEndpoints.add(myEndpoint);
-			}
-		}
-		
-		oneSection.put(ENDPOINTS, myEndpoints);
-		
-		return oneSection;
-	}
-	
-	private Endpoint getEndpoint(Method method) {
-		Annotation[] annotations = method.getAnnotations();
-		for (Annotation annotation : annotations) {
-			if (annotation.annotationType().equals(Endpoint.class)) {
-				return (Endpoint) annotation;
-			}
-		}
+        Map<String, Object> oneSection = new HashMap<>();
+        List<Endpoint> myEndpoints = new ArrayList<>();
 
-        logger.error("Endpoint annotation for {} not found",  method.getName());
-		return null;
-	}
-	
+        // Pull the section class name
+        oneSection.put(MODEL, inputSection.getName());
+
+        // Pull the section name from annotation
+        oneSection.put(DEFINITION, inputSection.getAnnotation(Section.class));
+
+        // Now build methods
+        Method[] declaredMethods = inputSection.getDeclaredMethods();
+        for (Method method : declaredMethods) {
+            logger.info("Method: {}", method);
+            Endpoint myEndpoint = getEndpoint(method);
+            if (myEndpoint != null) {
+                myEndpoints.add(myEndpoint);
+            }
+        }
+
+        oneSection.put(ENDPOINTS, myEndpoints);
+
+        return oneSection;
+    }
+
+    private Endpoint getEndpoint(Method method) {
+        Annotation[] annotations = method.getAnnotations();
+        for (Annotation annotation : annotations) {
+            if (annotation.annotationType().equals(Endpoint.class)) {
+                return (Endpoint) annotation;
+            }
+        }
+
+        logger.error("Endpoint annotation for {} not found", method.getName());
+        return null;
+    }
+
 }
 
 
