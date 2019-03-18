@@ -84,9 +84,9 @@ public class ModelBuilder {
         return modelMap;
     }
 
-    private ArrayList<Map<String, Object>> getSectionForest(Class[] sections) {
-        ArrayList<Map<String, Object>> sectionList = new ArrayList<>();
+    private List<Map<String, Object>> getSectionForest(Class[] sections) {
 
+        List<Map<String, Object>> sectionList = new ArrayList<>();
         for (Class section : sections) {
             sectionList.add(getSection(section));
         }
