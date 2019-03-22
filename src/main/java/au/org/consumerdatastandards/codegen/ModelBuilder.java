@@ -1,137 +1,72 @@
 package au.org.consumerdatastandards.codegen;
 
-import au.org.consumerdatastandards.interfaces.api.ModelInterface;
-import au.org.consumerdatastandards.models.types.support.Endpoint;
-import au.org.consumerdatastandards.models.types.support.EndpointResponse;
-import au.org.consumerdatastandards.models.types.support.ModelDefinition;
-import au.org.consumerdatastandards.models.types.support.Section;
+import au.org.consumerdatastandards.codegen.model.APIModel;
+import au.org.consumerdatastandards.codegen.model.DataDefinitionModel;
+import au.org.consumerdatastandards.codegen.model.SectionModel;
+import au.org.consumerdatastandards.support.Endpoint;
+import au.org.consumerdatastandards.support.Section;
+import au.org.consumerdatastandards.support.data.DataDefinition;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.reflections.Reflections;
 
-import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 import java.util.*;
 
 /**
- * Accepts a defined class then processes annotations and methods to produce a
- * data model.
+ * APIModel builder
  *
- * @author stuart
+ * @author stuart, fyang1024
  */
 public class ModelBuilder {
 
-    private static final String SECTIONS = "sections";
-    private static final String MODELS = "models";
-    private static final String ENDPOINTS = "endpoints";
-    private static final String MODEL = "model";
-    private static final String DEFINITION = "definition";
+    private final static String BASE_PACKAGE = "au.org.consumerdatastandards.api";
 
     private Logger logger = LogManager.getLogger(this.getClass());
 
-    private final ModelInterface model;
-
-    public ModelBuilder(ModelInterface inputModel) {
-        this.model = inputModel;
+    public APIModel build() {
+        APIModel apiModel = new APIModel();
+        apiModel.setSectionModels(buildSectionModels());
+        apiModel.setDataDefinitionModels(buildDataDefinitionModels());
+        return apiModel;
     }
 
-    @SuppressWarnings("unchecked")
-    public Map<String, Object> getModelForest() {
-        Map<String, Object> modelMap = new HashMap<>();
+    private List<SectionModel> buildSectionModels() {
 
-        // Process sections
-        modelMap.put(SECTIONS, getSectionForest(model.getSections()));
-        modelMap.put(MODELS, getModelForest((List<Map<String, Object>>) modelMap.get(SECTIONS)));
-
-        return modelMap;
-    }
-
-    @SuppressWarnings("unchecked")
-    private List<Object> getModelForest(List<Map<String, Object>> sectionList) {
-        Map<String, ModelDefinition> modelMap = new HashMap<>();
-
-        for (Map<String, Object> oneSection : sectionList) {
-            List<Endpoint> myEndpoints = (ArrayList<Endpoint>) oneSection.get(ENDPOINTS);
-
-            myEndpoints.forEach((oneEndpoint) -> {
-                EndpointResponse[] responseList = oneEndpoint.responseList();
-                for (EndpointResponse endpointResponse : responseList) {
-                    modelMap.putAll(getModelMap(endpointResponse.content()));
-                }
-            });
+        List<SectionModel> sectionModels = new ArrayList<>();
+        Reflections reflections = new Reflections(BASE_PACKAGE);
+        Set<Class<?>> sectionClasses = reflections.getTypesAnnotatedWith(Section.class);
+        for(Class<?> sectionClass : sectionClasses) {
+            Section section = sectionClass.getAnnotation(Section.class);
+            SectionModel sectionModel = new SectionModel(section);
+            sectionModel.setEndpoints(getEndpoints(sectionClass));
+            sectionModels.add(sectionModel);
         }
-
-        return Collections.singletonList(modelMap.values());
+        return sectionModels;
     }
 
-    private Map<String, ModelDefinition> getModelMap(Class content) {
-        Map<String, ModelDefinition> modelMap = new HashMap<>();
+    private List<Endpoint> getEndpoints(Class<?> sectionClass) {
 
-        logger.info("Parsing for {}", content);
-        Method[] declaredMethods = content.getDeclaredMethods();
-        for (Method method : declaredMethods) {
-            Class<?> returnType = method.getReturnType();
-            String modelName = returnType.getCanonicalName();
-            Map<String, Object> attributeMap = new HashMap<>();
-            if (returnType.isPrimitive() || returnType.equals(String.class) || returnType.isEnum()) {
-                logger.info("Writing primitive variable type for: {}", modelName);
-                attributeMap.put(method.getName(), returnType.getSimpleName());
-            } else {
-                logger.info("The response list says: {}", returnType);
-                //modelMap.put(modelName, getModelMap(declaredMethods[k].getReturnType()));
+        List<Endpoint> endpoints = new ArrayList<>();
+        for(Method method : sectionClass.getDeclaredMethods()) {
+            if (method.isAnnotationPresent(Endpoint.class)) {
+                Endpoint endpoint = method.getAnnotation(Endpoint.class);
+                endpoints.add(endpoint);
             }
         }
-
-        return modelMap;
+        return endpoints;
     }
 
-    private List<Map<String, Object>> getSectionForest(Class[] sections) {
+    private List<DataDefinitionModel> buildDataDefinitionModels() {
 
-        List<Map<String, Object>> sectionList = new ArrayList<>();
-        for (Class section : sections) {
-            sectionList.add(getSection(section));
+        List<DataDefinitionModel> dataDefinitionModels = new ArrayList<>();
+        Reflections reflections = new Reflections(BASE_PACKAGE);
+        Set<Class<?>> dataDefinitionClasses = reflections.getTypesAnnotatedWith(DataDefinition.class);
+        for(Class<?> dataDefinitionClass: dataDefinitionClasses) {
+            dataDefinitionModels.add(new DataDefinitionModel(dataDefinitionClass));
         }
-
-        return sectionList;
+        return dataDefinitionModels;
     }
-
-    private Map<String, Object> getSection(Class inputSection) {
-
-        Map<String, Object> oneSection = new HashMap<>();
-        List<Endpoint> myEndpoints = new ArrayList<>();
-
-        // Pull the section class name
-        oneSection.put(MODEL, inputSection.getName());
-
-        // Pull the section name from annotation
-        oneSection.put(DEFINITION, inputSection.getAnnotation(Section.class));
-
-        // Now build methods
-        Method[] declaredMethods = inputSection.getDeclaredMethods();
-        for (Method method : declaredMethods) {
-            logger.info("Method: {}", method);
-            Endpoint myEndpoint = getEndpoint(method);
-            if (myEndpoint != null) {
-                myEndpoints.add(myEndpoint);
-            }
-        }
-
-        oneSection.put(ENDPOINTS, myEndpoints);
-
-        return oneSection;
-    }
-
-    private Endpoint getEndpoint(Method method) {
-        Annotation[] annotations = method.getAnnotations();
-        for (Annotation annotation : annotations) {
-            if (annotation.annotationType().equals(Endpoint.class)) {
-                return (Endpoint) annotation;
-            }
-        }
-
-        logger.error("Endpoint annotation for {} not found", method.getName());
-        return null;
-    }
-
 }
 
 
