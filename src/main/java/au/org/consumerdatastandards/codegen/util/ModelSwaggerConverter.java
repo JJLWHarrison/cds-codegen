@@ -10,9 +10,7 @@ import au.org.consumerdatastandards.support.data.Enum;
 import au.org.consumerdatastandards.support.data.Property;
 import au.org.consumerdatastandards.support.data.StringFormat;
 import io.swagger.models.*;
-import io.swagger.models.properties.ObjectProperty;
-import io.swagger.models.properties.PropertyBuilder;
-import io.swagger.models.properties.RefProperty;
+import io.swagger.models.properties.*;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -26,11 +24,11 @@ public class ModelSwaggerConverter {
 
     static {
         TYPE_MAPPING = new Properties();
-        InputStream inputStream = ModelSwaggerConverter.class.getResourceAsStream("/java-swagger-mapping.properties");
+        InputStream inputStream = ModelSwaggerConverter.class.getResourceAsStream("/swagger/java-swagger-mapping.properties");
         try {
             TYPE_MAPPING.load(inputStream);
         } catch (IOException e) {
-            throw new Error("missing swagger.properties file");
+            throw new Error("missing static-values.properties file");
         }
     }
 
@@ -107,12 +105,12 @@ public class ModelSwaggerConverter {
 
     private static Properties loadSwaggerProperties() {
         Properties prop = new Properties();
-        InputStream inputStream = ModelSwaggerConverter.class.getResourceAsStream("/swagger.properties");
+        InputStream inputStream = ModelSwaggerConverter.class.getResourceAsStream("/swagger/static-values.properties");
         try {
             prop.load(inputStream);
             return prop;
         } catch (IOException e) {
-            throw new Error("missing swagger.properties file");
+            throw new Error("missing static-values.properties file");
         }
     }
 
@@ -154,12 +152,12 @@ public class ModelSwaggerConverter {
     }
 
     private static io.swagger.models.properties.Property convert(Field field) {
-        String type = "object", format = null;
+        String type = ObjectProperty.TYPE, format = null;
         Class<?> fieldType = field.getType();
         if (fieldType.isArray()) {
-            type = "array";
+            type = ArrayProperty.TYPE;
         } else if (fieldType.isEnum()) {
-            type = "string";
+            type = StringProperty.TYPE;
         } else {
             String mappedTypeFormat = TYPE_MAPPING.getProperty(fieldType.getSimpleName().toLowerCase());
             if (mappedTypeFormat != null) {
@@ -176,7 +174,7 @@ public class ModelSwaggerConverter {
         }
         StringFormat stringFormat = field.getAnnotation(StringFormat.class);
         if (stringFormat != null) {
-            format = stringFormat.format().name();
+            format = stringFormat.format().toString();
         }
         io.swagger.models.properties.Property property = PropertyBuilder.build(type, format, argsFromField(field));
         if (property instanceof ObjectProperty) {
