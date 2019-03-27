@@ -5,10 +5,9 @@ import au.org.consumerdatastandards.codegen.model.DataDefinitionModel;
 import au.org.consumerdatastandards.codegen.model.SectionModel;
 import au.org.consumerdatastandards.support.Endpoint;
 import au.org.consumerdatastandards.support.EndpointResponse;
-import au.org.consumerdatastandards.support.data.DataDefinition;
+import au.org.consumerdatastandards.support.data.*;
 import au.org.consumerdatastandards.support.data.Enum;
 import au.org.consumerdatastandards.support.data.Property;
-import au.org.consumerdatastandards.support.data.StringFormat;
 import io.swagger.models.*;
 import io.swagger.models.properties.*;
 
@@ -16,6 +15,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
+import java.math.BigDecimal;
 import java.util.*;
 
 public class ModelSwaggerConverter {
@@ -44,7 +44,7 @@ public class ModelSwaggerConverter {
         swagger = setPaths(swagger, apiModel);
         swagger = setDefinitions(swagger, apiModel);
         // TODO setParameters setResponses setSecurityDefinitions setSecurity setExternalDocs setVendorExtensions
-        // TODO support tags minimum  maximum self4j
+        // TODO support tags self4j default
         return swagger;
     }
 
@@ -206,6 +206,15 @@ public class ModelSwaggerConverter {
                 values.add(((java.lang.Enum)enumConstant).name());
             }
             args.put(PropertyBuilder.PropertyId.ENUM, values);
+        }
+        IntegerRange integerRange = field.getAnnotation(IntegerRange.class);
+        if (integerRange != null) {
+            if (integerRange.min() != Integer.MIN_VALUE) {
+                args.put(PropertyBuilder.PropertyId.MINIMUM, new BigDecimal(integerRange.min()));
+            }
+            if (integerRange.max() != Integer.MAX_VALUE) {
+                args.put(PropertyBuilder.PropertyId.MAXIMUM, new BigDecimal(integerRange.max()));
+            }
         }
         return args;
     }
