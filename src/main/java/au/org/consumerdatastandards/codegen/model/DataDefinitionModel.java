@@ -2,7 +2,7 @@ package au.org.consumerdatastandards.codegen.model;
 
 public class DataDefinitionModel {
 
-    private Class dataType;
+    private final Class dataType;
 
     public DataDefinitionModel(Class dataType) {
         this.dataType = dataType;
@@ -10,9 +10,5 @@ public class DataDefinitionModel {
 
     public Class getDataType() {
         return dataType;
-    }
-
-    public void setDataType(Class dataType) {
-        this.dataType = dataType;
     }
 }

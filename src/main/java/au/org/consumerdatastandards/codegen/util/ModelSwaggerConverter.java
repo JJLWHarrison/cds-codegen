@@ -44,6 +44,7 @@ public class ModelSwaggerConverter {
         swagger = setPaths(swagger, apiModel);
         swagger = setDefinitions(swagger, apiModel);
         // TODO setParameters setResponses setSecurityDefinitions setSecurity setExternalDocs setVendorExtensions
+        // TODO support tags minimum  maximum self4j
         return swagger;
     }
 
