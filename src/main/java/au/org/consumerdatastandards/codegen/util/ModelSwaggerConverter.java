@@ -49,7 +49,6 @@ public class ModelSwaggerConverter {
         swagger = setPaths(swagger, apiModel);
         swagger = setDefinitions(swagger, apiModel);
         // TODO setParameters setResponses setSecurityDefinitions setSecurity setExternalDocs setVendorExtensions
-        // TODO support tags self4j
         return swagger;
     }
 
@@ -87,11 +86,13 @@ public class ModelSwaggerConverter {
 
         logger.debug("Setting paths");
         for (SectionModel sectionModel : apiModel.getSectionModels()) {
+            List<String> tags = Arrays.asList(sectionModel.getTags());
             for (Endpoint endpoint : sectionModel.getEndpoints()) {
                 String method = endpoint.requestMethod().toString().toLowerCase();
                 Operation operation = new Operation().operationId(endpoint.operationId())
                     .description(endpoint.description())
-                    .summary(endpoint.summary());
+                    .summary(endpoint.summary())
+                    .tags(tags);
                 for (EndpointResponse response : endpoint.responses()) {
                     operation = operation.response(response.responseCode().getCode(),
                         new Response().description(response.description())
