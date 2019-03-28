@@ -6,8 +6,11 @@
         </Console>
     </Appenders>
     <Loggers>
-        <Root level="debug">
+        <Root level="DEBUG">
             <AppenderRef ref="Console" />
         </Root>
+        <Logger name="org.reflections.Reflections" level="ERROR">
+            <AppenderRef ref="Console" />
+        </Logger>
     </Loggers>
 </Configuration>

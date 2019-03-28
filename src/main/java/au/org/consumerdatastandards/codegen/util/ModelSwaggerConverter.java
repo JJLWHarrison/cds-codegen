@@ -10,6 +10,8 @@ import au.org.consumerdatastandards.support.data.Property;
 import io.swagger.models.*;
 import io.swagger.models.properties.*;
 import org.apache.commons.lang3.reflect.FieldUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -19,6 +21,8 @@ import java.math.BigDecimal;
 import java.util.*;
 
 public class ModelSwaggerConverter {
+
+    private static final Logger logger = LoggerFactory.getLogger(ModelSwaggerConverter.class);
 
     private static Properties TYPE_MAPPING;
 
@@ -45,7 +49,7 @@ public class ModelSwaggerConverter {
         swagger = setPaths(swagger, apiModel);
         swagger = setDefinitions(swagger, apiModel);
         // TODO setParameters setResponses setSecurityDefinitions setSecurity setExternalDocs setVendorExtensions
-        // TODO support tags self4j default
+        // TODO support tags self4j
         return swagger;
     }
 
@@ -81,6 +85,7 @@ public class ModelSwaggerConverter {
 
     private static Swagger setPaths(Swagger swagger, APIModel apiModel) {
 
+        logger.debug("Setting paths");
         for (SectionModel sectionModel : apiModel.getSectionModels()) {
             for (Endpoint endpoint : sectionModel.getEndpoints()) {
                 String method = endpoint.requestMethod().toString().toLowerCase();
@@ -101,6 +106,7 @@ public class ModelSwaggerConverter {
 
     private static Swagger setDefinitions(Swagger swagger, APIModel apiModel) {
 
+        logger.debug("Setting definitions");
         Map<String, Model> definitions = new HashMap<>();
         for (DataDefinitionModel dataDefinitionModel : apiModel.getDataDefinitionModels()) {
             Class dataType = dataDefinitionModel.getDataType();
