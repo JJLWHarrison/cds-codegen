@@ -6,10 +6,10 @@ import au.org.consumerdatastandards.codegen.model.SectionModel;
 import au.org.consumerdatastandards.support.Endpoint;
 import au.org.consumerdatastandards.support.EndpointResponse;
 import au.org.consumerdatastandards.support.data.*;
-import au.org.consumerdatastandards.support.data.Enum;
 import au.org.consumerdatastandards.support.data.Property;
 import io.swagger.models.*;
 import io.swagger.models.properties.*;
+import org.apache.commons.lang3.reflect.FieldUtils;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -33,6 +33,7 @@ public class ModelSwaggerConverter {
     }
 
     public static Swagger convert(APIModel apiModel) {
+
         Swagger swagger = new Swagger();
         Properties swaggerProp = loadSwaggerProperties();
         swagger = swagger.info(getInfo(swaggerProp))
@@ -49,6 +50,7 @@ public class ModelSwaggerConverter {
     }
 
     private static Info getInfo(Properties swaggerProp) {
+
         Info info = new Info();
         info.version(swaggerProp.getProperty("version"))
             .title(swaggerProp.getProperty("title"))
@@ -59,6 +61,7 @@ public class ModelSwaggerConverter {
     }
 
     private static Scheme[] getSchemes(Properties swaggerProp) {
+
         String[] schemeNames = swaggerProp.getProperty("schemes").split(",");
         Scheme[] schemes = new Scheme[schemeNames.length];
         for (int i = 0; i < schemeNames.length; i++) {
@@ -68,6 +71,7 @@ public class ModelSwaggerConverter {
     }
 
     private static String[] getTrimmedValues(String[] values) {
+
         String[] trimmedValues = new String[values.length];
         for (int i = 0; i < values.length; i++) {
             trimmedValues[i] = values[i].trim();
@@ -76,6 +80,7 @@ public class ModelSwaggerConverter {
     }
 
     private static Swagger setPaths(Swagger swagger, APIModel apiModel) {
+
         for (SectionModel sectionModel : apiModel.getSectionModels()) {
             for (Endpoint endpoint : sectionModel.getEndpoints()) {
                 String method = endpoint.requestMethod().toString().toLowerCase();
@@ -95,6 +100,7 @@ public class ModelSwaggerConverter {
     }
 
     private static Swagger setDefinitions(Swagger swagger, APIModel apiModel) {
+
         Map<String, Model> definitions = new HashMap<>();
         for (DataDefinitionModel dataDefinitionModel : apiModel.getDataDefinitionModels()) {
             Class dataType = dataDefinitionModel.getDataType();
@@ -105,6 +111,7 @@ public class ModelSwaggerConverter {
     }
 
     private static Properties loadSwaggerProperties() {
+
         Properties prop = new Properties();
         InputStream inputStream = ModelSwaggerConverter.class.getResourceAsStream("/swagger/static-values.properties");
         try {
@@ -116,6 +123,7 @@ public class ModelSwaggerConverter {
     }
 
     private static Model convert(Class contentClass) {
+
         Annotation dataDefinition = contentClass.getAnnotation(DataDefinition.class);
         if (dataDefinition == null) {
             return convertToModelImpl(contentClass);
@@ -124,22 +132,12 @@ public class ModelSwaggerConverter {
         }
     }
 
-    private static List<Field> getAllFields(List<Field> fields, Class<?> type) {
-        fields.addAll(Arrays.asList(type.getDeclaredFields()));
-
-        if (type.getSuperclass() != null) {
-            getAllFields(fields, type.getSuperclass());
-        }
-
-        return fields;
-    }
-
     private static ModelImpl convertToModelImpl(Class contentClass) {
+
         ModelImpl modelImpl = new ModelImpl();
         modelImpl = modelImpl.name(contentClass.getSimpleName());
         List<String> required = new ArrayList<>();
-        List<Field> allFields = new ArrayList<>();
-        for (Field field : getAllFields(allFields, contentClass)) {
+        for (Field field : FieldUtils.getAllFields(contentClass)) {
             if (field.isAnnotationPresent(Property.class)) {
                 Property property = field.getAnnotation(Property.class);
                 if (property.required()) {
@@ -153,6 +151,8 @@ public class ModelSwaggerConverter {
     }
 
     private static io.swagger.models.properties.Property convert(Field field) {
+
+        // figure out swagger type and format from field
         String type = ObjectProperty.TYPE, format = null;
         Class<?> fieldType = field.getType();
         if (fieldType.isArray()) {
@@ -177,6 +177,8 @@ public class ModelSwaggerConverter {
         if (stringFormat != null) {
             format = stringFormat.format().toString();
         }
+
+        // build swagger property
         io.swagger.models.properties.Property property = PropertyBuilder.build(type, format, argsFromField(field));
         if (property instanceof ObjectProperty) {
             if (fieldType.isAnnotationPresent(DataDefinition.class)) {
@@ -193,20 +195,35 @@ public class ModelSwaggerConverter {
     }
 
     private static Map<PropertyBuilder.PropertyId, Object> argsFromField(Field field) {
+
         Map<PropertyBuilder.PropertyId, Object> args = new HashMap<>();
+        setDescription(field, args);
+        setEnum(field, args);
+        setMinMax(field, args);
+        setDefaultValue(field, args);
+        return args;
+    }
+
+    private static void setDescription(Field field, Map<PropertyBuilder.PropertyId, Object> args) {
+
         Property property = field.getAnnotation(Property.class);
         args.put(PropertyBuilder.PropertyId.DESCRIPTION, property.description());
-        Enum enumerator = field.getAnnotation(Enum.class);
-        if (enumerator != null) {
-            args.put(PropertyBuilder.PropertyId.ENUM, Arrays.asList(enumerator.values()));
-        } else if (field.getType().isEnum()) {
+    }
+
+    private static void setEnum(Field field, Map<PropertyBuilder.PropertyId, Object> args) {
+
+        if (field.getType().isEnum()) {
             Object[] enumConstants = field.getType().getEnumConstants();
             List<String> values = new ArrayList<>(enumConstants.length);
-            for(Object enumConstant : enumConstants) {
-                values.add(((java.lang.Enum)enumConstant).name());
+            for (Object enumConstant : enumConstants) {
+                values.add(((Enum) enumConstant).name());
             }
             args.put(PropertyBuilder.PropertyId.ENUM, values);
         }
+    }
+
+    private static void setMinMax(Field field, Map<PropertyBuilder.PropertyId, Object> args) {
+
         IntegerRange integerRange = field.getAnnotation(IntegerRange.class);
         if (integerRange != null) {
             if (integerRange.min() != Integer.MIN_VALUE) {
@@ -216,6 +233,28 @@ public class ModelSwaggerConverter {
                 args.put(PropertyBuilder.PropertyId.MAXIMUM, new BigDecimal(integerRange.max()));
             }
         }
-        return args;
+    }
+
+    private static void setDefaultValue(Field field, Map<PropertyBuilder.PropertyId, Object> args) {
+
+        try {
+            Object target = field.getDeclaringClass().newInstance();
+            Object defaultValue = FieldUtils.readField(field, target, true);
+            if (defaultValue != null && !isTypeDefaultValue(defaultValue)) {
+                if (defaultValue.getClass().isEnum()) {
+                    args.put(PropertyBuilder.PropertyId.DEFAULT, ((Enum)defaultValue).name());
+                } else {
+                    args.put(PropertyBuilder.PropertyId.DEFAULT, defaultValue.toString());
+                }
+            }
+        } catch (InstantiationException | IllegalAccessException e) {
+            throw new Error(e);
+        }
+    }
+
+    private static boolean isTypeDefaultValue(Object defaultValue) {
+
+        return defaultValue.getClass().equals(Boolean.class) && defaultValue.equals(Boolean.FALSE)
+            || Number.class.isAssignableFrom(defaultValue.getClass()) && ((Number)defaultValue).intValue() == 0;
     }
 }
