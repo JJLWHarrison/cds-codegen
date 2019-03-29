@@ -176,6 +176,7 @@ public class ModelSwaggerConverter {
 
 
     private static io.swagger.models.properties.Property buildProperty(Field field, SwaggerTypeFormat typeFormat) {
+
         if (ObjectProperty.isType(typeFormat.type, typeFormat.format)) {
             Class<?> fieldType = field.getType();
             if (fieldType.isAnnotationPresent(DataDefinition.class)) {
@@ -200,7 +201,10 @@ public class ModelSwaggerConverter {
 
 
     private static io.swagger.models.properties.Property buildItemsProperty (
-        Class<?> type, SwaggerTypeFormat typeFormat, Map<PropertyBuilder.PropertyId, Object> args) {
+        Class<?> type,
+        SwaggerTypeFormat typeFormat,
+        Map<PropertyBuilder.PropertyId, Object> args
+    ) {
         if (ObjectProperty.isType(typeFormat.type, typeFormat.format)) {
             return buildObjectProperty(type);
         } else if (ArrayProperty.isType(typeFormat.type)) {
@@ -219,6 +223,7 @@ public class ModelSwaggerConverter {
     }
 
     private static SwaggerTypeFormat getSwaggerTypeFormat(Class<?> type) {
+
         SwaggerTypeFormat swaggerTypeFormat = new SwaggerTypeFormat();
         if (type.isArray()) {
             swaggerTypeFormat.type = ArrayProperty.TYPE;
@@ -301,6 +306,7 @@ public class ModelSwaggerConverter {
     }
 
     private static void setFormat(Field field, Map<PropertyBuilder.PropertyId, Object> args) {
+
         StringFormat stringFormat = field.getAnnotation(StringFormat.class);
         if (stringFormat != null) {
             args.put(PropertyBuilder.PropertyId.FORMAT, stringFormat.format().toString());
@@ -308,6 +314,7 @@ public class ModelSwaggerConverter {
     }
 
     private static void setPattern(Field field, Map<PropertyBuilder.PropertyId, Object> args) {
+
         Pattern pattern = field.getAnnotation(Pattern.class);
         if (pattern != null) {
             args.put(PropertyBuilder.PropertyId.PATTERN, pattern.regex());
