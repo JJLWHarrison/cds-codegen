@@ -7,9 +7,9 @@ import java.util.List;
 
 public class SectionModel {
 
-    private String name;
+    private final String name;
 
-    private String[] tags;
+    private final String[] tags;
 
     private List<Endpoint> endpoints;
 
@@ -22,16 +22,8 @@ public class SectionModel {
         return name;
     }
 
-    public void setName(String name) {
-        this.name = name;
-    }
-
     public String[] getTags() {
         return tags;
-    }
-
-    public void setTags(String[] tags) {
-        this.tags = tags;
     }
 
     public List<Endpoint> getEndpoints() {
