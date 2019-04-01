@@ -1,13 +1,13 @@
 package au.org.consumerdatastandards.codegen.util;
 
-import au.org.consumerdatastandards.codegen.model.APIModel;
-import au.org.consumerdatastandards.codegen.model.DataDefinitionModel;
-import au.org.consumerdatastandards.codegen.model.SectionModel;
+import au.org.consumerdatastandards.codegen.model.*;
 import au.org.consumerdatastandards.support.Endpoint;
 import au.org.consumerdatastandards.support.EndpointResponse;
+import au.org.consumerdatastandards.support.Param;
 import au.org.consumerdatastandards.support.data.Property;
 import au.org.consumerdatastandards.support.data.*;
 import io.swagger.models.*;
+import io.swagger.models.parameters.*;
 import io.swagger.models.properties.*;
 import io.swagger.models.utils.PropertyModelConverter;
 import org.apache.commons.lang3.StringUtils;
@@ -54,7 +54,7 @@ public class ModelSwaggerConverter {
             .consumes(Arrays.asList(getTrimmedValues(swaggerProp.getProperty("consumes").split(","))));
         setPaths(swagger, apiModel);
         setDefinitions(swagger, apiModel);
-        // TODO setParameters setVendorExtensions
+        // TODO setVendorExtensions
         // TODO support MapProperty ComposedModel
         return swagger;
     }
@@ -94,7 +94,8 @@ public class ModelSwaggerConverter {
         logger.debug("Setting paths");
         for (SectionModel sectionModel : apiModel.getSectionModels()) {
             List<String> tags = Arrays.asList(sectionModel.getTags());
-            for (Endpoint endpoint : sectionModel.getEndpoints()) {
+            for (EndpointModel endpointModel : sectionModel.getEndpointModels()) {
+                Endpoint endpoint = endpointModel.getEndpoint();
                 String method = endpoint.requestMethod().toString().toLowerCase();
                 Operation operation = new Operation().operationId(endpoint.operationId())
                     .description(endpoint.description())
@@ -104,6 +105,9 @@ public class ModelSwaggerConverter {
                     operation = operation.response(response.responseCode().getCode(),
                         new Response().description(response.description())
                             .responseSchema(convertToModel(response.content())));
+                }
+                for (ParamModel paramModel : endpointModel.getParamModels()) {
+                    operation.parameter(convertToParameter(swagger, paramModel));
                 }
                 Path path = new Path().set(method, operation);
                 swagger = swagger.path(endpoint.path(), path);
@@ -131,6 +135,92 @@ public class ModelSwaggerConverter {
             return prop;
         } catch (IOException e) {
             throw new Error("missing static-values.properties file");
+        }
+    }
+
+    private static Parameter convertToParameter(Swagger swagger, ParamModel paramModel) {
+
+        Param param = paramModel.getParam();
+        switch (param.in()) {
+            case BODY:
+                BodyParameter bodyParameter = new BodyParameter()
+                    .description(param.description())
+                    .name(param.name()).schema(convertToModel(paramModel.getParamDataType()));
+
+                if (!StringUtils.isBlank(param.ref())) {
+                    swagger.parameter(param.ref(), bodyParameter);
+                    return new RefParameter(param.ref());
+                }
+                return bodyParameter;
+            case HEADER:
+                HeaderParameter headerParameter = new HeaderParameter();
+                buildSerializableParameter(paramModel, param, headerParameter);
+                if (!StringUtils.isBlank(param.ref())) {
+                    swagger.parameter(param.ref(), headerParameter);
+                    return new RefParameter(param.ref());
+                }
+                return headerParameter;
+            case PATH:
+                PathParameter pathParameter = new PathParameter();
+                buildSerializableParameter(paramModel, param, pathParameter);
+                if (!StringUtils.isBlank(param.ref())) {
+                    swagger.parameter(param.ref(), pathParameter);
+                    return new RefParameter(param.ref());
+                }
+                return pathParameter;
+            case FORM:
+                FormParameter formParameter = new FormParameter();
+                buildSerializableParameter(paramModel, param, formParameter);
+                if (!StringUtils.isBlank(param.ref())) {
+                    swagger.parameter(param.ref(), formParameter);
+                    return new RefParameter(param.ref());
+                }
+                return formParameter;
+            case QUERY:
+                QueryParameter queryParameter = new QueryParameter();
+                buildSerializableParameter(paramModel, param, queryParameter);
+                if (!StringUtils.isBlank(param.ref())) {
+                    swagger.parameter(param.ref(), queryParameter);
+                    return new RefParameter(param.ref());
+                }
+                return queryParameter;
+            case COOKIE:
+                CookieParameter cookieParameter = new CookieParameter();
+                buildSerializableParameter(paramModel, param, cookieParameter);
+                if (!StringUtils.isBlank(param.ref())) {
+                    swagger.parameter(param.ref(), cookieParameter);
+                    return new RefParameter(param.ref());
+                }
+                return cookieParameter;
+            default:
+                throw new Error("unsupported ParamLocation " + param.in());
+        }
+    }
+
+    private static void buildSerializableParameter(ParamModel paramModel, Param param, AbstractSerializableParameter parameter) {
+        SwaggerTypeFormat swaggerTypeFormat = getSwaggerTypeFormat(paramModel.getParamDataType());
+        if (paramModel.getStringFormat() != null) {
+            swaggerTypeFormat.format = paramModel.getStringFormat().format().toString();
+        }
+        parameter
+            .description(param.description())
+            .name(param.name())
+            .type(swaggerTypeFormat.type)
+            .format(swaggerTypeFormat.format);
+        if (paramModel.getPattern() != null) {
+            parameter.setPattern(paramModel.getPattern().regex());
+        }
+        IntegerRange integerRange = paramModel.getIntegerRange();
+        if (integerRange != null) {
+            if (integerRange.min() != Integer.MIN_VALUE) {
+                parameter.setMinimum(new BigDecimal(integerRange.min()));
+            }
+            if (integerRange.max() != Integer.MAX_VALUE) {
+                parameter.setMaximum(new BigDecimal(integerRange.max()));
+            }
+        }
+        if (paramModel.getParamDataType().isEnum()) {
+            parameter.setEnum(getEnumValues(paramModel.getParamDataType()));
         }
     }
 
@@ -185,18 +275,22 @@ public class ModelSwaggerConverter {
                 return buildObjectProperty(fieldType);
             }
         } else if (ArrayProperty.isType(typeFormat.type)) {
-            ArrayProperty arrayProperty = new ArrayProperty();
-            Property property = field.getAnnotation(Property.class);
-            if (!StringUtils.isBlank(property.description())) {
-                arrayProperty.description(property.description());
-            }
-            Class<?> componentType = field.getType().getComponentType();
-            Map<PropertyBuilder.PropertyId, Object> args = argsFromField(field, true);
-            arrayProperty.setItems(convertItemToProperty(componentType, typeFormat.format, args));
-            return arrayProperty;
+            return buildArrayProperty(field, typeFormat);
         } else {
             return PropertyBuilder.build(typeFormat.type, typeFormat.format, argsFromField(field, false));
         }
+    }
+
+    private static io.swagger.models.properties.Property buildArrayProperty(Field field, SwaggerTypeFormat typeFormat) {
+        ArrayProperty arrayProperty = new ArrayProperty();
+        Property property = field.getAnnotation(Property.class);
+        if (!StringUtils.isBlank(property.description())) {
+            arrayProperty.description(property.description());
+        }
+        Class<?> componentType = field.getType().getComponentType();
+        Map<PropertyBuilder.PropertyId, Object> args = argsFromField(field, true);
+        arrayProperty.setItems(convertItemToProperty(componentType, typeFormat.format, args));
+        return arrayProperty;
     }
 
 
@@ -296,13 +390,19 @@ public class ModelSwaggerConverter {
     private static void setEnum(Class<?> type, Map<PropertyBuilder.PropertyId, Object> args) {
 
         if (type.isEnum()) {
-            Object[] enumConstants = type.getEnumConstants();
-            List<String> values = new ArrayList<>(enumConstants.length);
-            for (Object enumConstant : enumConstants) {
-                values.add(((Enum) enumConstant).name());
-            }
+            List<String> values = getEnumValues(type);
             args.put(PropertyBuilder.PropertyId.ENUM, values);
         }
+    }
+
+    private static List<String> getEnumValues(Class<?> type) {
+
+        Object[] enumConstants = type.getEnumConstants();
+        List<String> values = new ArrayList<>(enumConstants.length);
+        for (Object enumConstant : enumConstants) {
+            values.add(((Enum) enumConstant).name());
+        }
+        return values;
     }
 
     private static void setFormat(Field field, Map<PropertyBuilder.PropertyId, Object> args) {

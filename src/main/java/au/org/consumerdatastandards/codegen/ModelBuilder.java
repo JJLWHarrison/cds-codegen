@@ -1,17 +1,17 @@
 package au.org.consumerdatastandards.codegen;
 
-import au.org.consumerdatastandards.codegen.model.APIModel;
-import au.org.consumerdatastandards.codegen.model.DataDefinitionModel;
-import au.org.consumerdatastandards.codegen.model.SectionModel;
+import au.org.consumerdatastandards.codegen.model.*;
 import au.org.consumerdatastandards.support.Endpoint;
+import au.org.consumerdatastandards.support.Param;
 import au.org.consumerdatastandards.support.Section;
 import au.org.consumerdatastandards.support.data.DataDefinition;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.reflections.Reflections;
 
 import java.lang.reflect.Method;
-import java.util.*;
+import java.lang.reflect.Parameter;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Set;
 
 /**
  * APIModel builder
@@ -21,8 +21,6 @@ import java.util.*;
 public class ModelBuilder {
 
     private final static String BASE_PACKAGE = "au.org.consumerdatastandards.api";
-
-    private Logger logger = LogManager.getLogger(this.getClass());
 
     public APIModel build() {
         APIModel apiModel = new APIModel();
@@ -39,22 +37,29 @@ public class ModelBuilder {
         for(Class<?> sectionClass : sectionClasses) {
             Section section = sectionClass.getAnnotation(Section.class);
             SectionModel sectionModel = new SectionModel(section);
-            sectionModel.setEndpoints(getEndpoints(sectionClass));
+            sectionModel.setEndpointModels(getEndpointModels(sectionClass));
             sectionModels.add(sectionModel);
         }
         return sectionModels;
     }
 
-    private List<Endpoint> getEndpoints(Class<?> sectionClass) {
+    private List<EndpointModel> getEndpointModels(Class<?> sectionClass) {
 
-        List<Endpoint> endpoints = new ArrayList<>();
+        List<EndpointModel> endpointModels = new ArrayList<>();
         for(Method method : sectionClass.getDeclaredMethods()) {
             if (method.isAnnotationPresent(Endpoint.class)) {
                 Endpoint endpoint = method.getAnnotation(Endpoint.class);
-                endpoints.add(endpoint);
+                EndpointModel endpointModel = new EndpointModel(endpoint);
+                Parameter[] parameters = method.getParameters();
+                for (Parameter parameter : parameters) {
+                    if (parameter.isAnnotationPresent(Param.class)) {
+                        endpointModel.addParamModel(new ParamModel(parameter));
+                    }
+                }
+                endpointModels.add(endpointModel);
             }
         }
-        return endpoints;
+        return endpointModels;
     }
 
     private List<DataDefinitionModel> buildDataDefinitionModels() {

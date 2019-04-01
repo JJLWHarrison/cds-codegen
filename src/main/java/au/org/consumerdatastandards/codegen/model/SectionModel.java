@@ -1,6 +1,5 @@
 package au.org.consumerdatastandards.codegen.model;
 
-import au.org.consumerdatastandards.support.Endpoint;
 import au.org.consumerdatastandards.support.Section;
 
 import java.util.List;
@@ -11,7 +10,7 @@ public class SectionModel {
 
     private final String[] tags;
 
-    private List<Endpoint> endpoints;
+    private List<EndpointModel> endpointModels;
 
     public SectionModel(Section section) {
         this.name = section.name();
@@ -26,11 +25,11 @@ public class SectionModel {
         return tags;
     }
 
-    public List<Endpoint> getEndpoints() {
-        return endpoints;
+    public List<EndpointModel> getEndpointModels() {
+        return endpointModels;
     }
 
-    public void setEndpoints(List<Endpoint> endpoints) {
-        this.endpoints = endpoints;
+    public void setEndpointModels(List<EndpointModel> endpointModels) {
+        this.endpointModels = endpointModels;
     }
 }
