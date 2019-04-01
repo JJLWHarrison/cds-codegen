@@ -207,6 +207,9 @@ public class ModelSwaggerConverter {
             .name(param.name())
             .type(swaggerTypeFormat.type)
             .format(swaggerTypeFormat.format);
+        if (!StringUtils.isBlank(param.defaultValue())) {
+            parameter.setDefaultValue(param.defaultValue());
+        }
         if (paramModel.getPattern() != null) {
             parameter.setPattern(paramModel.getPattern().regex());
         }
