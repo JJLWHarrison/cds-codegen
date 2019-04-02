@@ -147,54 +147,54 @@ public class ModelSwaggerConverter {
                     .description(param.description())
                     .name(param.name()).schema(convertToModel(paramModel.getParamDataType()));
 
-                if (!StringUtils.isBlank(param.reference())) {
-                    swagger.parameter(param.reference(), bodyParameter);
-                    return new RefParameter(param.reference());
+                if (param.reference() && !paramModel.isSimple()) {
+                    return buildRefParameter(swagger, paramModel, bodyParameter);
                 }
                 return bodyParameter;
             case HEADER:
                 HeaderParameter headerParameter = new HeaderParameter();
                 buildSerializableParameter(paramModel, param, headerParameter);
-                if (!StringUtils.isBlank(param.reference())) {
-                    swagger.parameter(param.reference(), headerParameter);
-                    return new RefParameter(param.reference());
+                if (param.reference() && !paramModel.isSimple()) {
+                    return buildRefParameter(swagger, paramModel, headerParameter);
                 }
                 return headerParameter;
             case PATH:
                 PathParameter pathParameter = new PathParameter();
                 buildSerializableParameter(paramModel, param, pathParameter);
-                if (!StringUtils.isBlank(param.reference())) {
-                    swagger.parameter(param.reference(), pathParameter);
-                    return new RefParameter(param.reference());
+                if (param.reference() && !paramModel.isSimple()) {
+                    return buildRefParameter(swagger, paramModel, pathParameter);
                 }
                 return pathParameter;
             case FORM:
                 FormParameter formParameter = new FormParameter();
                 buildSerializableParameter(paramModel, param, formParameter);
-                if (!StringUtils.isBlank(param.reference())) {
-                    swagger.parameter(param.reference(), formParameter);
-                    return new RefParameter(param.reference());
+                if (param.reference() && !paramModel.isSimple()) {
+                    return buildRefParameter(swagger, paramModel, formParameter);
                 }
                 return formParameter;
             case QUERY:
                 QueryParameter queryParameter = new QueryParameter();
                 buildSerializableParameter(paramModel, param, queryParameter);
-                if (!StringUtils.isBlank(param.reference())) {
-                    swagger.parameter(param.reference(), queryParameter);
-                    return new RefParameter(param.reference());
+                if (param.reference() && !paramModel.isSimple()) {
+                    return buildRefParameter(swagger, paramModel, queryParameter);
                 }
                 return queryParameter;
             case COOKIE:
                 CookieParameter cookieParameter = new CookieParameter();
                 buildSerializableParameter(paramModel, param, cookieParameter);
-                if (!StringUtils.isBlank(param.reference())) {
-                    swagger.parameter(param.reference(), cookieParameter);
-                    return new RefParameter(param.reference());
+                if (param.reference() && !paramModel.isSimple()) {
+                    return buildRefParameter(swagger, paramModel, cookieParameter);
                 }
                 return cookieParameter;
             default:
                 throw new Error("unsupported ParamLocation " + param.in());
         }
+    }
+
+    private static Parameter buildRefParameter(Swagger swagger, ParamModel paramModel, Parameter parameter) {
+        String ref = paramModel.generateRef();
+        swagger.parameter(ref, parameter);
+        return new RefParameter(ref);
     }
 
     private static void buildSerializableParameter(ParamModel paramModel, Param param, AbstractSerializableParameter parameter) {
