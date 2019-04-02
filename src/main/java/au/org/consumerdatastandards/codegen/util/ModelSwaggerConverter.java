@@ -19,6 +19,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
+import java.lang.reflect.ParameterizedType;
+import java.lang.reflect.Type;
 import java.math.BigDecimal;
 import java.util.*;
 
@@ -47,11 +49,11 @@ public class ModelSwaggerConverter {
         Swagger swagger = new Swagger();
         Properties swaggerProp = loadSwaggerProperties();
         swagger = swagger.info(getInfo(swaggerProp))
-            .host(swaggerProp.getProperty("host"))
-            .basePath(swaggerProp.getProperty("basePath"))
-            .schemes(Arrays.asList(getSchemes(swaggerProp)))
-            .produces(Arrays.asList(getTrimmedValues(swaggerProp.getProperty("produces").split(","))))
-            .consumes(Arrays.asList(getTrimmedValues(swaggerProp.getProperty("consumes").split(","))));
+                .host(swaggerProp.getProperty("host"))
+                .basePath(swaggerProp.getProperty("basePath"))
+                .schemes(Arrays.asList(getSchemes(swaggerProp)))
+                .produces(Arrays.asList(getTrimmedValues(swaggerProp.getProperty("produces").split(","))))
+                .consumes(Arrays.asList(getTrimmedValues(swaggerProp.getProperty("consumes").split(","))));
         setPaths(swagger, apiModel);
         setDefinitions(swagger, apiModel);
         // TODO setVendorExtensions
@@ -63,10 +65,10 @@ public class ModelSwaggerConverter {
 
         Info info = new Info();
         info.version(swaggerProp.getProperty("version"))
-            .title(swaggerProp.getProperty("title"))
-            .description(swaggerProp.getProperty("description"))
-            .license(new License().name(swaggerProp.getProperty("license.name"))
-                .url(swaggerProp.getProperty("license.url")));
+                .title(swaggerProp.getProperty("title"))
+                .description(swaggerProp.getProperty("description"))
+                .license(new License().name(swaggerProp.getProperty("license.name"))
+                        .url(swaggerProp.getProperty("license.url")));
         return info;
     }
 
@@ -98,13 +100,13 @@ public class ModelSwaggerConverter {
                 Endpoint endpoint = endpointModel.getEndpoint();
                 String method = endpoint.requestMethod().toString().toLowerCase();
                 Operation operation = new Operation().operationId(endpoint.operationId())
-                    .description(endpoint.description())
-                    .summary(endpoint.summary())
-                    .tags(tags);
+                        .description(endpoint.description())
+                        .summary(endpoint.summary())
+                        .tags(tags);
                 for (EndpointResponse response : endpoint.responses()) {
                     operation = operation.response(response.responseCode().getCode(),
-                        new Response().description(response.description())
-                            .responseSchema(convertToModel(response.content())));
+                            new Response().description(response.description())
+                                    .responseSchema(convertToModel(response.content())));
                 }
                 for (ParamModel paramModel : endpointModel.getParamModels()) {
                     operation.parameter(convertToParameter(swagger, paramModel));
@@ -144,8 +146,8 @@ public class ModelSwaggerConverter {
         switch (param.in()) {
             case BODY:
                 BodyParameter bodyParameter = new BodyParameter()
-                    .description(param.description())
-                    .name(param.name()).schema(convertToModel(paramModel.getParamDataType()));
+                        .description(param.description())
+                        .name(param.name()).schema(convertToModel(paramModel.getParamDataType()));
 
                 if (param.reference() && !paramModel.isSimple()) {
                     return buildRefParameter(swagger, paramModel, bodyParameter);
@@ -203,10 +205,10 @@ public class ModelSwaggerConverter {
             swaggerTypeFormat.format = paramModel.getStringFormat().format().toString();
         }
         parameter
-            .description(param.description())
-            .name(param.name())
-            .type(swaggerTypeFormat.type)
-            .format(swaggerTypeFormat.format);
+                .description(param.description())
+                .name(param.name())
+                .type(swaggerTypeFormat.type)
+                .format(swaggerTypeFormat.format);
         if (!StringUtils.isBlank(param.defaultValue())) {
             parameter.setDefaultValue(param.defaultValue());
         }
@@ -290,24 +292,25 @@ public class ModelSwaggerConverter {
         if (!StringUtils.isBlank(property.description())) {
             arrayProperty.description(property.description());
         }
-        Class<?> componentType = field.getType().getComponentType();
+        Type genericType = field.getGenericType();
+        Class<?> itemType = getItemType(field.getType(), genericType);
         Map<PropertyBuilder.PropertyId, Object> args = argsFromField(field, true);
-        arrayProperty.setItems(convertItemToProperty(componentType, typeFormat.format, args));
+        arrayProperty.setItems(convertItemToProperty(itemType, genericType, typeFormat.format, args));
         return arrayProperty;
     }
 
 
-    private static io.swagger.models.properties.Property buildItemsProperty (
-        Class<?> type,
-        SwaggerTypeFormat typeFormat,
-        Map<PropertyBuilder.PropertyId, Object> args
+    private static io.swagger.models.properties.Property buildItemsProperty(
+            Class<?> type, Type genericType,
+            SwaggerTypeFormat typeFormat,
+            Map<PropertyBuilder.PropertyId, Object> args
     ) {
         if (ObjectProperty.isType(typeFormat.type, typeFormat.format)) {
             return buildObjectProperty(type);
         } else if (ArrayProperty.isType(typeFormat.type)) {
             ArrayProperty arrayProperty = new ArrayProperty();
-            Class<?> componentType = type.getComponentType();
-            arrayProperty.setItems(convertItemToProperty(componentType, typeFormat.format, args));
+            Class<?> itemType = getItemType(type, genericType);
+            arrayProperty.setItems(convertItemToProperty(itemType, genericType, typeFormat.format, args));
             return arrayProperty;
         }
         return PropertyBuilder.build(typeFormat.type, typeFormat.format, args);
@@ -322,7 +325,7 @@ public class ModelSwaggerConverter {
     private static SwaggerTypeFormat getSwaggerTypeFormat(Class<?> type) {
 
         SwaggerTypeFormat swaggerTypeFormat = new SwaggerTypeFormat();
-        if (type.isArray()) {
+        if (type.isArray() || isSetOrList(type)) {
             swaggerTypeFormat.type = ArrayProperty.TYPE;
         } else if (type.isEnum()) {
             swaggerTypeFormat.type = StringProperty.TYPE;
@@ -344,18 +347,18 @@ public class ModelSwaggerConverter {
     }
 
     private static io.swagger.models.properties.Property convertItemToProperty(
-        Class<?> type,
-        String format,
-        Map<PropertyBuilder.PropertyId, Object> args
+            Class<?> type, Type genericType,
+            String format,
+            Map<PropertyBuilder.PropertyId, Object> args
     ) {
         SwaggerTypeFormat typeFormat = getSwaggerTypeFormat(type);
-        if (!type.isArray() && !StringUtils.isBlank(format)) {
+        if (!type.isArray() && !isSetOrList(type) && !StringUtils.isBlank(format)) {
             typeFormat.format = format;
         }
-        if (!type.isArray()) {
+        if (!type.isArray() && !isSetOrList(type)) {
             setEnum(type, args);
         }
-        return buildItemsProperty(type, typeFormat, args);
+        return buildItemsProperty(type, genericType, typeFormat, args);
     }
 
     private static Map<PropertyBuilder.PropertyId, Object> argsFromField(Field field, boolean forItem) {
@@ -457,6 +460,24 @@ public class ModelSwaggerConverter {
     private static boolean isTypeDefaultValue(Object defaultValue) {
 
         return defaultValue.getClass().equals(Boolean.class) && defaultValue.equals(Boolean.FALSE)
-            || Number.class.isAssignableFrom(defaultValue.getClass()) && ((Number) defaultValue).intValue() == 0;
+                || Number.class.isAssignableFrom(defaultValue.getClass()) && ((Number) defaultValue).intValue() == 0;
+    }
+
+    private static boolean isSetOrList(Class type) {
+
+        return Set.class.isAssignableFrom(type) || List.class.isAssignableFrom(type);
+    }
+
+    private static Class getItemType(Class type, Type genericType) {
+
+        if (type.isArray()) {
+            return type.getComponentType();
+        }
+        if (genericType instanceof ParameterizedType) {
+            ParameterizedType aType = (ParameterizedType) genericType;
+            Type[] fieldArgTypes = aType.getActualTypeArguments();
+            return (Class) fieldArgTypes[0];
+        }
+        return Object.class;
     }
 }
