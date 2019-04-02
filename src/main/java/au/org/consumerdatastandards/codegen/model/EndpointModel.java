@@ -9,7 +9,7 @@ public class EndpointModel {
 
     private Endpoint endpoint;
 
-    private List<ParamModel> paramModels;
+    private List<ParamModel> paramModels = new ArrayList<>();
 
     public EndpointModel(Endpoint endpoint) {
         this.endpoint = endpoint;
@@ -24,9 +24,7 @@ public class EndpointModel {
     }
 
     public void addParamModel(ParamModel paramModel) {
-        if (paramModels == null) {
-            paramModels = new ArrayList<>();
-        }
+
         paramModels.add(paramModel);
     }
 }

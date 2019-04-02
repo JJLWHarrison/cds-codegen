@@ -5,6 +5,7 @@ import au.org.consumerdatastandards.support.Endpoint;
 import au.org.consumerdatastandards.support.Param;
 import au.org.consumerdatastandards.support.Section;
 import au.org.consumerdatastandards.support.data.DataDefinition;
+import org.apache.commons.lang3.reflect.MethodUtils;
 import org.reflections.Reflections;
 
 import java.lang.reflect.Method;
@@ -34,7 +35,7 @@ public class ModelBuilder {
         List<SectionModel> sectionModels = new ArrayList<>();
         Reflections reflections = new Reflections(BASE_PACKAGE);
         Set<Class<?>> sectionClasses = reflections.getTypesAnnotatedWith(Section.class);
-        for(Class<?> sectionClass : sectionClasses) {
+        for (Class<?> sectionClass : sectionClasses) {
             Section section = sectionClass.getAnnotation(Section.class);
             SectionModel sectionModel = new SectionModel(section);
             sectionModel.setEndpointModels(getEndpointModels(sectionClass));
@@ -46,18 +47,16 @@ public class ModelBuilder {
     private List<EndpointModel> getEndpointModels(Class<?> sectionClass) {
 
         List<EndpointModel> endpointModels = new ArrayList<>();
-        for(Method method : sectionClass.getDeclaredMethods()) {
-            if (method.isAnnotationPresent(Endpoint.class)) {
-                Endpoint endpoint = method.getAnnotation(Endpoint.class);
-                EndpointModel endpointModel = new EndpointModel(endpoint);
-                Parameter[] parameters = method.getParameters();
-                for (Parameter parameter : parameters) {
-                    if (parameter.isAnnotationPresent(Param.class)) {
-                        endpointModel.addParamModel(new ParamModel(parameter));
-                    }
+        for (Method method : MethodUtils.getMethodsListWithAnnotation(sectionClass, Endpoint.class, true, true)) {
+            Endpoint endpoint = method.getAnnotation(Endpoint.class);
+            EndpointModel endpointModel = new EndpointModel(endpoint);
+            Parameter[] parameters = method.getParameters();
+            for (Parameter parameter : parameters) {
+                if (parameter.isAnnotationPresent(Param.class)) {
+                    endpointModel.addParamModel(new ParamModel(parameter));
                 }
-                endpointModels.add(endpointModel);
             }
+            endpointModels.add(endpointModel);
         }
         return endpointModels;
     }
@@ -67,7 +66,7 @@ public class ModelBuilder {
         List<DataDefinitionModel> dataDefinitionModels = new ArrayList<>();
         Reflections reflections = new Reflections(BASE_PACKAGE);
         Set<Class<?>> dataDefinitionClasses = reflections.getTypesAnnotatedWith(DataDefinition.class);
-        for(Class<?> dataDefinitionClass: dataDefinitionClasses) {
+        for (Class<?> dataDefinitionClass : dataDefinitionClasses) {
             dataDefinitionModels.add(new DataDefinitionModel(dataDefinitionClass));
         }
         return dataDefinitionModels;
