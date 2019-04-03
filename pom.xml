@@ -18,6 +18,11 @@
     <maven.compiler.target>1.7</maven.compiler.target>
   </properties>
 
+  <build>
+    <sourceDirectory>src/main/java</sourceDirectory>
+    <outputDirectory>target/classes</outputDirectory>
+  </build>
+
   <modules>
       <module>modules/cds-codegen-core</module>
   </modules>
