@@ -67,7 +67,8 @@ public class ModelBuilder {
         Reflections reflections = new Reflections(BASE_PACKAGE);
         Set<Class<?>> dataDefinitionClasses = reflections.getTypesAnnotatedWith(DataDefinition.class);
         for (Class<?> dataDefinitionClass : dataDefinitionClasses) {
-            dataDefinitionModels.add(new DataDefinitionModel(dataDefinitionClass));
+            DataDefinition dataDefinition = dataDefinitionClass.getAnnotation(DataDefinition.class);
+            dataDefinitionModels.add(new DataDefinitionModel(dataDefinition, dataDefinitionClass));
         }
         return dataDefinitionModels;
     }

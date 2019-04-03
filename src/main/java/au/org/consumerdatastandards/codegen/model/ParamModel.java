@@ -5,12 +5,15 @@ import au.org.consumerdatastandards.support.data.IntegerRange;
 import au.org.consumerdatastandards.support.data.Pattern;
 import au.org.consumerdatastandards.support.data.StringFormat;
 import org.apache.commons.lang3.ClassUtils;
+import org.apache.commons.lang3.StringUtils;
 
 import java.lang.reflect.Parameter;
 
 public class ParamModel {
 
     private Param param;
+
+    private String name;
 
     private Class paramDataType;
 
@@ -22,6 +25,7 @@ public class ParamModel {
 
     public ParamModel(Parameter parameter) {
         this.param = parameter.getAnnotation(Param.class);
+        this.name = parameter.getName();
         this.paramDataType = parameter.getType();
         this.stringFormat = parameter.getAnnotation(StringFormat.class);
         this.pattern = parameter.getAnnotation(Pattern.class);
@@ -55,6 +59,6 @@ public class ParamModel {
     }
 
     public String generateRef() {
-        return "Param" + paramDataType.getSimpleName();
+        return "Param" + StringUtils.capitalize(name);
     }
 }

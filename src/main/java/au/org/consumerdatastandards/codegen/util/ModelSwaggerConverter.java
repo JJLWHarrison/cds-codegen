@@ -57,7 +57,6 @@ public class ModelSwaggerConverter {
         setPaths(swagger, apiModel);
         setDefinitions(swagger, apiModel);
         // TODO setVendorExtensions
-        // TODO support MapProperty ComposedModel
         return swagger;
     }
 
@@ -123,7 +122,12 @@ public class ModelSwaggerConverter {
         Map<String, Model> definitions = new HashMap<>();
         for (DataDefinitionModel dataDefinitionModel : apiModel.getDataDefinitionModels()) {
             Class dataType = dataDefinitionModel.getDataType();
-            definitions.put(dataType.getSimpleName(), convertToModelImpl(dataType));
+            DataDefinition dataDefinition = dataDefinitionModel.getDataDefinition();
+            if (dataDefinition.allOf().length == 0) {
+                definitions.put(dataType.getSimpleName(), convertToModelImpl(dataType));
+            } else {
+                definitions.put(dataType.getSimpleName(), convertToComposedModel(dataType, dataDefinition.allOf()));
+            }
         }
         swagger.setDefinitions(definitions);
     }
@@ -149,7 +153,7 @@ public class ModelSwaggerConverter {
                         .description(param.description())
                         .name(param.name()).schema(convertToModel(paramModel.getParamDataType()));
 
-                if (param.reference() && !paramModel.isSimple()) {
+                if (param.reference()) {
                     return buildRefParameter(swagger, paramModel, bodyParameter);
                 }
                 return bodyParameter;
@@ -194,6 +198,7 @@ public class ModelSwaggerConverter {
     }
 
     private static Parameter buildRefParameter(Swagger swagger, ParamModel paramModel, Parameter parameter) {
+
         String ref = paramModel.generateRef();
         swagger.parameter(ref, parameter);
         return new RefParameter(ref);
@@ -255,6 +260,17 @@ public class ModelSwaggerConverter {
         }
         modelImpl.setRequired(required);
         return modelImpl;
+    }
+
+    private static ComposedModel convertToComposedModel(Class contentClass,Class[] allOf) {
+
+        ComposedModel composedModel = new ComposedModel();
+        composedModel.setReference(contentClass.getSimpleName());
+        for(Class allOfClass : allOf) {
+            composedModel.child(convertToModel(allOfClass));
+        }
+        composedModel.child(convertToModelImpl(contentClass));
+        return composedModel;
     }
 
     private static io.swagger.models.properties.Property convertToProperty(Field field) {
