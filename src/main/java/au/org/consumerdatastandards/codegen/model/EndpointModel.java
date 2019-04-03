@@ -5,7 +5,7 @@ import au.org.consumerdatastandards.support.Endpoint;
 import java.util.ArrayList;
 import java.util.List;
 
-public class EndpointModel {
+public class EndpointModel extends ModelBase {
 
     private Endpoint endpoint;
 

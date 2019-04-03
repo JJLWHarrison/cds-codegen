@@ -1,6 +1,7 @@
 package au.org.consumerdatastandards.codegen;
 
 import au.org.consumerdatastandards.codegen.model.*;
+import au.org.consumerdatastandards.codegen.util.CustomAttributesUtil;
 import au.org.consumerdatastandards.support.Endpoint;
 import au.org.consumerdatastandards.support.Param;
 import au.org.consumerdatastandards.support.Section;
@@ -38,6 +39,7 @@ public class ModelBuilder {
         for (Class<?> sectionClass : sectionClasses) {
             Section section = sectionClass.getAnnotation(Section.class);
             SectionModel sectionModel = new SectionModel(section);
+            CustomAttributesUtil.addCustomAttributes(sectionClass, sectionModel);
             sectionModel.setEndpointModels(getEndpointModels(sectionClass));
             sectionModels.add(sectionModel);
         }
@@ -50,10 +52,13 @@ public class ModelBuilder {
         for (Method method : MethodUtils.getMethodsListWithAnnotation(sectionClass, Endpoint.class, true, true)) {
             Endpoint endpoint = method.getAnnotation(Endpoint.class);
             EndpointModel endpointModel = new EndpointModel(endpoint);
+            CustomAttributesUtil.addCustomAttributes(method, endpointModel);
             Parameter[] parameters = method.getParameters();
             for (Parameter parameter : parameters) {
                 if (parameter.isAnnotationPresent(Param.class)) {
-                    endpointModel.addParamModel(new ParamModel(parameter));
+                    ParamModel paramModel = new ParamModel(parameter);
+                    CustomAttributesUtil.addCustomAttributes(parameter, paramModel);
+                    endpointModel.addParamModel(paramModel);
                 }
             }
             endpointModels.add(endpointModel);
@@ -68,7 +73,9 @@ public class ModelBuilder {
         Set<Class<?>> dataDefinitionClasses = reflections.getTypesAnnotatedWith(DataDefinition.class);
         for (Class<?> dataDefinitionClass : dataDefinitionClasses) {
             DataDefinition dataDefinition = dataDefinitionClass.getAnnotation(DataDefinition.class);
-            dataDefinitionModels.add(new DataDefinitionModel(dataDefinition, dataDefinitionClass));
+            DataDefinitionModel dataDefinitionModel = new DataDefinitionModel(dataDefinition, dataDefinitionClass);
+            CustomAttributesUtil.addCustomAttributes(dataDefinitionClass, dataDefinitionModel);
+            dataDefinitionModels.add(dataDefinitionModel);
         }
         return dataDefinitionModels;
     }

@@ -4,7 +4,7 @@ import au.org.consumerdatastandards.support.Section;
 
 import java.util.List;
 
-public class SectionModel {
+public class SectionModel extends ModelBase {
 
     private final String name;
 

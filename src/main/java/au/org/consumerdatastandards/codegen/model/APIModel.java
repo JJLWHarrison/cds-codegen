@@ -2,7 +2,7 @@ package au.org.consumerdatastandards.codegen.model;
 
 import java.util.List;
 
-public class APIModel {
+public class APIModel extends ModelBase {
 
     private List<SectionModel> sectionModels;
 

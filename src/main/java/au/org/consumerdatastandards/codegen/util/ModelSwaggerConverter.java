@@ -62,13 +62,11 @@ public class ModelSwaggerConverter {
 
     private static Info getInfo(Properties swaggerProp) {
 
-        Info info = new Info();
-        info.version(swaggerProp.getProperty("version"))
+        return new Info().version(swaggerProp.getProperty("version"))
                 .title(swaggerProp.getProperty("title"))
                 .description(swaggerProp.getProperty("description"))
                 .license(new License().name(swaggerProp.getProperty("license.name"))
                         .url(swaggerProp.getProperty("license.url")));
-        return info;
     }
 
     private static Scheme[] getSchemes(Properties swaggerProp) {
@@ -101,7 +99,8 @@ public class ModelSwaggerConverter {
                 Operation operation = new Operation().operationId(endpoint.operationId())
                         .description(endpoint.description())
                         .summary(endpoint.summary())
-                        .tags(tags);
+                        .tags(tags)
+                        .vendorExtensions(endpointModel.getGroupedAttributes());
                 for (EndpointResponse response : endpoint.responses()) {
                     operation = operation.response(response.responseCode().getCode(),
                             new Response().description(response.description())
@@ -147,49 +146,55 @@ public class ModelSwaggerConverter {
     private static Parameter convertToParameter(Swagger swagger, ParamModel paramModel) {
 
         Param param = paramModel.getParam();
+        Map<String, Object> vendorExtensions = paramModel.getGroupedAttributes();
         switch (param.in()) {
             case BODY:
                 BodyParameter bodyParameter = new BodyParameter()
                         .description(param.description())
                         .name(param.name()).schema(convertToModel(paramModel.getParamDataType()));
-
-                if (param.reference()) {
-                    return buildRefParameter(swagger, paramModel, bodyParameter);
+                bodyParameter.setVendorExtensions(vendorExtensions);
+                if (!StringUtils.isBlank(param.reference())) {
+                    return buildRefParameter(swagger, param.reference(), bodyParameter);
                 }
                 return bodyParameter;
             case HEADER:
                 HeaderParameter headerParameter = new HeaderParameter();
+                headerParameter.setVendorExtensions(vendorExtensions);
                 buildSerializableParameter(paramModel, param, headerParameter);
-                if (param.reference() && !paramModel.isSimple()) {
-                    return buildRefParameter(swagger, paramModel, headerParameter);
+                if (!StringUtils.isBlank(param.reference())) {
+                    return buildRefParameter(swagger, param.reference(), headerParameter);
                 }
                 return headerParameter;
             case PATH:
                 PathParameter pathParameter = new PathParameter();
+                pathParameter.setVendorExtensions(vendorExtensions);
                 buildSerializableParameter(paramModel, param, pathParameter);
-                if (param.reference() && !paramModel.isSimple()) {
-                    return buildRefParameter(swagger, paramModel, pathParameter);
+                if (!StringUtils.isBlank(param.reference())) {
+                    return buildRefParameter(swagger, param.reference(), pathParameter);
                 }
                 return pathParameter;
             case FORM:
                 FormParameter formParameter = new FormParameter();
+                formParameter.setVendorExtensions(vendorExtensions);
                 buildSerializableParameter(paramModel, param, formParameter);
-                if (param.reference() && !paramModel.isSimple()) {
-                    return buildRefParameter(swagger, paramModel, formParameter);
+                if (!StringUtils.isBlank(param.reference())) {
+                    return buildRefParameter(swagger, param.reference(), formParameter);
                 }
                 return formParameter;
             case QUERY:
                 QueryParameter queryParameter = new QueryParameter();
+                queryParameter.setVendorExtensions(vendorExtensions);
                 buildSerializableParameter(paramModel, param, queryParameter);
-                if (param.reference() && !paramModel.isSimple()) {
-                    return buildRefParameter(swagger, paramModel, queryParameter);
+                if (!StringUtils.isBlank(param.reference())) {
+                    return buildRefParameter(swagger, param.reference(), queryParameter);
                 }
                 return queryParameter;
             case COOKIE:
                 CookieParameter cookieParameter = new CookieParameter();
+                cookieParameter.setVendorExtensions(vendorExtensions);
                 buildSerializableParameter(paramModel, param, cookieParameter);
-                if (param.reference() && !paramModel.isSimple()) {
-                    return buildRefParameter(swagger, paramModel, cookieParameter);
+                if (!StringUtils.isBlank(param.reference())) {
+                    return buildRefParameter(swagger, param.reference(), cookieParameter);
                 }
                 return cookieParameter;
             default:
@@ -197,11 +202,10 @@ public class ModelSwaggerConverter {
         }
     }
 
-    private static Parameter buildRefParameter(Swagger swagger, ParamModel paramModel, Parameter parameter) {
+    private static Parameter buildRefParameter(Swagger swagger, String reference, Parameter parameter) {
 
-        String ref = paramModel.generateRef();
-        swagger.parameter(ref, parameter);
-        return new RefParameter(ref);
+        swagger.parameter(reference, parameter);
+        return new RefParameter(reference);
     }
 
     private static void buildSerializableParameter(ParamModel paramModel, Param param, AbstractSerializableParameter parameter) {
@@ -247,6 +251,7 @@ public class ModelSwaggerConverter {
     private static ModelImpl convertToModelImpl(Class contentClass) {
 
         ModelImpl modelImpl = new ModelImpl();
+        modelImpl.setVendorExtensions(CustomAttributesUtil.getGroupedAttributes(contentClass));
         modelImpl = modelImpl.name(contentClass.getSimpleName()).type(ModelImpl.OBJECT);
         List<String> required = new ArrayList<>();
         for (Field field : FieldUtils.getAllFields(contentClass)) {
@@ -293,10 +298,14 @@ public class ModelSwaggerConverter {
             if (fieldType.isAnnotationPresent(DataDefinition.class)) {
                 return new RefProperty(fieldType.getSimpleName());
             } else {
-                return buildObjectProperty(fieldType);
+                ObjectProperty property = (ObjectProperty) buildObjectProperty(fieldType);
+                property.setVendorExtensions(CustomAttributesUtil.getGroupedAttributes(field));
+                return property;
             }
         } else if (ArrayProperty.isType(typeFormat.type)) {
-            return buildArrayProperty(field, typeFormat);
+            ArrayProperty property = (ArrayProperty) buildArrayProperty(field, typeFormat);
+            property.setVendorExtensions(CustomAttributesUtil.getGroupedAttributes(field));
+            return property;
         } else {
             return PropertyBuilder.build(typeFormat.type, typeFormat.format, argsFromField(field, false));
         }
@@ -390,6 +399,7 @@ public class ModelSwaggerConverter {
         setFormat(field, args);
         setPattern(field, args);
         setDefaultValue(field, args);
+        setVendorExtensions(field, args);
         return args;
     }
 
@@ -477,6 +487,11 @@ public class ModelSwaggerConverter {
 
         return defaultValue.getClass().equals(Boolean.class) && defaultValue.equals(Boolean.FALSE)
                 || Number.class.isAssignableFrom(defaultValue.getClass()) && ((Number) defaultValue).intValue() == 0;
+    }
+
+    private static void setVendorExtensions(Field field, Map<PropertyBuilder.PropertyId, Object> args) {
+
+        args.put(PropertyBuilder.PropertyId.VENDOR_EXTENSIONS, CustomAttributesUtil.getGroupedAttributes(field));
     }
 
     private static boolean isSetOrList(Class type) {

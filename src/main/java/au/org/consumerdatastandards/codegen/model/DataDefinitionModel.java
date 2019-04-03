@@ -2,7 +2,7 @@ package au.org.consumerdatastandards.codegen.model;
 
 import au.org.consumerdatastandards.support.data.DataDefinition;
 
-public class DataDefinitionModel {
+public class DataDefinitionModel extends ModelBase {
 
     private final DataDefinition dataDefinition;
 
