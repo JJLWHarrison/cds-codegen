@@ -19,7 +19,8 @@ public class ModelBuilderOptions {
     }
 
     public boolean isSectionIncluded(String sectionName) {
-        return includedSections.contains(sectionName) ||
-            !excludedSections.contains(sectionName) && !excludedSections.isEmpty();
+        return includedSections.isEmpty() && excludedSections.isEmpty()
+            || includedSections.contains(sectionName)
+            || !excludedSections.contains(sectionName);
     }
 }

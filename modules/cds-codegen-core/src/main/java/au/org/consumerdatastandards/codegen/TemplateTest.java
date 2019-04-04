@@ -15,15 +15,15 @@ public class TemplateTest {
         options.addOption("x", "exclude", true, "Sections to exclude");
         CommandLineParser parser = new DefaultParser();
         CommandLine cmd = parser.parse(options, args);
-        if (cmd.hasOption('i') && cmd.hasOption('x')) {
+        if (cmd.hasOption("i") && cmd.hasOption("x")) {
             throw new Error("Either included sections or excluded sections can be specified, but not both");
         }
 
         ModelBuilderOptions modelBuilderOptions = new ModelBuilderOptions();
-        if (cmd.hasOption('i')) {
+        if (cmd.hasOption("i")) {
             String[] includedSections = cmd.getOptionValue('i').split(",");
             modelBuilderOptions.includeSections(includedSections);
-        } else if (cmd.hasOption('x')) {
+        } else if (cmd.hasOption("x")) {
             String[] excludedSections = cmd.getOptionValue('x').split(",");
             modelBuilderOptions.excludeSections(excludedSections);
         }
