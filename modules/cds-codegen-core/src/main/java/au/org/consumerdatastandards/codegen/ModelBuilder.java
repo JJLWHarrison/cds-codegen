@@ -24,10 +24,15 @@ public class ModelBuilder {
 
     private final static String BASE_PACKAGE = "au.org.consumerdatastandards.api";
 
+    private ModelBuilderOptions options;
+
+    public ModelBuilder(ModelBuilderOptions options) {
+        this.options = options;
+    }
+
     public APIModel build() {
         APIModel apiModel = new APIModel();
         apiModel.setSectionModels(buildSectionModels());
-        apiModel.setDataDefinitionModels(buildDataDefinitionModels());
         return apiModel;
     }
 
@@ -38,10 +43,12 @@ public class ModelBuilder {
         Set<Class<?>> sectionClasses = reflections.getTypesAnnotatedWith(Section.class);
         for (Class<?> sectionClass : sectionClasses) {
             Section section = sectionClass.getAnnotation(Section.class);
-            SectionModel sectionModel = new SectionModel(section);
-            CustomAttributesUtil.addCustomAttributes(sectionClass, sectionModel);
-            sectionModel.setEndpointModels(getEndpointModels(sectionClass));
-            sectionModels.add(sectionModel);
+            if (options.isSectionIncluded(section.name())) {
+                SectionModel sectionModel = new SectionModel(section);
+                CustomAttributesUtil.addCustomAttributes(sectionClass, sectionModel);
+                sectionModel.setEndpointModels(getEndpointModels(sectionClass));
+                sectionModels.add(sectionModel);
+            }
         }
         return sectionModels;
     }
@@ -64,20 +71,6 @@ public class ModelBuilder {
             endpointModels.add(endpointModel);
         }
         return endpointModels;
-    }
-
-    private List<DataDefinitionModel> buildDataDefinitionModels() {
-
-        List<DataDefinitionModel> dataDefinitionModels = new ArrayList<>();
-        Reflections reflections = new Reflections(BASE_PACKAGE);
-        Set<Class<?>> dataDefinitionClasses = reflections.getTypesAnnotatedWith(DataDefinition.class);
-        for (Class<?> dataDefinitionClass : dataDefinitionClasses) {
-            DataDefinition dataDefinition = dataDefinitionClass.getAnnotation(DataDefinition.class);
-            DataDefinitionModel dataDefinitionModel = new DataDefinitionModel(dataDefinition, dataDefinitionClass);
-            CustomAttributesUtil.addCustomAttributes(dataDefinitionClass, dataDefinitionModel);
-            dataDefinitionModels.add(dataDefinitionModel);
-        }
-        return dataDefinitionModels;
     }
 }
 

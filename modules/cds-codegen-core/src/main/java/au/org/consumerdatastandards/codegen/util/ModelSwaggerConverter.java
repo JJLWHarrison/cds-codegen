@@ -1,6 +1,9 @@
 package au.org.consumerdatastandards.codegen.util;
 
-import au.org.consumerdatastandards.codegen.model.*;
+import au.org.consumerdatastandards.codegen.model.APIModel;
+import au.org.consumerdatastandards.codegen.model.EndpointModel;
+import au.org.consumerdatastandards.codegen.model.ParamModel;
+import au.org.consumerdatastandards.codegen.model.SectionModel;
 import au.org.consumerdatastandards.support.Endpoint;
 import au.org.consumerdatastandards.support.EndpointResponse;
 import au.org.consumerdatastandards.support.Param;
@@ -17,7 +20,6 @@ import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
@@ -55,8 +57,6 @@ public class ModelSwaggerConverter {
                 .produces(Arrays.asList(getTrimmedValues(swaggerProp.getProperty("produces").split(","))))
                 .consumes(Arrays.asList(getTrimmedValues(swaggerProp.getProperty("consumes").split(","))));
         setPaths(swagger, apiModel);
-        setDefinitions(swagger, apiModel);
-        // TODO setVendorExtensions
         return swagger;
     }
 
@@ -104,7 +104,7 @@ public class ModelSwaggerConverter {
                 for (EndpointResponse response : endpoint.responses()) {
                     operation = operation.response(response.responseCode().getCode(),
                             new Response().description(response.description())
-                                    .responseSchema(convertToModel(response.content())));
+                                    .responseSchema(convertToModel(swagger, response.content())));
                 }
                 for (ParamModel paramModel : endpointModel.getParamModels()) {
                     operation.parameter(convertToParameter(swagger, paramModel));
@@ -113,22 +113,6 @@ public class ModelSwaggerConverter {
                 swagger = swagger.path(endpoint.path(), path);
             }
         }
-    }
-
-    private static void setDefinitions(Swagger swagger, APIModel apiModel) {
-
-        logger.debug("Setting definitions");
-        Map<String, Model> definitions = new HashMap<>();
-        for (DataDefinitionModel dataDefinitionModel : apiModel.getDataDefinitionModels()) {
-            Class dataType = dataDefinitionModel.getDataType();
-            DataDefinition dataDefinition = dataDefinitionModel.getDataDefinition();
-            if (dataDefinition.allOf().length == 0) {
-                definitions.put(dataType.getSimpleName(), convertToModelImpl(dataType));
-            } else {
-                definitions.put(dataType.getSimpleName(), convertToComposedModel(dataType, dataDefinition.allOf()));
-            }
-        }
-        swagger.setDefinitions(definitions);
     }
 
     private static Properties loadSwaggerProperties() {
@@ -151,7 +135,7 @@ public class ModelSwaggerConverter {
             case BODY:
                 BodyParameter bodyParameter = new BodyParameter()
                         .description(param.description())
-                        .name(param.name()).schema(convertToModel(paramModel.getParamDataType()));
+                        .name(param.name()).schema(convertToModel(swagger, paramModel.getParamDataType()));
                 bodyParameter.setVendorExtensions(vendorExtensions);
                 if (!StringUtils.isBlank(param.reference())) {
                     return buildRefParameter(swagger, param.reference(), bodyParameter);
@@ -238,17 +222,24 @@ public class ModelSwaggerConverter {
         }
     }
 
-    private static Model convertToModel(Class contentClass) {
+    private static Model convertToModel(Swagger swagger, Class<?> dataType) {
 
-        Annotation dataDefinition = contentClass.getAnnotation(DataDefinition.class);
+        DataDefinition dataDefinition = dataType.getAnnotation(DataDefinition.class);
         if (dataDefinition == null) {
-            return convertToModelImpl(contentClass);
+            return convertToModelImpl(swagger, dataType);
         } else {
-            return new RefModel(contentClass.getSimpleName());
+            if (swagger.getDefinitions() == null || !swagger.getDefinitions().containsKey(dataType.getSimpleName())) {
+                if (dataDefinition.allOf().length == 0) {
+                    swagger.addDefinition(dataType.getSimpleName(), convertToModelImpl(swagger, dataType));
+                } else {
+                    swagger.addDefinition(dataType.getSimpleName(), convertToComposedModel(swagger, dataType, dataDefinition.allOf()));
+                }
+            }
+            return new RefModel(dataType.getSimpleName());
         }
     }
 
-    private static ModelImpl convertToModelImpl(Class contentClass) {
+    private static ModelImpl convertToModelImpl(Swagger swagger, Class contentClass) {
 
         ModelImpl modelImpl = new ModelImpl();
         modelImpl.setVendorExtensions(CustomAttributesUtil.getGroupedAttributes(contentClass));
@@ -260,25 +251,26 @@ public class ModelSwaggerConverter {
                 if (property.required()) {
                     required.add(field.getName());
                 }
-                modelImpl.addProperty(field.getName(), convertToProperty(field));
+                modelImpl.addProperty(field.getName(), convertToProperty(swagger, field));
             }
         }
         modelImpl.setRequired(required);
         return modelImpl;
     }
 
-    private static ComposedModel convertToComposedModel(Class contentClass,Class[] allOf) {
+    private static ComposedModel convertToComposedModel(Swagger swagger, Class dataType,Class[] allOf) {
 
         ComposedModel composedModel = new ComposedModel();
-        composedModel.setReference(contentClass.getSimpleName());
+        composedModel.setReference(dataType.getSimpleName());
         for(Class allOfClass : allOf) {
-            composedModel.child(convertToModel(allOfClass));
+            composedModel.child(convertToModel(swagger, allOfClass));
         }
-        composedModel.child(convertToModelImpl(contentClass));
+        composedModel.child(convertToModelImpl(swagger, dataType));
+        composedModel.setVendorExtensions(CustomAttributesUtil.getGroupedAttributes(dataType));
         return composedModel;
     }
 
-    private static io.swagger.models.properties.Property convertToProperty(Field field) {
+    private static io.swagger.models.properties.Property convertToProperty(Swagger swagger, Field field) {
 
         // figure out swagger type and format from field
         SwaggerTypeFormat typeFormat = getSwaggerTypeFormat(field.getType());
@@ -287,23 +279,20 @@ public class ModelSwaggerConverter {
             typeFormat.format = stringFormat.format().toString();
         }
 
-        return buildProperty(field, typeFormat);
+        return buildProperty(swagger, field, typeFormat);
     }
 
 
-    private static io.swagger.models.properties.Property buildProperty(Field field, SwaggerTypeFormat typeFormat) {
+    private static io.swagger.models.properties.Property buildProperty(Swagger swagger, Field field, SwaggerTypeFormat typeFormat) {
 
         if (ObjectProperty.isType(typeFormat.type, typeFormat.format)) {
-            Class<?> fieldType = field.getType();
-            if (fieldType.isAnnotationPresent(DataDefinition.class)) {
-                return new RefProperty(fieldType.getSimpleName());
-            } else {
-                ObjectProperty property = (ObjectProperty) buildObjectProperty(fieldType);
-                property.setVendorExtensions(CustomAttributesUtil.getGroupedAttributes(field));
-                return property;
+            io.swagger.models.properties.Property property = buildObjectProperty(swagger, field.getType());
+            if (property instanceof ObjectProperty) {
+                ((ObjectProperty) property).setVendorExtensions(CustomAttributesUtil.getGroupedAttributes(field));
             }
+            return property;
         } else if (ArrayProperty.isType(typeFormat.type)) {
-            ArrayProperty property = (ArrayProperty) buildArrayProperty(field, typeFormat);
+            ArrayProperty property = (ArrayProperty) buildArrayProperty(swagger, field, typeFormat);
             property.setVendorExtensions(CustomAttributesUtil.getGroupedAttributes(field));
             return property;
         } else {
@@ -311,7 +300,7 @@ public class ModelSwaggerConverter {
         }
     }
 
-    private static io.swagger.models.properties.Property buildArrayProperty(Field field, SwaggerTypeFormat typeFormat) {
+    private static io.swagger.models.properties.Property buildArrayProperty(Swagger swagger, Field field, SwaggerTypeFormat typeFormat) {
         ArrayProperty arrayProperty = new ArrayProperty();
         Property property = field.getAnnotation(Property.class);
         if (!StringUtils.isBlank(property.description())) {
@@ -320,30 +309,31 @@ public class ModelSwaggerConverter {
         Type genericType = field.getGenericType();
         Class<?> itemType = getItemType(field.getType(), genericType);
         Map<PropertyBuilder.PropertyId, Object> args = argsFromField(field, true);
-        arrayProperty.setItems(convertItemToProperty(itemType, genericType, typeFormat.format, args));
+        arrayProperty.setItems(convertItemToProperty(swagger, itemType, genericType, typeFormat.format, args));
         return arrayProperty;
     }
 
 
     private static io.swagger.models.properties.Property buildItemsProperty(
+            Swagger swagger,
             Class<?> type, Type genericType,
             SwaggerTypeFormat typeFormat,
             Map<PropertyBuilder.PropertyId, Object> args
     ) {
         if (ObjectProperty.isType(typeFormat.type, typeFormat.format)) {
-            return buildObjectProperty(type);
+            return buildObjectProperty(swagger, type);
         } else if (ArrayProperty.isType(typeFormat.type)) {
             ArrayProperty arrayProperty = new ArrayProperty();
             Class<?> itemType = getItemType(type, genericType);
-            arrayProperty.setItems(convertItemToProperty(itemType, genericType, typeFormat.format, args));
+            arrayProperty.setItems(convertItemToProperty(swagger, itemType, genericType, typeFormat.format, args));
             return arrayProperty;
         }
         return PropertyBuilder.build(typeFormat.type, typeFormat.format, args);
     }
 
-    private static io.swagger.models.properties.Property buildObjectProperty(Class<?> fieldType) {
+    private static io.swagger.models.properties.Property buildObjectProperty(Swagger swagger, Class<?> fieldType) {
 
-        ModelImpl model = convertToModelImpl(fieldType);
+        Model model = convertToModel(swagger, fieldType);
         return new PropertyModelConverter().modelToProperty(model);
     }
 
@@ -372,6 +362,7 @@ public class ModelSwaggerConverter {
     }
 
     private static io.swagger.models.properties.Property convertItemToProperty(
+            Swagger swagger,
             Class<?> type, Type genericType,
             String format,
             Map<PropertyBuilder.PropertyId, Object> args
@@ -383,7 +374,7 @@ public class ModelSwaggerConverter {
         if (!type.isArray() && !isSetOrList(type)) {
             setEnum(type, args);
         }
-        return buildItemsProperty(type, genericType, typeFormat, args);
+        return buildItemsProperty(swagger, type, genericType, typeFormat, args);
     }
 
     private static Map<PropertyBuilder.PropertyId, Object> argsFromField(Field field, boolean forItem) {
