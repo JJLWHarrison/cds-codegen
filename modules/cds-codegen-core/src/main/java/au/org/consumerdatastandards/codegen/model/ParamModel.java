@@ -4,12 +4,10 @@ import au.org.consumerdatastandards.support.Param;
 import au.org.consumerdatastandards.support.data.IntegerRange;
 import au.org.consumerdatastandards.support.data.Pattern;
 import au.org.consumerdatastandards.support.data.StringFormat;
-import org.apache.commons.lang3.ClassUtils;
-import org.apache.commons.lang3.StringUtils;
 
 import java.lang.reflect.Parameter;
 
-public class ParamModel extends ModelBase {
+public class ParamModel extends ModelBase implements Comparable<ParamModel> {
 
     private Param param;
 
@@ -52,13 +50,9 @@ public class ParamModel extends ModelBase {
         return paramDataType;
     }
 
-    public boolean isSimple() {
-        return ClassUtils.isPrimitiveOrWrapper(paramDataType)
-                || String.class.equals(paramDataType)
-                || Number.class.isAssignableFrom(paramDataType);
-    }
+    @Override
+    public int compareTo(ParamModel paramModel) {
 
-    public String generateRef() {
-        return "Param" + StringUtils.capitalize(name);
+        return name.compareTo(paramModel.name);
     }
 }
