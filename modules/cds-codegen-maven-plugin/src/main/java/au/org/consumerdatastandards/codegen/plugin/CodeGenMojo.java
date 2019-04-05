@@ -13,6 +13,7 @@ import org.apache.maven.plugins.annotations.Parameter;
 import org.apache.maven.project.MavenProject;
 
 import au.org.consumerdatastandards.codegen.ModelBuilder;
+import au.org.consumerdatastandards.codegen.ModelBuilderOptions;
 import au.org.consumerdatastandards.codegen.model.APIModel;
 import au.org.consumerdatastandards.codegen.util.ModelSwaggerConverter;
 import io.swagger.codegen.DefaultGenerator;
@@ -20,10 +21,19 @@ import io.swagger.codegen.config.CodegenConfigurator;
 import io.swagger.models.Swagger;
 
 /**
- * Goal which generates sources from cds-models Current Path is: cds-models ->
- * cds-codegen -> swagger.json -> swagger-codegen -> codegen output (java client
- * etc) Future path is: cds-models -> cds-codegen -> codegen output (java client
- * etc)
+ * Goal which generates sources from cds-models 
+ * Current Method is: 
+ *  cds-models [input to] 
+ *  cds-codegen [creates] 
+ *  swagger.json [inputs into] 
+ *  swagger-codegen [outpust] 
+ *  codegen output (java client etc)
+ *  
+ *  Future path is:
+ *   cds-models [input to]
+ *   cds-codegen [outputs]
+ *   codegen output (java client etc)
+ *
  */
 @Mojo(name = "generate", defaultPhase = LifecyclePhase.GENERATE_SOURCES)
 public class CodeGenMojo extends AbstractMojo {
@@ -45,7 +55,8 @@ public class CodeGenMojo extends AbstractMojo {
         /**
          * First produce a swagger.json using cds-codegen with cds-models
          */
-        ModelBuilder modelBuilder = new ModelBuilder();
+        ModelBuilderOptions modelBuilderOptions = new ModelBuilderOptions();
+        ModelBuilder modelBuilder = new ModelBuilder(modelBuilderOptions);
         APIModel apiModel = modelBuilder.build();
         Swagger swagger = ModelSwaggerConverter.convert(apiModel);
 
@@ -60,7 +71,7 @@ public class CodeGenMojo extends AbstractMojo {
             new DefaultGenerator().opts(configurator.toClientOptInput()).generate();
         } catch (Exception e) {
             getLog().error(e);
-            throw new MojoExecutionException("Swagger-codegen execution failed, see details above");
+            throw new MojoExecutionException("cds-codegen attempted to execute swagger-codegen and failed, see details above");
         }
 
     }
