@@ -3,33 +3,46 @@ package au.org.consumerdatastandards.codegen.model;
 import au.org.consumerdatastandards.support.Section;
 
 import java.util.List;
+import java.util.Set;
+import java.util.TreeSet;
 
-public class SectionModel extends ModelBase {
+public class SectionModel extends ModelBase implements Comparable<SectionModel> {
 
     private final String name;
 
     private final String[] tags;
 
-    private List<EndpointModel> endpointModels;
+    private Set<EndpointModel> endpointModels = new TreeSet<>();
 
     public SectionModel(Section section) {
+
         this.name = section.name();
         this.tags = section.tags();
     }
 
     public String getName() {
+
         return name;
     }
 
     public String[] getTags() {
+
         return tags;
     }
 
-    public List<EndpointModel> getEndpointModels() {
+    public Set<EndpointModel> getEndpointModels() {
+
         return endpointModels;
     }
 
-    public void setEndpointModels(List<EndpointModel> endpointModels) {
-        this.endpointModels = endpointModels;
+    public void add(EndpointModel endpointModel) {
+
+        endpointModels.add(endpointModel);
+    }
+
+    @Override
+    public int compareTo(SectionModel sectionModel) {
+
+        return name.compareTo(sectionModel.name);
     }
 }

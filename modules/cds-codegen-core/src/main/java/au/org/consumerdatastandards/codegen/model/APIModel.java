@@ -1,26 +1,18 @@
 package au.org.consumerdatastandards.codegen.model;
 
-import java.util.List;
+import java.util.Set;
+import java.util.TreeSet;
 
 public class APIModel extends ModelBase {
 
-    private List<SectionModel> sectionModels;
+    private Set<SectionModel> sectionModels = new TreeSet<>();
 
-    private List<DataDefinitionModel> dataDefinitionModels;
-
-    public List<SectionModel> getSectionModels() {
+    public Set<SectionModel> getSectionModels() {
         return sectionModels;
     }
 
-    public void setSectionModels(List<SectionModel> sectionModels) {
-        this.sectionModels = sectionModels;
-    }
+    public void add(SectionModel sectionModel) {
 
-    public List<DataDefinitionModel> getDataDefinitionModels() {
-        return dataDefinitionModels;
-    }
-
-    public void setDataDefinitionModels(List<DataDefinitionModel> dataDefinitionModels) {
-        this.dataDefinitionModels = dataDefinitionModels;
+        sectionModels.add(sectionModel);
     }
 }

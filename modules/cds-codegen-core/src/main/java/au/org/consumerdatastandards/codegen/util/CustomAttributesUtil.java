@@ -21,9 +21,9 @@ public class CustomAttributesUtil {
         }
     }
 
-    public static Map<String, Object> getGroupedAttributes(AnnotatedElement annotatedElement) {
+    static Map<String, Object> getGroupedAttributes(AnnotatedElement annotatedElement) {
 
-        List<CustomAttribute> attributes = new ArrayList<>();
+        Set<CustomAttribute> attributes = new TreeSet<>(Comparator.comparing(attribute -> (attribute.name() + attribute.value())));
         CustomAttribute customAttribute = annotatedElement.getAnnotation(CustomAttribute.class);
         if (customAttribute != null) {
             attributes.add(customAttribute);
@@ -36,13 +36,13 @@ public class CustomAttributesUtil {
         return getGroupedAttributes(attributes);
     }
 
-    public static Map<String, Object> getGroupedAttributes(List<CustomAttribute> attributes) {
+    public static Map<String, Object> getGroupedAttributes(Set<CustomAttribute> attributes) {
         Map<String, Object> map = new LinkedHashMap<>();
         for (CustomAttribute attribute : attributes) {
             if (attribute.multiple()) {
-                List<String> values = new ArrayList<>();
+                Set<String> values = new TreeSet<>();
                 if (map.get(attribute.name()) != null) {
-                    values = (List<String>)map.get(attribute.name());
+                    values = (Set<String>)map.get(attribute.name());
                 }
                 values.add(attribute.value());
                 map.put(attribute.name(), values);
