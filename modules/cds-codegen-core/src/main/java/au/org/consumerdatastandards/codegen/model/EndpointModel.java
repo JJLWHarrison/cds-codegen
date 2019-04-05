@@ -2,8 +2,6 @@ package au.org.consumerdatastandards.codegen.model;
 
 import au.org.consumerdatastandards.support.Endpoint;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
 
