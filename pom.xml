@@ -7,7 +7,7 @@
 
     <groupId>au.org.consumerdatastandards</groupId>
     <artifactId>cds-codegen-project</artifactId>
-    <version>0.0.1-SNAPSHOT</version>
+    <version>0.0.2-SNAPSHOT</version>
     <packaging>pom</packaging>
 
     <name>cds-codegen-project</name>
@@ -22,6 +22,7 @@
 
     <modules>
         <module>modules/cds-codegen-core</module>
+        <module>modules/cds-codegen-maven-plugin</module>
     </modules>
 
     <distributionManagement>

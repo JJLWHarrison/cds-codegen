@@ -26,11 +26,11 @@ public class ModelBuilder {
 
     private ModelBuilderOptions options;
 
-    ModelBuilder(ModelBuilderOptions options) {
+    public ModelBuilder(ModelBuilderOptions options) {
         this.options = options;
     }
 
-    APIModel build() {
+    public APIModel build() {
 
         APIModel apiModel = new APIModel();
         Reflections reflections = new Reflections(BASE_PACKAGE);
