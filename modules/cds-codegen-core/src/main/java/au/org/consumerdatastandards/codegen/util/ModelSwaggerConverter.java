@@ -7,11 +7,13 @@ import au.org.consumerdatastandards.codegen.model.SectionModel;
 import au.org.consumerdatastandards.support.Endpoint;
 import au.org.consumerdatastandards.support.EndpointResponse;
 import au.org.consumerdatastandards.support.Param;
-import au.org.consumerdatastandards.support.data.Property;
 import au.org.consumerdatastandards.support.data.*;
 import io.swagger.models.*;
 import io.swagger.models.parameters.*;
-import io.swagger.models.properties.*;
+import io.swagger.models.properties.ArrayProperty;
+import io.swagger.models.properties.ObjectProperty;
+import io.swagger.models.properties.PropertyBuilder;
+import io.swagger.models.properties.StringProperty;
 import io.swagger.models.utils.PropertyModelConverter;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.reflect.FieldUtils;
@@ -57,7 +59,29 @@ public class ModelSwaggerConverter {
                 .produces(Arrays.asList(getTrimmedValues(swaggerProp.getProperty("produces").split(","))))
                 .consumes(Arrays.asList(getTrimmedValues(swaggerProp.getProperty("consumes").split(","))));
         setPaths(swagger, apiModel);
+        sortMaps(swagger);
         return swagger;
+    }
+
+    private static void sortMaps(Swagger swagger) {
+        sortDefinitions(swagger);
+        sortParameters(swagger);
+    }
+
+    private static void sortDefinitions(Swagger swagger) {
+        Map<String, Model> definitions = swagger.getDefinitions();
+        if (definitions != null && !definitions.isEmpty()) {
+            Map<String, Model> sortedDefinitions = new TreeMap<>(definitions);
+            swagger.setDefinitions(sortedDefinitions);
+        }
+    }
+
+    private static void sortParameters(Swagger swagger) {
+        Map<String, Parameter> parameters = swagger.getParameters();
+        if (parameters != null && !parameters.isEmpty()) {
+            Map<String, Parameter> sortedParameters = new TreeMap<>(parameters);
+            swagger.setParameters(sortedParameters);
+        }
     }
 
     private static Info getInfo(Properties swaggerProp) {
@@ -253,7 +277,7 @@ public class ModelSwaggerConverter {
         } else {
             modelImpl.type(ModelImpl.OBJECT);
             List<String> required = new ArrayList<>();
-            for (Field field : FieldUtils.getAllFields(dataType)) {
+            for (Field field : sortFields(FieldUtils.getAllFieldsList(dataType))) {
                 if (field.isAnnotationPresent(Property.class)) {
                     Property property = field.getAnnotation(Property.class);
                     if (property.required()) {
@@ -265,6 +289,12 @@ public class ModelSwaggerConverter {
             modelImpl.setRequired(required);
         }
         return modelImpl;
+    }
+
+    private static Set<Field> sortFields(List<Field> fields) {
+        Set<Field> sortedFields = new TreeSet<>(Comparator.comparing(Field::getName));
+        sortedFields.addAll(fields);
+        return sortedFields;
     }
 
     private static ComposedModel convertToComposedModel(Swagger swagger, Class<?> dataType,Class[] allOf) {
@@ -425,19 +455,18 @@ public class ModelSwaggerConverter {
     private static void setEnum(Class<?> type, Map<PropertyBuilder.PropertyId, Object> args) {
 
         if (type.isEnum()) {
-            List<String> values = getEnumValues(type);
-            args.put(PropertyBuilder.PropertyId.ENUM, values);
+            args.put(PropertyBuilder.PropertyId.ENUM, getEnumValues(type));
         }
     }
 
     private static List<String> getEnumValues(Class<?> type) {
 
         Object[] enumConstants = type.getEnumConstants();
-        List<String> values = new ArrayList<>(enumConstants.length);
+        Set<String> values = new TreeSet<>();
         for (Object enumConstant : enumConstants) {
             values.add(((Enum) enumConstant).name());
         }
-        return values;
+        return new ArrayList<>(values);
     }
 
     private static void setFormat(Field field, Map<PropertyBuilder.PropertyId, Object> args) {
