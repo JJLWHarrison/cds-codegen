@@ -1,6 +1,9 @@
 package au.org.consumerdatastandards.codegen.plugin;
 
+import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -16,9 +19,11 @@ import au.org.consumerdatastandards.codegen.ModelBuilder;
 import au.org.consumerdatastandards.codegen.ModelBuilderOptions;
 import au.org.consumerdatastandards.codegen.model.APIModel;
 import au.org.consumerdatastandards.codegen.util.ModelSwaggerConverter;
+import io.swagger.codegen.ClientOptInput;
 import io.swagger.codegen.DefaultGenerator;
 import io.swagger.codegen.config.CodegenConfigurator;
 import io.swagger.models.Swagger;
+import io.swagger.util.Json;
 
 /**
  * Goal which generates sources from cds-models 
@@ -48,6 +53,33 @@ public class CodeGenMojo extends AbstractMojo {
      */
     @Parameter(name = "language", required = true)
     private String language;
+    
+    /**
+     * Generated file location
+     */
+    @Parameter(name = "generatedSwaggerFile", required = false, defaultValue = "cds-codegen-generated-swagger.json")
+    private String generatedSwaggerFile;
+    
+    /**
+     * Location of the output directory.
+     */
+    @Parameter(name = "outputDirectory", required = true, property = "au.org.consumerdatastandards.codegen.maven.plugin.outputdirectory"
+            )
+    private File outputDirectory;
+    
+    /**
+     * Included sections in generation
+     */
+    @Parameter(name = "includedSections", required = false, property = "au.org.consumerdatastandards.codegen.maven.plugin.includesections"
+            )
+    private String includedSections;
+    
+    /**
+     * Excluded sections in generation
+     */
+    @Parameter(name = "excludedSections", required = false, property = "au.org.consumerdatastandards.codegen.maven.plugin.excludedsections"
+            )
+    private String excludedSections;
 
     @Override
     public void execute() throws MojoExecutionException {
@@ -56,9 +88,29 @@ public class CodeGenMojo extends AbstractMojo {
          * First produce a swagger.json using cds-codegen with cds-models
          */
         ModelBuilderOptions modelBuilderOptions = new ModelBuilderOptions();
+        if(includedSections != null) {
+            modelBuilderOptions.includeSections(includedSections);
+        }
+        
+        if(excludedSections != null) {
+            modelBuilderOptions.excludeSections(excludedSections);
+        }
+        
         ModelBuilder modelBuilder = new ModelBuilder(modelBuilderOptions);
         APIModel apiModel = modelBuilder.build();
-        Swagger swagger = ModelSwaggerConverter.convert(apiModel);
+        Swagger generatedSwagger = ModelSwaggerConverter.convert(apiModel);
+        
+        
+        try {
+            
+            BufferedWriter generatedSwaggerFileWriter = new BufferedWriter(new FileWriter(generatedSwaggerFile));
+            System.out.println(Json.pretty(generatedSwagger));
+            generatedSwaggerFileWriter.write(Json.pretty(generatedSwagger));
+            generatedSwaggerFileWriter.close();
+        } catch (IOException e1) {
+            throw new MojoExecutionException("Couldn't generated file for writing");
+        }
+        
 
         /**
          * Now, hot-wire into swagger codegen TODO: Replace with native cds-codegen
@@ -66,9 +118,13 @@ public class CodeGenMojo extends AbstractMojo {
         CodegenConfigurator configurator = new CodegenConfigurator();
         configurator.setVerbose(verbose);
         configurator.setLang(language);
+        configurator.setInputSpec(generatedSwaggerFile);
+        configurator.setOutputDir(outputDirectory.getAbsolutePath());
 
         try {
-            new DefaultGenerator().opts(configurator.toClientOptInput()).generate();
+            ClientOptInput inputOptions = configurator.toClientOptInput();
+            //inputOptions.setSwagger(generatedSwagger);
+            new DefaultGenerator().opts(inputOptions).generate();
         } catch (Exception e) {
             getLog().error(e);
             throw new MojoExecutionException("cds-codegen attempted to execute swagger-codegen and failed, see details above");
