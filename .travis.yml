@@ -9,4 +9,4 @@ cache:
     
 after_success:
   - test $TRAVIS_BRANCH == "master" && test $TRAVIS_PULL_REQUEST == "false" && mvn deploy -DskipTests --settings .travis/snapshot-dispatch-settings.xml
-  - test $TRAVIS_BRANCH == "master" && test $TRAVIS_PULL_REQUEST == "false" && .travis/build-cds-codegen.sh
+  - test $TRAVIS_BRANCH == "master" && test $TRAVIS_PULL_REQUEST == "false" && .travis/build-cds-codegen-outputs.sh

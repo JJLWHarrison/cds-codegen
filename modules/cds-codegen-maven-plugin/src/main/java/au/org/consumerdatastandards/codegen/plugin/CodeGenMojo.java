@@ -89,11 +89,11 @@ public class CodeGenMojo extends AbstractMojo {
          */
         ModelBuilderOptions modelBuilderOptions = new ModelBuilderOptions();
         if(includedSections != null) {
-            modelBuilderOptions.includeSections(includedSections);
+            modelBuilderOptions.includeSections(includedSections.split(","));
         }
         
         if(excludedSections != null) {
-            modelBuilderOptions.excludeSections(excludedSections);
+            modelBuilderOptions.excludeSections(excludedSections.split(","));
         }
         
         ModelBuilder modelBuilder = new ModelBuilder(modelBuilderOptions);
