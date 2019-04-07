@@ -72,14 +72,14 @@ public class CodeGenMojo extends AbstractMojo {
      */
     @Parameter(name = "includedSections", required = false, property = "au.org.consumerdatastandards.codegen.maven.plugin.includesections"
             )
-    private String includedSections;
+    private String[] includedSections;
     
     /**
      * Excluded sections in generation
      */
     @Parameter(name = "excludedSections", required = false, property = "au.org.consumerdatastandards.codegen.maven.plugin.excludedsections"
             )
-    private String excludedSections;
+    private String[] excludedSections;
 
     @Override
     public void execute() throws MojoExecutionException {
@@ -89,11 +89,11 @@ public class CodeGenMojo extends AbstractMojo {
          */
         ModelBuilderOptions modelBuilderOptions = new ModelBuilderOptions();
         if(includedSections != null) {
-            modelBuilderOptions.includeSections(includedSections.split(","));
+            modelBuilderOptions.includeSections(includedSections);
         }
         
         if(excludedSections != null) {
-            modelBuilderOptions.excludeSections(excludedSections.split(","));
+            modelBuilderOptions.excludeSections(excludedSections);
         }
         
         ModelBuilder modelBuilder = new ModelBuilder(modelBuilderOptions);
