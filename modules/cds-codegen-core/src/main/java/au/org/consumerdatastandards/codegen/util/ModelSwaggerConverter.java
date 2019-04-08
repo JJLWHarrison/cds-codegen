@@ -221,6 +221,21 @@ public class ModelSwaggerConverter {
         if (paramModel.getStringFormat() != null) {
             swaggerTypeFormat.format = paramModel.getStringFormat().format().toString();
         }
+        if (paramModel.getCDSDataType() != null) {
+            CustomDataType customDataType = paramModel.getCDSDataType().value();
+            if (customDataType.getFormat() != null) {
+                swaggerTypeFormat.format = customDataType.getFormat().toString();
+            }
+            if (customDataType.getPattern() != null) {
+                parameter.setPattern(customDataType.getPattern());
+            }
+            if (customDataType.getMin() != null) {
+                parameter.setMinimum(new BigDecimal(customDataType.getMin().toString()));
+            }
+            if (customDataType.getMin() != null) {
+                parameter.setMaximum(new BigDecimal(customDataType.getMax().toString()));
+            }
+        }
         parameter
                 .description(param.description())
                 .name(param.name())
@@ -428,12 +443,33 @@ public class ModelSwaggerConverter {
             setDescription(field, args);
         }
         setEnum(field.getType(), args);
+        processCDSDataType(field, args);
         setMinMax(field, args);
         setFormat(field, args);
         setPattern(field, args);
         setDefaultValue(field, args);
         setVendorExtensions(field, args);
         return args;
+    }
+
+    private static void processCDSDataType(Field field, Map<PropertyBuilder.PropertyId, Object> args) {
+
+        CDSDataType cdsDataType = field.getAnnotation(CDSDataType.class);
+        if (cdsDataType != null) {
+            CustomDataType customDataType = cdsDataType.value();
+            if (customDataType.getFormat() != null) {
+                args.put(PropertyBuilder.PropertyId.FORMAT, customDataType.getFormat().toString());
+            }
+            if (customDataType.getPattern() != null) {
+                args.put(PropertyBuilder.PropertyId.PATTERN, customDataType.getPattern());
+            }
+            if (customDataType.getMin() != null) {
+                args.put(PropertyBuilder.PropertyId.MINIMUM, new BigDecimal(customDataType.getMin().toString()));
+            }
+            if (customDataType.getMax() != null) {
+                args.put(PropertyBuilder.PropertyId.MAXIMUM, new BigDecimal(customDataType.getMax().toString()));
+            }
+        }
     }
 
     private static void setDescription(Field field, Map<PropertyBuilder.PropertyId, Object> args) {

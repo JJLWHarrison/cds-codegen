@@ -1,6 +1,7 @@
 package au.org.consumerdatastandards.codegen.model;
 
 import au.org.consumerdatastandards.support.Param;
+import au.org.consumerdatastandards.support.data.CDSDataType;
 import au.org.consumerdatastandards.support.data.IntegerRange;
 import au.org.consumerdatastandards.support.data.Pattern;
 import au.org.consumerdatastandards.support.data.StringFormat;
@@ -15,6 +16,8 @@ public class ParamModel extends ModelBase implements Comparable<ParamModel> {
 
     private Class paramDataType;
 
+    private CDSDataType cdsDataType;
+
     private StringFormat stringFormat;
 
     private Pattern pattern;
@@ -25,6 +28,7 @@ public class ParamModel extends ModelBase implements Comparable<ParamModel> {
         this.param = parameter.getAnnotation(Param.class);
         this.name = parameter.getName();
         this.paramDataType = parameter.getType();
+        this.cdsDataType = parameter.getAnnotation(CDSDataType.class);
         this.stringFormat = parameter.getAnnotation(StringFormat.class);
         this.pattern = parameter.getAnnotation(Pattern.class);
         this.integerRange = parameter.getAnnotation(IntegerRange.class);
@@ -48,6 +52,10 @@ public class ParamModel extends ModelBase implements Comparable<ParamModel> {
 
     public Class getParamDataType() {
         return paramDataType;
+    }
+
+    public CDSDataType getCDSDataType() {
+        return cdsDataType;
     }
 
     @Override
