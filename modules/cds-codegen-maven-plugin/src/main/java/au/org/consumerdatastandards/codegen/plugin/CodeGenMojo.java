@@ -7,6 +7,7 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.MojoExecutionException;
@@ -17,8 +18,8 @@ import org.apache.maven.project.MavenProject;
 
 import au.org.consumerdatastandards.codegen.ModelBuilder;
 import au.org.consumerdatastandards.codegen.ModelBuilderOptions;
+import au.org.consumerdatastandards.codegen.generator.SwaggerGenerator;
 import au.org.consumerdatastandards.codegen.model.APIModel;
-import au.org.consumerdatastandards.codegen.util.ModelSwaggerConverter;
 import io.swagger.codegen.ClientOptInput;
 import io.swagger.codegen.DefaultGenerator;
 import io.swagger.codegen.config.CodegenConfigurator;
@@ -72,14 +73,14 @@ public class CodeGenMojo extends AbstractMojo {
      */
     @Parameter(name = "includedSections", required = false, property = "au.org.consumerdatastandards.codegen.maven.plugin.includesections"
             )
-    private String includedSections;
+    private List<String> includedSections;
     
     /**
      * Excluded sections in generation
      */
     @Parameter(name = "excludedSections", required = false, property = "au.org.consumerdatastandards.codegen.maven.plugin.excludedsections"
             )
-    private String excludedSections;
+    private List<String> excludedSections;
 
     @Override
     public void execute() throws MojoExecutionException {
@@ -98,7 +99,7 @@ public class CodeGenMojo extends AbstractMojo {
         
         ModelBuilder modelBuilder = new ModelBuilder(modelBuilderOptions);
         APIModel apiModel = modelBuilder.build();
-        Swagger generatedSwagger = ModelSwaggerConverter.convert(apiModel);
+        Swagger generatedSwagger = SwaggerGenerator.convert(apiModel);
         
         
         try {

@@ -1,9 +1,11 @@
-package au.org.consumerdatastandards.codegen.util;
+package au.org.consumerdatastandards.codegen.generator;
 
+import au.org.consumerdatastandards.codegen.cli.BaseCommandLine;
 import au.org.consumerdatastandards.codegen.model.APIModel;
 import au.org.consumerdatastandards.codegen.model.EndpointModel;
 import au.org.consumerdatastandards.codegen.model.ParamModel;
 import au.org.consumerdatastandards.codegen.model.SectionModel;
+import au.org.consumerdatastandards.codegen.util.CustomAttributesUtil;
 import au.org.consumerdatastandards.support.Endpoint;
 import au.org.consumerdatastandards.support.EndpointResponse;
 import au.org.consumerdatastandards.support.Param;
@@ -15,6 +17,8 @@ import io.swagger.models.properties.ObjectProperty;
 import io.swagger.models.properties.PropertyBuilder;
 import io.swagger.models.properties.StringProperty;
 import io.swagger.models.utils.PropertyModelConverter;
+import io.swagger.util.Json;
+
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.reflect.FieldUtils;
 import org.slf4j.Logger;
@@ -28,15 +32,14 @@ import java.lang.reflect.Type;
 import java.math.BigDecimal;
 import java.util.*;
 
-public class ModelSwaggerConverter {
+public class SwaggerGenerator implements GeneratorInterface {
 
-    private static final Logger logger = LoggerFactory.getLogger(ModelSwaggerConverter.class);
-
+    private static final Logger logger = LoggerFactory.getLogger(SwaggerGenerator.class);
     private static Properties TYPE_MAPPING;
 
     static {
         TYPE_MAPPING = new Properties();
-        InputStream inputStream = ModelSwaggerConverter.class.getResourceAsStream("/swagger/java-swagger-mapping.properties");
+        InputStream inputStream = SwaggerGenerator.class.getResourceAsStream("/swagger/java-swagger-mapping.properties");
         try {
             TYPE_MAPPING.load(inputStream);
         } catch (IOException e) {
@@ -46,6 +49,13 @@ public class ModelSwaggerConverter {
 
     private static class SwaggerTypeFormat {
         String type = ObjectProperty.TYPE, format;
+    }
+    
+
+    @Override
+    public void generate(APIModel apiModel, BaseCommandLine cliModel) {
+        Swagger swagger = SwaggerGenerator.convert(apiModel);
+        Json.prettyPrint(swagger);
     }
 
     public static Swagger convert(APIModel apiModel) {
@@ -142,7 +152,7 @@ public class ModelSwaggerConverter {
     private static Properties loadSwaggerProperties() {
 
         Properties prop = new Properties();
-        InputStream inputStream = ModelSwaggerConverter.class.getResourceAsStream("/swagger/static-values.properties");
+        InputStream inputStream = SwaggerGenerator.class.getResourceAsStream("/swagger/static-values.properties");
         try {
             prop.load(inputStream);
             return prop;
@@ -579,4 +589,11 @@ public class ModelSwaggerConverter {
         }
         return Object.class;
     }
+
+    @Override
+    public Class commandOptions() {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
 }

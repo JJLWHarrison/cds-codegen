@@ -22,7 +22,7 @@ public class CustomAttributesUtil {
         }
     }
 
-    static Map<String, Object> getGroupedAttributes(AnnotatedElement annotatedElement) {
+    public static Map<String, Object> getGroupedAttributes(AnnotatedElement annotatedElement) {
 
         Set<CustomAttribute> attributes = new TreeSet<>(Comparator.comparing(attribute -> (attribute.name() + attribute.value())));
         CustomAttribute customAttribute = annotatedElement.getAnnotation(CustomAttribute.class);

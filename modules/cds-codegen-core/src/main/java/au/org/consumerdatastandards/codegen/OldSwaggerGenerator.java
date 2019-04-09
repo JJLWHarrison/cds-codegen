@@ -1,12 +1,14 @@
 package au.org.consumerdatastandards.codegen;
 
+import au.org.consumerdatastandards.codegen.generator.SwaggerGenerator;
 import au.org.consumerdatastandards.codegen.model.APIModel;
-import au.org.consumerdatastandards.codegen.util.ModelSwaggerConverter;
 import io.swagger.models.Swagger;
 import io.swagger.util.Json;
+
+import java.util.Arrays;
 import org.apache.commons.cli.*;
 
-public class SwaggerGenerator {
+public class OldSwaggerGenerator {
 
     public static void main(String[] args) throws ParseException {
 
@@ -22,15 +24,15 @@ public class SwaggerGenerator {
         ModelBuilderOptions modelBuilderOptions = new ModelBuilderOptions();
         if (cmd.hasOption("i")) {
             String[] includedSections = cmd.getOptionValue('i').split(",");
-            modelBuilderOptions.includedSections(includedSections);
+            modelBuilderOptions.includedSections(Arrays.asList(includedSections));
         } else if (cmd.hasOption("x")) {
             String[] excludedSections = cmd.getOptionValue('x').split(",");
-            modelBuilderOptions.excludedSections(excludedSections);
+            modelBuilderOptions.excludedSections(Arrays.asList(excludedSections));
         }
 
         ModelBuilder modelBuilder = new ModelBuilder(modelBuilderOptions);
         APIModel apiModel = modelBuilder.build();
-        Swagger swagger = ModelSwaggerConverter.convert(apiModel);
+        Swagger swagger = SwaggerGenerator.convert(apiModel);
         Json.prettyPrint(swagger);
     }
 }

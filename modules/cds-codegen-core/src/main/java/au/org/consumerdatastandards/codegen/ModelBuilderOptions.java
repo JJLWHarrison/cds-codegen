@@ -2,21 +2,20 @@ package au.org.consumerdatastandards.codegen;
 
 import java.util.*;
 
-import au.org.consumerdatastandards.codegen.model.CLIModel;
+import au.org.consumerdatastandards.codegen.cli.BaseCommandLine;
 
 public class ModelBuilderOptions {
 
-    private Set<String> includedSections = new LinkedHashSet<>();
+    private List<String> includedSections = new ArrayList<String>();
+    private List<String> excludedSections = new ArrayList<String>();
 
-    private Set<String> excludedSections = new LinkedHashSet<>();
-
-    public ModelBuilderOptions includedSections(Set<String> sectionNames) {
-        includedSections = sectionNames;
+    public ModelBuilderOptions includedSections(List<String> list) {
+        includedSections = list;
         return this;
     }
 
-    public ModelBuilderOptions excludedSections(Set<String> sectionNames) {
-        excludedSections = sectionNames;
+    public ModelBuilderOptions excludedSections(List<String> list) {
+        excludedSections = list;
         return this;
     }
 
@@ -26,7 +25,7 @@ public class ModelBuilderOptions {
             || !excludedSections.isEmpty() && !excludedSections.contains(sectionName);
     }
     
-    public static ModelBuilderOptions factory(CLIModel inputModel) {
+    public static ModelBuilderOptions factory(BaseCommandLine inputModel) {
         return new ModelBuilderOptions().includedSections(inputModel.getIncludedSections()).excludedSections(inputModel.getExcludedSections());
     }
 }
