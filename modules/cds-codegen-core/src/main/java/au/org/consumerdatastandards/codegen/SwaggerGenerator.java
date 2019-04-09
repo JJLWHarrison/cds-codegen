@@ -6,7 +6,7 @@ import io.swagger.models.Swagger;
 import io.swagger.util.Json;
 import org.apache.commons.cli.*;
 
-public class TemplateTest {
+public class SwaggerGenerator {
 
     public static void main(String[] args) throws ParseException {
 
@@ -22,10 +22,10 @@ public class TemplateTest {
         ModelBuilderOptions modelBuilderOptions = new ModelBuilderOptions();
         if (cmd.hasOption("i")) {
             String[] includedSections = cmd.getOptionValue('i').split(",");
-            modelBuilderOptions.includeSections(includedSections);
+            modelBuilderOptions.includedSections(includedSections);
         } else if (cmd.hasOption("x")) {
             String[] excludedSections = cmd.getOptionValue('x').split(",");
-            modelBuilderOptions.excludeSections(excludedSections);
+            modelBuilderOptions.excludedSections(excludedSections);
         }
 
         ModelBuilder modelBuilder = new ModelBuilder(modelBuilderOptions);
