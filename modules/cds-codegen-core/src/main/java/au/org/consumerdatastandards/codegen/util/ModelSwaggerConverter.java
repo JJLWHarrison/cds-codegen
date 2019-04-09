@@ -234,7 +234,7 @@ public class ModelSwaggerConverter {
             }
             if (customDataType.getMin() != null) {
                 parameter.setMaximum(new BigDecimal(customDataType.getMax().toString()));
-            }
+            }            
         }
         parameter
                 .description(param.description())

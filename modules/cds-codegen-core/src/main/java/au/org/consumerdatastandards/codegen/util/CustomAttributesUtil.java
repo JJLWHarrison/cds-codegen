@@ -1,6 +1,7 @@
 package au.org.consumerdatastandards.codegen.util;
 
 import au.org.consumerdatastandards.codegen.model.ModelBase;
+import au.org.consumerdatastandards.support.data.CDSDataType;
 import au.org.consumerdatastandards.support.data.CustomAttribute;
 import au.org.consumerdatastandards.support.data.CustomAttributes;
 
@@ -32,8 +33,20 @@ public class CustomAttributesUtil {
         if (customAttributes != null) {
             Collections.addAll(attributes, customAttributes.value());
         }
-
-        return getGroupedAttributes(attributes);
+        
+        Map<String,Object> groupedAttributes = getGroupedAttributes(attributes);
+        
+        /**
+         * Now inject cds-type
+         */
+        
+        CDSDataType cdsDataType = annotatedElement.getAnnotation(CDSDataType.class);
+        if(cdsDataType != null) {
+            groupedAttributes.put("x-cds-type", cdsDataType.value().getTypeString());
+        }
+        
+        return groupedAttributes;
+        
     }
 
     public static Map<String, Object> getGroupedAttributes(Set<CustomAttribute> attributes) {
