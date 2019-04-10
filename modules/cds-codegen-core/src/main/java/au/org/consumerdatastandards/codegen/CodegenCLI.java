@@ -23,6 +23,11 @@ public class CodegenCLI {
             Builder cliBaseBuilder = JCommander.newBuilder().addObject(cliModel);
             if(getGenerator(bootstrapCliModel.getGeneratorClassName()).commandOptions() != null) {
                 cliBaseBuilder.addObject(getGenerator(bootstrapCliModel.getGeneratorClassName()).commandOptions());
+            Builder cliBaseBuilder = JCommander.newBuilder();
+            if(getGenerator(bootstrapCliModel).commandOptions() != null) {
+                cliBaseBuilder.addObject(getGenerator(bootstrapCliModel).commandOptions());
+            } else {
+                cliBaseBuilder.addObject(cliModel);
             }
             
             JCommander cliBuilder = cliBaseBuilder.build();
