@@ -1,17 +1,17 @@
 package au.org.consumerdatastandards.codegen;
 
-import java.lang.reflect.InvocationTargetException;
-import com.beust.jcommander.JCommander;
-import com.beust.jcommander.JCommander.Builder;
-import com.beust.jcommander.ParameterException;
-
 import au.org.consumerdatastandards.codegen.cli.BaseCommandLine;
 import au.org.consumerdatastandards.codegen.generator.GeneratorInterface;
 import au.org.consumerdatastandards.codegen.model.APIModel;
+import com.beust.jcommander.JCommander;
+import com.beust.jcommander.JCommander.Builder;
+import com.beust.jcommander.ParameterException;
+import org.apache.commons.lang.StringUtils;
 
 public class CodegenCLI {
 
     public static void main(String[] args) {
+
         BaseCommandLine bootstrapCliModel = new BaseCommandLine();
         JCommander bootstrapCli = JCommander.newBuilder().addObject(bootstrapCliModel).build();
         bootstrapCli.parseWithoutValidation(args);
@@ -21,8 +21,8 @@ public class CodegenCLI {
             BaseCommandLine cliModel = new BaseCommandLine();
             
             Builder cliBaseBuilder = JCommander.newBuilder().addObject(cliModel);
-            if(getGenerator(bootstrapCliModel).commandOptions() != null) {
-                cliBaseBuilder.addObject(getGenerator(bootstrapCliModel).commandOptions());
+            if(getGenerator(bootstrapCliModel.getGeneratorClassName()).commandOptions() != null) {
+                cliBaseBuilder.addObject(getGenerator(bootstrapCliModel.getGeneratorClassName()).commandOptions());
             }
             
             JCommander cliBuilder = cliBaseBuilder.build();
@@ -40,7 +40,7 @@ public class CodegenCLI {
             }
 
             if (bootstrapCliModel.getGeneratorClassName() != null) {
-                getGenerator(cliModel).generate(apiModel, cliModel);
+                getGenerator(cliModel.getGeneratorClassName()).generate(apiModel, cliModel);
             }
 
         } catch (ParameterException e) {
@@ -49,23 +49,20 @@ public class CodegenCLI {
         }
     }
 
-    private static GeneratorInterface getGenerator(BaseCommandLine cliModel) {
+    private static GeneratorInterface getGenerator(String generatorClassName) {
 
+        if (StringUtils.isBlank(generatorClassName)) {
+            throw new ParameterException("You must supply a generator name");
+        }
         try {
-            if (cliModel.getGeneratorClassName() != null) {
-                Class<? extends GeneratorInterface> targetGenerator = (Class<? extends GeneratorInterface>) Class
-                        .forName(cliModel.getGeneratorClassName());
-                return targetGenerator.getConstructor().newInstance();
-            } else {
-                throw new ParameterException("You must supply a generator name");
-            }
+            Class targetGenerator = Class.forName(generatorClassName);
+            return (GeneratorInterface) targetGenerator.newInstance();
         } catch (ClassNotFoundException e) {
-            throw new ParameterException(
-                    String.format("The specified generator of \"%s\" is not found", cliModel.getGeneratorClassName()));
-        } catch (InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException
-                | NoSuchMethodException | SecurityException e) {
-            throw new ParameterException(String.format("Unable to instantiate requested class of %s due to: %s",
-                    cliModel.getGeneratorClassName(), e.getMessage()));
+            String message = String.format("The specified generator of \"%s\" is not found", generatorClassName);
+            throw new ParameterException(message);
+        } catch (InstantiationException | IllegalAccessException | IllegalArgumentException | SecurityException e) {
+            String message = String.format("Unable to instantiate requested class %s due to: %s", generatorClassName, e.getMessage());
+            throw new ParameterException(message);
         }
     }
 

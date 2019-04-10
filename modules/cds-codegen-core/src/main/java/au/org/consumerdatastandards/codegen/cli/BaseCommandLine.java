@@ -7,9 +7,10 @@ import com.beust.jcommander.Parameters;
 
 @Parameters(commandDescription = "Perform Code Generation Tasks")
 public class BaseCommandLine {
+
     @Parameter(names= {"--generator", "-g"}, description = "Class name of cds-codegen generator", order = 1)
     private String generatorClassName = "au.org.consumerdatastandards.codegen.generator.SwaggerGenerator";
-    
+
     @Parameter(names = {"--included", "-i"}, description = "Include Section", order = 2, variableArity = true)
     private List<String> includedSections = new ArrayList<>();
     
@@ -22,16 +23,16 @@ public class BaseCommandLine {
     public String getGeneratorClassName() {
         return generatorClassName;
     }
+
     public List<String> getIncludedSections() {
         return includedSections;
     }
+
     public List<String> getExcludedSections() {
         return excludedSections;
     }
+
     public boolean isHelp() {
         return help;
     }
-
-
-
 }
