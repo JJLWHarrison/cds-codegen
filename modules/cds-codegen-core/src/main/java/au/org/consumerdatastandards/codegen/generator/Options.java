@@ -20,6 +20,15 @@ public class Options {
     @Parameter(names = {"--help", "-?", "-h" }, help = true)
     private boolean help;
     
+    public Options(List<String> includedInit, List<String> excludedInit) {
+        this.excludedSections = excludedInit;
+        this.includedSections = includedInit;
+    }
+
+    public Options() {
+       // zer0
+    }
+
     public String getGeneratorClassName() {
         return generatorClassName;
     }

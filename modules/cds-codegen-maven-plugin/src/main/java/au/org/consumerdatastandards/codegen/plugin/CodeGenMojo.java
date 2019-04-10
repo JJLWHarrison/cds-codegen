@@ -17,8 +17,8 @@ import org.apache.maven.plugins.annotations.Parameter;
 import org.apache.maven.project.MavenProject;
 
 import au.org.consumerdatastandards.codegen.ModelBuilder;
-import au.org.consumerdatastandards.codegen.ModelBuilderOptions;
-import au.org.consumerdatastandards.codegen.generator.SwaggerGenerator;
+import au.org.consumerdatastandards.codegen.generator.Options;
+import au.org.consumerdatastandards.codegen.generator.openapi.SwaggerGenerator;
 import au.org.consumerdatastandards.codegen.model.APIModel;
 import io.swagger.codegen.ClientOptInput;
 import io.swagger.codegen.DefaultGenerator;
@@ -88,16 +88,8 @@ public class CodeGenMojo extends AbstractMojo {
         /**
          * First produce a swagger.json using cds-codegen with cds-models
          */
-        ModelBuilderOptions modelBuilderOptions = new ModelBuilderOptions();
-        if(includedSections != null) {
-            modelBuilderOptions.includedSections(includedSections);
-        }
-        
-        if(excludedSections != null) {
-            modelBuilderOptions.excludedSections(excludedSections);
-        }
-        
-        ModelBuilder modelBuilder = new ModelBuilder(modelBuilderOptions);
+        Options cliModel = new Options(includedSections, excludedSections);
+        ModelBuilder modelBuilder = new ModelBuilder(cliModel);
         APIModel apiModel = modelBuilder.build();
         Swagger generatedSwagger = SwaggerGenerator.convert(apiModel);
         
