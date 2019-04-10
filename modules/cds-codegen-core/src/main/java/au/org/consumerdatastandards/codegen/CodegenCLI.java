@@ -1,7 +1,7 @@
 package au.org.consumerdatastandards.codegen;
 
-import au.org.consumerdatastandards.codegen.cli.BaseCommandLine;
-import au.org.consumerdatastandards.codegen.generator.GeneratorInterface;
+import au.org.consumerdatastandards.codegen.generator.Options;
+import au.org.consumerdatastandards.codegen.generator.Generator;
 import au.org.consumerdatastandards.codegen.model.APIModel;
 import com.beust.jcommander.JCommander;
 import com.beust.jcommander.JCommander.Builder;
@@ -12,20 +12,15 @@ public class CodegenCLI {
 
     public static void main(String[] args) {
 
-        BaseCommandLine bootstrapCliModel = new BaseCommandLine();
-        JCommander bootstrapCli = JCommander.newBuilder().addObject(bootstrapCliModel).build();
+        Options options = new Options();
+        JCommander bootstrapCli = JCommander.newBuilder().addObject(options).build();
         bootstrapCli.parseWithoutValidation(args);
 
         try {
-
-            BaseCommandLine cliModel = new BaseCommandLine();
-            
-            Builder cliBaseBuilder = JCommander.newBuilder().addObject(cliModel);
-            if(getGenerator(bootstrapCliModel.getGeneratorClassName()).commandOptions() != null) {
-                cliBaseBuilder.addObject(getGenerator(bootstrapCliModel.getGeneratorClassName()).commandOptions());
+            Options cliModel = new Options();
             Builder cliBaseBuilder = JCommander.newBuilder();
-            if(getGenerator(bootstrapCliModel).commandOptions() != null) {
-                cliBaseBuilder.addObject(getGenerator(bootstrapCliModel).commandOptions());
+            if(getGenerator(options.getGeneratorClassName()).commandOptions() != null) {
+                cliBaseBuilder.addObject(getGenerator(options.getGeneratorClassName()).commandOptions());
             } else {
                 cliBaseBuilder.addObject(cliModel);
             }
@@ -35,33 +30,32 @@ public class CodegenCLI {
             cliBuilder.setProgramName(CodegenCLI.class.getTypeName());
             cliBuilder.parse(args);
 
-            ModelBuilderOptions modelBuilderOptions = ModelBuilderOptions.factory(cliModel);
-            ModelBuilder modelBuilder = new ModelBuilder(modelBuilderOptions);
+            ModelBuilder modelBuilder = new ModelBuilder(cliModel);
             APIModel apiModel = modelBuilder.build();
 
-            if (bootstrapCliModel.isHelp()) {
+            if (options.isHelp()) {
                 cliBuilder.usage();
                 System.exit(0);
             }
 
-            if (bootstrapCliModel.getGeneratorClassName() != null) {
+            if (options.getGeneratorClassName() != null) {
                 getGenerator(cliModel.getGeneratorClassName()).generate(apiModel, cliModel);
             }
-
         } catch (ParameterException e) {
             System.out.println(String.format("ERROR: %s \n", e.getMessage()));
             bootstrapCli.usage();
         }
     }
 
-    private static GeneratorInterface getGenerator(String generatorClassName) {
+    private static Generator getGenerator(String generatorClassName) {
 
         if (StringUtils.isBlank(generatorClassName)) {
             throw new ParameterException("You must supply a generator name");
         }
+
         try {
             Class targetGenerator = Class.forName(generatorClassName);
-            return (GeneratorInterface) targetGenerator.newInstance();
+            return (Generator) targetGenerator.newInstance();
         } catch (ClassNotFoundException e) {
             String message = String.format("The specified generator of \"%s\" is not found", generatorClassName);
             throw new ParameterException(message);

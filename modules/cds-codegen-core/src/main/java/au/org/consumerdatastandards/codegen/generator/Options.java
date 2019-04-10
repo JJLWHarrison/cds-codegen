@@ -1,4 +1,4 @@
-package au.org.consumerdatastandards.codegen.cli;
+package au.org.consumerdatastandards.codegen.generator;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -6,10 +6,10 @@ import com.beust.jcommander.Parameter;
 import com.beust.jcommander.Parameters;
 
 @Parameters(commandDescription = "Perform Code Generation Tasks")
-public class BaseCommandLine {
+public class Options {
 
     @Parameter(names= {"--generator", "-g"}, description = "Class name of cds-codegen generator", order = 1)
-    private String generatorClassName = "au.org.consumerdatastandards.codegen.generator.SwaggerGenerator";
+    private String generatorClassName = "au.org.consumerdatastandards.codegen.generator.openapi.SwaggerGenerator";
 
     @Parameter(names = {"--included", "-i"}, description = "Include Section", order = 2, variableArity = true)
     private List<String> includedSections = new ArrayList<>();
@@ -34,5 +34,11 @@ public class BaseCommandLine {
 
     public boolean isHelp() {
         return help;
+    }
+
+    public boolean isSectionIncluded(String sectionName) {
+        return includedSections.isEmpty() && excludedSections.isEmpty()
+            || includedSections.contains(sectionName)
+            || !excludedSections.isEmpty() && !excludedSections.contains(sectionName);
     }
 }

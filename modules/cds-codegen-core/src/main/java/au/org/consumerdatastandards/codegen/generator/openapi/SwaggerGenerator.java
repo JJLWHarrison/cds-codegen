@@ -1,6 +1,7 @@
-package au.org.consumerdatastandards.codegen.generator;
+package au.org.consumerdatastandards.codegen.generator.openapi;
 
-import au.org.consumerdatastandards.codegen.cli.BaseCommandLine;
+import au.org.consumerdatastandards.codegen.generator.Options;
+import au.org.consumerdatastandards.codegen.generator.Generator;
 import au.org.consumerdatastandards.codegen.model.APIModel;
 import au.org.consumerdatastandards.codegen.model.EndpointModel;
 import au.org.consumerdatastandards.codegen.model.ParamModel;
@@ -32,7 +33,7 @@ import java.lang.reflect.Type;
 import java.math.BigDecimal;
 import java.util.*;
 
-public class SwaggerGenerator implements GeneratorInterface {
+public class SwaggerGenerator implements Generator {
 
     private static final Logger logger = LoggerFactory.getLogger(SwaggerGenerator.class);
     private static Properties TYPE_MAPPING;
@@ -53,7 +54,7 @@ public class SwaggerGenerator implements GeneratorInterface {
     
 
     @Override
-    public void generate(APIModel apiModel, BaseCommandLine cliModel) {
+    public void generate(APIModel apiModel, Options cliModel) {
         Swagger swagger = SwaggerGenerator.convert(apiModel);
         Json.prettyPrint(swagger);
     }
