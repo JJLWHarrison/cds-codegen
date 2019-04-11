@@ -37,7 +37,7 @@ import io.swagger.util.Json;
  * (java client etc)
  *
  */
-@Mojo(name = "generate", defaultPhase = LifecyclePhase.GENERATE_SOURCES)
+@Mojo(name = "generate-sources", defaultPhase = LifecyclePhase.GENERATE_SOURCES)
 public class CodeGenMojo extends AbstractMojo {
 
     public enum GENERATOR {
