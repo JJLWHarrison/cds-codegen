@@ -1,8 +1,7 @@
 package au.org.consumerdatastandards.codegen.generator.java;
 
-import au.org.consumerdatastandards.codegen.generator.Generator;
-import au.org.consumerdatastandards.codegen.generator.Options;
-import au.org.consumerdatastandards.codegen.model.APIModel;
+import au.org.consumerdatastandards.codegen.generator.AbstractCodeGenerator;
+import au.org.consumerdatastandards.codegen.generator.CodegenModel;
 
 public class ClientGenerator extends AbstractCodeGenerator {
 

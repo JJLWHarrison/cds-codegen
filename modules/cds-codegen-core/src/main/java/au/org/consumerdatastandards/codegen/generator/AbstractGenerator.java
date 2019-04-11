@@ -1,8 +1,6 @@
 package au.org.consumerdatastandards.codegen.generator;
 
-import au.org.consumerdatastandards.codegen.generator.java.ClientGenerator;
 import au.org.consumerdatastandards.codegen.model.APIModel;
-import io.swagger.models.Swagger;
 
 public abstract class AbstractGenerator {
 
@@ -19,15 +17,7 @@ public abstract class AbstractGenerator {
     public void setOptions(OptionsBase options) {
         this.options = options;
     }
-    
-    public Generator(APIModel newModel) {
-        this.apiModel = newModel;
-    }
-    
-    public Generator() {
-        
-    }
-    
+
     public void setModel(APIModel newModel) {
         this.apiModel = newModel;
     }
