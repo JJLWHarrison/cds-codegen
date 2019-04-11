@@ -15,12 +15,16 @@ public class ModelCodegenConverter {
     public static CodegenModel convert(APIModel apiModel) {
 
         CodegenModel codegenModel = new CodegenModel();
-        processSections(codegenModel, apiModel.getSectionModels());
+        codegenModel.setSectionModels(apiModel.getSectionModels());
+        processSections(codegenModel);
         return codegenModel;
     }
 
-    private static void processSections(CodegenModel codegenModel, Set<SectionModel> sectionModels) {
+    private static void processSections(CodegenModel codegenModel) {
 
+        for (SectionModel sectionModel : codegenModel.getSectionModels()) {
+            processSection(codegenModel, sectionModel);
+        }
     }
 
     private static void processSection(CodegenModel codegenModel, SectionModel sectionModel) {

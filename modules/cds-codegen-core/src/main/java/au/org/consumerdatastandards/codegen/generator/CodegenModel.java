@@ -1,11 +1,24 @@
 package au.org.consumerdatastandards.codegen.generator;
 
+import au.org.consumerdatastandards.codegen.model.SectionModel;
+
 import java.util.HashSet;
 import java.util.Set;
 
 public class CodegenModel {
 
+    private Set<SectionModel> sectionModels;
+
     private Set<Class> dataDefinitions = new HashSet<>();
+
+    public void setSectionModels(Set<SectionModel> sectionModels) {
+
+        this.sectionModels = sectionModels;
+    }
+
+    public Set<SectionModel> getSectionModels() {
+        return sectionModels;
+    }
 
     public void addDataDefinition(Class dataDefinition) {
 
