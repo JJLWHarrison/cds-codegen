@@ -2,7 +2,7 @@ package au.org.consumerdatastandards.codegen.generator;
 
 import au.org.consumerdatastandards.codegen.model.APIModel;
 
-public abstract class Generator {
+public abstract class AbstractGenerator {
 
     protected OptionsBase options;
 

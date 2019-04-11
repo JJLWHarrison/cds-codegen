@@ -5,6 +5,6 @@ import com.beust.jcommander.Parameter;
 
 public class ClientGeneratorOptions extends OptionsBase {
 
-    @Parameter(names = {"--template", "-t"}, description = "Template to generate")
+    @Parameter(names = {"--template", "-t"}, description = "Velocity templates folder")
     private String templateName;
 }
