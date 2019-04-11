@@ -36,7 +36,8 @@ public class CodegenCLI {
             }
             ModelBuilder modelBuilder = new ModelBuilder(options);
             APIModel apiModel = modelBuilder.build();
-            generator.generate(apiModel);
+            generator.setModel(apiModel);
+            generator.print();
         } catch (ParameterException | IllegalAccessException | InstantiationException e) {
             System.out.println(String.format("ERROR: %s \n", e.getMessage()));
             commander.usage();
@@ -56,7 +57,7 @@ public class CodegenCLI {
             String message = String.format("The specified generator of \"%s\" is not found", generatorClassName);
             throw new ParameterException(message);
         } catch (ClassCastException | InstantiationException | IllegalAccessException | IllegalArgumentException | SecurityException e) {
-            String message = String.format("Unable to instantiate requested class %s due to: %s", generatorClassName, e.getMessage());
+            String message = String.format("Unable to instantiate requested class %s due to: %s", generatorClassName, e.getCause());
             throw new ParameterException(message);
         }
     }
