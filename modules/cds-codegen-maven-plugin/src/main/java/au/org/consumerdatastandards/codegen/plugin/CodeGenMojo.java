@@ -17,7 +17,9 @@ import org.apache.maven.plugins.annotations.Parameter;
 import org.apache.maven.project.MavenProject;
 
 import au.org.consumerdatastandards.codegen.ModelBuilder;
+import au.org.consumerdatastandards.codegen.generator.CodegenModel;
 import au.org.consumerdatastandards.codegen.generator.Options;
+import au.org.consumerdatastandards.codegen.generator.java.ClientGenerator;
 import au.org.consumerdatastandards.codegen.generator.openapi.SwaggerGenerator;
 import au.org.consumerdatastandards.codegen.model.APIModel;
 import io.swagger.codegen.ClientOptInput;
@@ -69,7 +71,7 @@ public class CodeGenMojo extends AbstractMojo {
     /**
      * What are we using to generate?
      */
-    @Parameter(name = "generatorEngine", required = false, property = "au.org.consumerdatastandards.codegen.maven.plugin.generatorengine")
+    @Parameter(name = "generatorEngine", required = true, property = "au.org.consumerdatastandards.codegen.maven.plugin.generatorengine")
     private GENERATOR generatorEngine = GENERATOR.SWAGGER_CODEGEN;
 
     /**
@@ -118,13 +120,23 @@ public class CodeGenMojo extends AbstractMojo {
 
             try {
                 ClientOptInput inputOptions = configurator.toClientOptInput();
-                // inputOptions.setSwagger(generatedSwagger);
+                //inputOptions.swagger((new SwaggerGenerator(apiModel)).generateSwagger());
                 new DefaultGenerator().opts(inputOptions).generate();
             } catch (Exception e) {
                 getLog().error(e);
                 throw new MojoExecutionException(
                         "cds-codegen attempted to execute swagger-codegen and failed, see details above");
             }
+        } else if(generatorEngine.equals(GENERATOR.CDS_CODEGEN)) {
+            
+            CodegenModel myCodegenModel = new CodegenModel();
+            ClientGenerator myGenerator = new ClientGenerator();
+            myGenerator.generate(myCodegenModel);
+
+        } else {
+            throw new MojoExecutionException(
+                    "cds-codegen attempted to execute with unknown generatorEngine");
+      
         }
 
     }

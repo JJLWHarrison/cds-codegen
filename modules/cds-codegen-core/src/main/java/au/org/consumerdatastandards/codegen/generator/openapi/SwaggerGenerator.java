@@ -22,7 +22,7 @@ public class SwaggerGenerator extends AbstractGenerator {
         generateSwagger();
     }
     
-    private Swagger generateSwagger() {
+    public Swagger generateSwagger() {
         return ModelSwaggerConverter.convert(apiModel);
     }
     
