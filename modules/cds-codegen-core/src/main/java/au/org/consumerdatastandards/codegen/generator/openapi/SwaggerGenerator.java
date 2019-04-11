@@ -8,8 +8,32 @@ import io.swagger.util.Json;
 
 public class SwaggerGenerator extends Generator {
 
-    public void generate(APIModel apiModel) {
-        Swagger swagger = ModelSwaggerConverter.convert(apiModel);
-        Json.prettyPrint(swagger);
+    public SwaggerGenerator(APIModel newModel) {
+        super(newModel);
     }
+    
+    public SwaggerGenerator() {
+
+    }
+
+    @Override
+    public void generate() {
+        generateSwagger();
+    }
+    
+    private Swagger generateSwagger() {
+        return ModelSwaggerConverter.convert(apiModel);
+    }
+    
+    @Override
+    public void print() {
+        Json.prettyPrint(this.generateSwagger());
+    }
+    
+    @Override
+    public String toString() {
+        return Json.pretty(this.generateSwagger());
+    }
+   
+
 }

@@ -27,22 +27,21 @@ import io.swagger.models.Swagger;
 import io.swagger.util.Json;
 
 /**
- * Goal which generates sources from cds-models 
- * Current Method is: 
- *  cds-models [input to] 
- *  cds-codegen [creates] 
- *  swagger.json [inputs into] 
- *  swagger-codegen [outpust] 
- *  codegen output (java client etc)
- *  
- *  Future path is:
- *   cds-models [input to]
- *   cds-codegen [outputs]
- *   codegen output (java client etc)
+ * Goal which generates sources from cds-models Current Method is: cds-models
+ * [input to] cds-codegen [creates] swagger.json [inputs into] swagger-codegen
+ * [outpust] codegen output (java client etc)
+ * 
+ * Future path is: cds-models [input to] cds-codegen [outputs] codegen output
+ * (java client etc)
  *
  */
 @Mojo(name = "generate", defaultPhase = LifecyclePhase.GENERATE_SOURCES)
 public class CodeGenMojo extends AbstractMojo {
+
+    public enum GENERATOR {
+        SWAGGER_CODEGEN, CDS_CODEGEN
+    }
+
     /**
      * Verbosity enabled
      */
@@ -54,32 +53,35 @@ public class CodeGenMojo extends AbstractMojo {
      */
     @Parameter(name = "language", required = true)
     private String language;
-    
+
     /**
      * Generated file location
      */
     @Parameter(name = "generatedSwaggerFile", required = false, defaultValue = "cds-codegen-generated-swagger.json")
     private String generatedSwaggerFile;
-    
+
     /**
      * Location of the output directory.
      */
-    @Parameter(name = "outputDirectory", required = true, property = "au.org.consumerdatastandards.codegen.maven.plugin.outputdirectory"
-            )
+    @Parameter(name = "outputDirectory", required = true, property = "au.org.consumerdatastandards.codegen.maven.plugin.outputdirectory")
     private File outputDirectory;
-    
+
+    /**
+     * What are we using to generate?
+     */
+    @Parameter(name = "generatorEngine", required = false, property = "au.org.consumerdatastandards.codegen.maven.plugin.generatorengine")
+    private GENERATOR generatorEngine = GENERATOR.SWAGGER_CODEGEN;
+
     /**
      * Included sections in generation
      */
-    @Parameter(name = "includedSections", required = false, property = "au.org.consumerdatastandards.codegen.maven.plugin.includesections"
-            )
+    @Parameter(name = "includedSections", required = false, property = "au.org.consumerdatastandards.codegen.maven.plugin.includesections")
     private List<String> includedSections;
-    
+
     /**
      * Excluded sections in generation
      */
-    @Parameter(name = "excludedSections", required = false, property = "au.org.consumerdatastandards.codegen.maven.plugin.excludedsections"
-            )
+    @Parameter(name = "excludedSections", required = false, property = "au.org.consumerdatastandards.codegen.maven.plugin.excludedsections")
     private List<String> excludedSections;
 
     @Override
@@ -91,36 +93,38 @@ public class CodeGenMojo extends AbstractMojo {
         Options cliModel = new Options(includedSections, excludedSections);
         ModelBuilder modelBuilder = new ModelBuilder(cliModel);
         APIModel apiModel = modelBuilder.build();
-        Swagger generatedSwagger = SwaggerGenerator.convert(apiModel);
-        
-        
+
+        String generatedSwagger = (new SwaggerGenerator(apiModel)).toString();
+
         try {
-            
+
             BufferedWriter generatedSwaggerFileWriter = new BufferedWriter(new FileWriter(generatedSwaggerFile));
-            System.out.println(Json.pretty(generatedSwagger));
-            generatedSwaggerFileWriter.write(Json.pretty(generatedSwagger));
+            System.out.println(generatedSwagger);
+            generatedSwaggerFileWriter.write(generatedSwagger);
             generatedSwaggerFileWriter.close();
         } catch (IOException e1) {
             throw new MojoExecutionException("Couldn't generated file for writing");
         }
-        
 
-        /**
-         * Now, hot-wire into swagger codegen TODO: Replace with native cds-codegen
-         */
-        CodegenConfigurator configurator = new CodegenConfigurator();
-        configurator.setVerbose(verbose);
-        configurator.setLang(language);
-        configurator.setInputSpec(generatedSwaggerFile);
-        configurator.setOutputDir(outputDirectory.getAbsolutePath());
+        if (generatorEngine.equals(GENERATOR.SWAGGER_CODEGEN)) {
+            /**
+             * Now, hot-wire into swagger codegen TODO: Replace with native cds-codegen
+             */
+            CodegenConfigurator configurator = new CodegenConfigurator();
+            configurator.setVerbose(verbose);
+            configurator.setLang(language);
+            configurator.setInputSpec(generatedSwaggerFile);
+            configurator.setOutputDir(outputDirectory.getAbsolutePath());
 
-        try {
-            ClientOptInput inputOptions = configurator.toClientOptInput();
-            //inputOptions.setSwagger(generatedSwagger);
-            new DefaultGenerator().opts(inputOptions).generate();
-        } catch (Exception e) {
-            getLog().error(e);
-            throw new MojoExecutionException("cds-codegen attempted to execute swagger-codegen and failed, see details above");
+            try {
+                ClientOptInput inputOptions = configurator.toClientOptInput();
+                // inputOptions.setSwagger(generatedSwagger);
+                new DefaultGenerator().opts(inputOptions).generate();
+            } catch (Exception e) {
+                getLog().error(e);
+                throw new MojoExecutionException(
+                        "cds-codegen attempted to execute swagger-codegen and failed, see details above");
+            }
         }
 
     }
