@@ -1,5 +1,6 @@
 package au.org.consumerdatastandards.codegen;
 
+import au.org.consumerdatastandards.codegen.generator.Options;
 import au.org.consumerdatastandards.codegen.model.APIModel;
 import au.org.consumerdatastandards.codegen.model.EndpointModel;
 import au.org.consumerdatastandards.codegen.model.ParamModel;
@@ -24,9 +25,9 @@ public class ModelBuilder {
 
     private final static String BASE_PACKAGE = "au.org.consumerdatastandards.api";
 
-    private ModelBuilderOptions options;
+    private Options options;
 
-    public ModelBuilder(ModelBuilderOptions options) {
+    public ModelBuilder(Options options) {
         this.options = options;
     }
 

@@ -31,7 +31,6 @@ import java.util.*;
 public class ModelSwaggerConverter {
 
     private static final Logger logger = LoggerFactory.getLogger(ModelSwaggerConverter.class);
-
     private static Properties TYPE_MAPPING;
 
     static {
@@ -53,11 +52,11 @@ public class ModelSwaggerConverter {
         Swagger swagger = new Swagger();
         Properties swaggerProp = loadSwaggerProperties();
         swagger = swagger.info(getInfo(swaggerProp))
-                .host(swaggerProp.getProperty("host"))
-                .basePath(swaggerProp.getProperty("basePath"))
-                .schemes(Arrays.asList(getSchemes(swaggerProp)))
-                .produces(Arrays.asList(getTrimmedValues(swaggerProp.getProperty("produces").split(","))))
-                .consumes(Arrays.asList(getTrimmedValues(swaggerProp.getProperty("consumes").split(","))));
+            .host(swaggerProp.getProperty("host"))
+            .basePath(swaggerProp.getProperty("basePath"))
+            .schemes(Arrays.asList(getSchemes(swaggerProp)))
+            .produces(Arrays.asList(getTrimmedValues(swaggerProp.getProperty("produces").split(","))))
+            .consumes(Arrays.asList(getTrimmedValues(swaggerProp.getProperty("consumes").split(","))));
         setPaths(swagger, apiModel);
         sortMaps(swagger);
         return swagger;
@@ -87,10 +86,10 @@ public class ModelSwaggerConverter {
     private static Info getInfo(Properties swaggerProp) {
 
         return new Info().version(swaggerProp.getProperty("version"))
-                .title(swaggerProp.getProperty("title"))
-                .description(swaggerProp.getProperty("description"))
-                .license(new License().name(swaggerProp.getProperty("license.name"))
-                        .url(swaggerProp.getProperty("license.url")));
+            .title(swaggerProp.getProperty("title"))
+            .description(swaggerProp.getProperty("description"))
+            .license(new License().name(swaggerProp.getProperty("license.name"))
+                .url(swaggerProp.getProperty("license.url")));
     }
 
     private static Scheme[] getSchemes(Properties swaggerProp) {
@@ -121,14 +120,14 @@ public class ModelSwaggerConverter {
                 Endpoint endpoint = endpointModel.getEndpoint();
                 String method = endpoint.requestMethod().toString().toLowerCase();
                 Operation operation = new Operation().operationId(endpoint.operationId())
-                        .description(endpoint.description())
-                        .summary(endpoint.summary())
-                        .tags(tags)
-                        .vendorExtensions(endpointModel.getGroupedAttributes());
+                    .description(endpoint.description())
+                    .summary(endpoint.summary())
+                    .tags(tags)
+                    .vendorExtensions(endpointModel.getGroupedAttributes());
                 for (EndpointResponse response : endpoint.responses()) {
                     operation = operation.response(response.responseCode().getCode(),
-                            new Response().description(response.description())
-                                    .responseSchema(convertToModel(swagger, response.content())));
+                        new Response().description(response.description())
+                            .responseSchema(convertToModel(swagger, response.content())));
                 }
                 for (ParamModel paramModel : endpointModel.getParamModels()) {
                     operation.parameter(convertToParameter(swagger, paramModel));
@@ -158,8 +157,8 @@ public class ModelSwaggerConverter {
         switch (param.in()) {
             case BODY:
                 BodyParameter bodyParameter = new BodyParameter()
-                        .description(param.description())
-                        .name(param.name()).schema(convertToModel(swagger, paramModel.getParamDataType()));
+                    .description(param.description())
+                    .name(param.name()).schema(convertToModel(swagger, paramModel.getParamDataType()));
                 bodyParameter.setVendorExtensions(vendorExtensions);
                 if (!StringUtils.isBlank(param.reference())) {
                     return buildRefParameter(swagger, param.reference(), bodyParameter);
@@ -221,11 +220,26 @@ public class ModelSwaggerConverter {
         if (paramModel.getStringFormat() != null) {
             swaggerTypeFormat.format = paramModel.getStringFormat().format().toString();
         }
+        if (paramModel.getCDSDataType() != null) {
+            CustomDataType customDataType = paramModel.getCDSDataType().value();
+            if (customDataType.getFormat() != null) {
+                swaggerTypeFormat.format = customDataType.getFormat().toString();
+            }
+            if (customDataType.getPattern() != null) {
+                parameter.setPattern(customDataType.getPattern());
+            }
+            if (customDataType.getMin() != null) {
+                parameter.setMinimum(new BigDecimal(customDataType.getMin().toString()));
+            }
+            if (customDataType.getMin() != null) {
+                parameter.setMaximum(new BigDecimal(customDataType.getMax().toString()));
+            }
+        }
         parameter
-                .description(param.description())
-                .name(param.name())
-                .type(swaggerTypeFormat.type)
-                .format(swaggerTypeFormat.format);
+            .description(param.description())
+            .name(param.name())
+            .type(swaggerTypeFormat.type)
+            .format(swaggerTypeFormat.format);
         if (!StringUtils.isBlank(param.defaultValue())) {
             parameter.setDefaultValue(param.defaultValue());
         }
@@ -357,10 +371,10 @@ public class ModelSwaggerConverter {
 
 
     private static io.swagger.models.properties.Property buildItemsProperty(
-            Swagger swagger,
-            Class<?> type, Type genericType,
-            SwaggerTypeFormat typeFormat,
-            Map<PropertyBuilder.PropertyId, Object> args
+        Swagger swagger,
+        Class<?> type, Type genericType,
+        SwaggerTypeFormat typeFormat,
+        Map<PropertyBuilder.PropertyId, Object> args
     ) {
         if (ObjectProperty.isType(typeFormat.type, typeFormat.format)) {
             return buildObjectProperty(swagger, type);
@@ -404,10 +418,10 @@ public class ModelSwaggerConverter {
     }
 
     private static io.swagger.models.properties.Property convertItemToProperty(
-            Swagger swagger,
-            Class<?> type, Type genericType,
-            String format,
-            Map<PropertyBuilder.PropertyId, Object> args
+        Swagger swagger,
+        Class<?> type, Type genericType,
+        String format,
+        Map<PropertyBuilder.PropertyId, Object> args
     ) {
         SwaggerTypeFormat typeFormat = getSwaggerTypeFormat(type);
         if (!type.isArray() && !isSetOrList(type) && !StringUtils.isBlank(format)) {
@@ -428,12 +442,33 @@ public class ModelSwaggerConverter {
             setDescription(field, args);
         }
         setEnum(field.getType(), args);
+        processCDSDataType(field, args);
         setMinMax(field, args);
         setFormat(field, args);
         setPattern(field, args);
         setDefaultValue(field, args);
         setVendorExtensions(field, args);
         return args;
+    }
+
+    private static void processCDSDataType(Field field, Map<PropertyBuilder.PropertyId, Object> args) {
+
+        CDSDataType cdsDataType = field.getAnnotation(CDSDataType.class);
+        if (cdsDataType != null) {
+            CustomDataType customDataType = cdsDataType.value();
+            if (customDataType.getFormat() != null) {
+                args.put(PropertyBuilder.PropertyId.FORMAT, customDataType.getFormat().toString());
+            }
+            if (customDataType.getPattern() != null) {
+                args.put(PropertyBuilder.PropertyId.PATTERN, customDataType.getPattern());
+            }
+            if (customDataType.getMin() != null) {
+                args.put(PropertyBuilder.PropertyId.MINIMUM, new BigDecimal(customDataType.getMin().toString()));
+            }
+            if (customDataType.getMax() != null) {
+                args.put(PropertyBuilder.PropertyId.MAXIMUM, new BigDecimal(customDataType.getMax().toString()));
+            }
+        }
     }
 
     private static void setDescription(Field field, Map<PropertyBuilder.PropertyId, Object> args) {
@@ -518,7 +553,7 @@ public class ModelSwaggerConverter {
     private static boolean isTypeDefaultValue(Object defaultValue) {
 
         return defaultValue.getClass().equals(Boolean.class) && defaultValue.equals(Boolean.FALSE)
-                || Number.class.isAssignableFrom(defaultValue.getClass()) && ((Number) defaultValue).intValue() == 0;
+            || Number.class.isAssignableFrom(defaultValue.getClass()) && ((Number) defaultValue).intValue() == 0;
     }
 
     private static void setVendorExtensions(Field field, Map<PropertyBuilder.PropertyId, Object> args) {
