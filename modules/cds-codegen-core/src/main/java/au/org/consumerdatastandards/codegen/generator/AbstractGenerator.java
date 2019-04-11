@@ -9,6 +9,14 @@ public abstract class AbstractGenerator {
 
     abstract public void generate();
     abstract public void print();
+    
+    public AbstractGenerator(APIModel newModel) {
+        this.apiModel = newModel;
+    }
+
+    public AbstractGenerator() {
+
+    }
 
     public Class<? extends OptionsBase> getOptionsClass() {
         return null;
