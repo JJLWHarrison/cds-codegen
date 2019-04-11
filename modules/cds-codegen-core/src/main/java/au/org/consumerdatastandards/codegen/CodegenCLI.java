@@ -2,48 +2,44 @@ package au.org.consumerdatastandards.codegen;
 
 import au.org.consumerdatastandards.codegen.generator.Options;
 import au.org.consumerdatastandards.codegen.generator.Generator;
+import au.org.consumerdatastandards.codegen.generator.OptionsBase;
 import au.org.consumerdatastandards.codegen.model.APIModel;
 import com.beust.jcommander.JCommander;
-import com.beust.jcommander.JCommander.Builder;
 import com.beust.jcommander.ParameterException;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 
 public class CodegenCLI {
 
     public static void main(String[] args) {
 
         Options options = new Options();
-        JCommander bootstrapCli = JCommander.newBuilder().addObject(options).build();
-        bootstrapCli.parseWithoutValidation(args);
-
+        JCommander commander = JCommander.newBuilder().addObject(options).build();
+        commander.setProgramName(CodegenCLI.class.getSimpleName());
+        commander.parse(args);
+        if (options.isHelp()) {
+            commander.usage();
+            System.exit(0);
+        }
         try {
-            Options cliModel = new Options();
-            Builder cliBaseBuilder = JCommander.newBuilder();
-            if(getGenerator(options.getGeneratorClassName()).commandOptions() != null) {
-                cliBaseBuilder.addObject(getGenerator(options.getGeneratorClassName()).commandOptions());
-            } else {
-                cliBaseBuilder.addObject(cliModel);
+            Generator generator = getGenerator(options.getGeneratorClassName());
+            Class<? extends OptionsBase> optionsClass = generator.getOptionsClass();
+            if (optionsClass != null) {
+                OptionsBase generatorOptions = optionsClass.newInstance();
+                JCommander generatorCommander = JCommander.newBuilder().addObject(generatorOptions).build();
+                generatorCommander.setProgramName(generator.getClass().getSimpleName());
+                generatorCommander.parse(args);
+                if (generatorOptions.isHelp()) {
+                    generatorCommander.usage();
+                    System.exit(0);
+                }
+                generator.setOptions(generatorOptions);
             }
-            
-            JCommander cliBuilder = cliBaseBuilder.build();
-
-            cliBuilder.setProgramName(CodegenCLI.class.getTypeName());
-            cliBuilder.parse(args);
-
-            ModelBuilder modelBuilder = new ModelBuilder(cliModel);
+            ModelBuilder modelBuilder = new ModelBuilder(options);
             APIModel apiModel = modelBuilder.build();
-
-            if (options.isHelp()) {
-                cliBuilder.usage();
-                System.exit(0);
-            }
-
-            if (options.getGeneratorClassName() != null) {
-                getGenerator(cliModel.getGeneratorClassName()).generate(apiModel, cliModel);
-            }
-        } catch (ParameterException e) {
+            generator.generate(apiModel);
+        } catch (ParameterException | IllegalAccessException | InstantiationException e) {
             System.out.println(String.format("ERROR: %s \n", e.getMessage()));
-            bootstrapCli.usage();
+            commander.usage();
         }
     }
 
@@ -59,7 +55,7 @@ public class CodegenCLI {
         } catch (ClassNotFoundException e) {
             String message = String.format("The specified generator of \"%s\" is not found", generatorClassName);
             throw new ParameterException(message);
-        } catch (InstantiationException | IllegalAccessException | IllegalArgumentException | SecurityException e) {
+        } catch (ClassCastException | InstantiationException | IllegalAccessException | IllegalArgumentException | SecurityException e) {
             String message = String.format("Unable to instantiate requested class %s due to: %s", generatorClassName, e.getMessage());
             throw new ParameterException(message);
         }

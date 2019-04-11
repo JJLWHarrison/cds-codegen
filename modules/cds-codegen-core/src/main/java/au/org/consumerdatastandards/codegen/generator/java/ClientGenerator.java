@@ -4,16 +4,15 @@ import au.org.consumerdatastandards.codegen.generator.Generator;
 import au.org.consumerdatastandards.codegen.generator.Options;
 import au.org.consumerdatastandards.codegen.model.APIModel;
 
-public class ClientGenerator implements Generator {
+public class ClientGenerator extends Generator {
 
     @Override
-    public void generate(APIModel apiModel, Options cliModel) {
+    public void generate(APIModel apiModel) {
 
     }
 
     @Override
-    public ClientGeneratorOptions commandOptions() {
-        return new ClientGeneratorOptions();
+    public Class getOptionsClass() {
+        return ClientGeneratorOptions.class;
     }
-
 }
