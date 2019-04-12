@@ -21,7 +21,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import javax.validation.Valid;
 
-@Api(value = "Product APIs")
+@Api(value = "Product API")
 public interface ProductApi {
 
     @ApiOperation(value = "Get Product Detail", nickname = "getProductDetail", notes = "Obtain detailed information on a single product offered openly to the market", response = ResponseBankingProductById.class, tags={ "Products","Banking APIs", })
