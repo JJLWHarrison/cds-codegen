@@ -27,7 +27,7 @@ import javax.validation.Valid;
 import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
 
-@Controller
+@Controller("Product API")
 public class ProductApiController implements ProductApi {
 
     private static final Logger log = LoggerFactory.getLogger(ProductApiController.class);
