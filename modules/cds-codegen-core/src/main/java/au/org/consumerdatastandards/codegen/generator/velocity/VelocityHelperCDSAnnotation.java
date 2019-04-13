@@ -13,8 +13,6 @@ import au.org.consumerdatastandards.codegen.model.SectionModel;
 public class VelocityHelperCDSAnnotation extends VelocityHelperDefault {
     public VelocityHelperCDSAnnotation(String inputPath) {
         super(inputPath);
-        packagePathSeparator = "/";
-        classExtension = ".java";
     }
     
     

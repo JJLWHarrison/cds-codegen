@@ -4,6 +4,7 @@ import au.org.consumerdatastandards.codegen.generator.AbstractCodeGenerator;
 import au.org.consumerdatastandards.codegen.generator.CodegenModel;
 import au.org.consumerdatastandards.codegen.generator.OptionsBase;
 import au.org.consumerdatastandards.codegen.generator.velocity.VelocityHelperCDSAnnotation;
+import au.org.consumerdatastandards.codegen.generator.velocity.VelocityHelperJava;
 import au.org.consumerdatastandards.codegen.generator.velocity.VelocityHelper;
 import au.org.consumerdatastandards.codegen.generator.velocity.model.CDSAnnotation;
 import au.org.consumerdatastandards.codegen.generator.velocity.model.VelocityFile;
@@ -24,7 +25,11 @@ public class ClientGenerator extends AbstractCodeGenerator {
     @Override
     public void generate(CodegenModel codegenModel) throws Exception {
         
-        VelocityHelper velocityHelper = new VelocityHelperCDSAnnotation(options.getOutputPath());
+        /**
+         * Ideally we'd wrap this in the json config as well so that we could support other types
+         * with variable templates
+         */
+        VelocityHelper velocityHelper = new VelocityHelperJava(options.getOutputPath());
         /**
          * @fyang1024: I'm thinking we can read a json config file and push sets of config through CDSAnnotation variations.
          *             Ideally CDSAnnotation would be retired and the json file would specify the Annotation type
