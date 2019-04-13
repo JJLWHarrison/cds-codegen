@@ -8,6 +8,7 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.HashSet;
+import java.util.Properties;
 import java.util.Set;
 
 import org.apache.velocity.Template;
@@ -65,10 +66,14 @@ public class DefaultVelocityFileHelper implements VelocityFileHelper {
                 ve.setProperty("file.resource.loader.class", ClasspathResourceLoader.class.getName());
                 ve.init();
                 Template t = ve.getTemplate(oneFile.getVelocityTemplate());
-                ToolManager manager = new ToolManager();
+                ToolManager manager = new ToolManager(true, true);
                 manager.setVelocityEngine(ve);
+                
                 ToolContext context = manager.createContext();
                 context.put("class", oneFile.getFileClass());
+                // I can't figure out how to get the DisplayTool working...
+                context.put("StringUtils", org.apache.commons.lang3.StringUtils.class);
+                context.put("package", oneFile.getPackageName());
                 t.merge(context, outputFileWriter);
                 
                 outputFileWriter.close();

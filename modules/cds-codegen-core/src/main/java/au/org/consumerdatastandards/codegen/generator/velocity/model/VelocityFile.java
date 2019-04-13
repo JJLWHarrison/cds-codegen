@@ -46,4 +46,8 @@ public class VelocityFile {
     public Class<?> getFileClass() {
         return fileClass;
     }
+    
+    public String getPackageName() {
+        return fileClass.getPackage().getName();
+    }
 }
