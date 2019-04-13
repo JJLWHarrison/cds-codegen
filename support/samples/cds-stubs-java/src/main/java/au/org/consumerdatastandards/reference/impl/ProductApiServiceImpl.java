@@ -1,6 +1,7 @@
 package au.org.consumerdatastandards.reference.impl;
 
 import java.util.Date;
+
 import javax.ws.rs.core.SecurityContext;
 
 import au.org.consumerdatastandards.reference.api.*;
@@ -15,7 +16,6 @@ public class ProductApiServiceImpl implements ProductsApi {
   }
       @Override
     public ResponseBankingProductList listProducts(String effective,Date updatedSince,String brand,String productCategory,Integer page,Integer pageSize,SecurityContext securityContext) {
-      
       // do some magic!
       return new ResponseBankingProductList();
   }

@@ -36,12 +36,15 @@ public class Meta   {
   /**
    * Convert the given object to string with each line indented by 4 spaces
    * (except the first line).
+   * 
+   * ONLY inject this if objects have items
    */
+  /**
   private String toIndentedString(Object o) {
     if (o == null) {
       return "null";
     }
     return o.toString().replace("\n", "\n    ");
-  }
+  }*/
 }
 
