@@ -1,14 +1,11 @@
 package au.org.consumerdatastandards.codegen.generator.velocity;
 
-import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.io.StringWriter;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.HashSet;
-import java.util.Properties;
 import java.util.Set;
 
 import org.apache.velocity.Template;
@@ -18,10 +15,8 @@ import org.apache.velocity.tools.ToolContext;
 import org.apache.velocity.tools.ToolManager;
 
 import au.org.consumerdatastandards.codegen.generator.CodegenModel;
-import au.org.consumerdatastandards.codegen.generator.java.ClientGeneratorOptions;
 import au.org.consumerdatastandards.codegen.generator.velocity.model.CDSAnnotation;
 import au.org.consumerdatastandards.codegen.generator.velocity.model.VelocityFile;
-import au.org.consumerdatastandards.codegen.util.ModelCodegenConverter;
 
 public class VelocityHelperDefault implements VelocityHelper {
 
@@ -30,14 +25,17 @@ public class VelocityHelperDefault implements VelocityHelper {
     public String packagePathSeparator;
     public String classExtension;
 
+    @Override
     public Set<VelocityFile> getFiles() {
         return velocityFiles;
     }
 
+    @Override
     public void addFile(VelocityFile inputVelocityFile) {
         velocityFiles.add(inputVelocityFile);
     }
 
+    @Override
     public void clearFiles() {
         velocityFiles.clear();
     }
@@ -55,6 +53,7 @@ public class VelocityHelperDefault implements VelocityHelper {
         basePath = inputPath;
     }
 
+    @Override
     public void writeFiles() {
         for (VelocityFile oneFile : velocityFiles) {
             try {

@@ -1,7 +1,5 @@
 package au.org.consumerdatastandards.codegen.generator;
 
-import com.beust.jcommander.JCommander;
-
 import au.org.consumerdatastandards.codegen.generator.java.ClientGeneratorOptions;
 import au.org.consumerdatastandards.codegen.model.APIModel;
 

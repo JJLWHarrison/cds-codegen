@@ -3,22 +3,10 @@ package au.org.consumerdatastandards.codegen.generator.java;
 import au.org.consumerdatastandards.codegen.generator.AbstractCodeGenerator;
 import au.org.consumerdatastandards.codegen.generator.CodegenModel;
 import au.org.consumerdatastandards.codegen.generator.OptionsBase;
-import au.org.consumerdatastandards.codegen.generator.velocity.VelocityHelperCDSAnnotation;
 import au.org.consumerdatastandards.codegen.generator.velocity.VelocityHelperJava;
 import au.org.consumerdatastandards.codegen.generator.velocity.VelocityHelper;
 import au.org.consumerdatastandards.codegen.generator.velocity.model.CDSAnnotation;
-import au.org.consumerdatastandards.codegen.generator.velocity.model.VelocityFile;
-
-import org.apache.velocity.Template;
-import org.apache.velocity.app.VelocityEngine;
-import org.apache.velocity.runtime.resource.loader.ClasspathResourceLoader;
-import org.apache.velocity.tools.ToolContext;
-import org.apache.velocity.tools.ToolManager;
-
 import com.beust.jcommander.JCommander;
-
-import java.io.StringWriter;
-import java.util.Set;
 
 public class ClientGenerator extends AbstractCodeGenerator {
 

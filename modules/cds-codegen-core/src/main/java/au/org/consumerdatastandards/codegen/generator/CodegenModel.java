@@ -2,9 +2,6 @@ package au.org.consumerdatastandards.codegen.generator;
 
 import au.org.consumerdatastandards.codegen.model.EndpointModel;
 import au.org.consumerdatastandards.codegen.model.SectionModel;
-import au.org.consumerdatastandards.support.data.DataDefinition;
-
-import java.lang.annotation.Annotation;
 import java.util.HashSet;
 import java.util.Set;
 

@@ -3,7 +3,6 @@ package au.org.consumerdatastandards.codegen.generator.openapi;
 import com.beust.jcommander.JCommander;
 
 import au.org.consumerdatastandards.codegen.generator.AbstractGenerator;
-import au.org.consumerdatastandards.codegen.generator.java.ClientGeneratorOptions;
 import au.org.consumerdatastandards.codegen.model.APIModel;
 import au.org.consumerdatastandards.codegen.util.ModelSwaggerConverter;
 import io.swagger.models.Swagger;
