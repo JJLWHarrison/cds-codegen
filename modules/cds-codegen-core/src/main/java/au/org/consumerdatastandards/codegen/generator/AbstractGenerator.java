@@ -10,8 +10,8 @@ public abstract class AbstractGenerator {
     protected ClientGeneratorOptions options;
     protected APIModel apiModel;
 
-    abstract public void generate();
-    abstract public void print();
+    abstract public void generate() throws Exception;
+    abstract public void print() throws Exception;
     abstract public void populateOptions(String[] commandLineArgs);
     
     public AbstractGenerator(APIModel newModel) {

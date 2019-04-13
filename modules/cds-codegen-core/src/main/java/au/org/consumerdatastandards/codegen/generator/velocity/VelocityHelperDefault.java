@@ -17,11 +17,13 @@ import org.apache.velocity.runtime.resource.loader.ClasspathResourceLoader;
 import org.apache.velocity.tools.ToolContext;
 import org.apache.velocity.tools.ToolManager;
 
+import au.org.consumerdatastandards.codegen.generator.CodegenModel;
 import au.org.consumerdatastandards.codegen.generator.java.ClientGeneratorOptions;
+import au.org.consumerdatastandards.codegen.generator.velocity.model.CDSAnnotation;
 import au.org.consumerdatastandards.codegen.generator.velocity.model.VelocityFile;
 import au.org.consumerdatastandards.codegen.util.ModelCodegenConverter;
 
-public class DefaultVelocityFileHelper implements VelocityFileHelper {
+public class VelocityHelperDefault implements VelocityHelper {
 
     public Set<VelocityFile> velocityFiles = new HashSet<VelocityFile>();
     public String basePath;
@@ -49,7 +51,7 @@ public class DefaultVelocityFileHelper implements VelocityFileHelper {
         return String.join("/", Arrays.asList(basePath, startPath, inputPackageName.replace(".", packagePathSeparator)));
     }
 
-    public DefaultVelocityFileHelper(String inputPath) {
+    public VelocityHelperDefault(String inputPath) {
         basePath = inputPath;
     }
 
@@ -71,7 +73,7 @@ public class DefaultVelocityFileHelper implements VelocityFileHelper {
                 
                 ToolContext context = manager.createContext();
                 context.put("class", oneFile.getFileClass());
-                // I can't figure out how to get the DisplayTool working...
+                // TODO: I can't figure out how to get the DisplayTool working...
                 context.put("StringUtils", org.apache.commons.lang3.StringUtils.class);
                 context.put("package", oneFile.getPackageName());
                 t.merge(context, outputFileWriter);
@@ -92,6 +94,12 @@ public class DefaultVelocityFileHelper implements VelocityFileHelper {
     public VelocityFile toVelocityFile(Class<?> inputClass, String inputVelocityTemplate, String startPath) {
         return new VelocityFile(classToFileName(inputClass.getTypeName()),
                 classToPath(inputClass.getPackage().getName(), startPath), inputVelocityTemplate, inputClass);
+    }
+
+    @Override
+    public Set<Class<?>> getAnnotatedDefinitions(CodegenModel codegenModel, CDSAnnotation dataDefinition)
+            throws Exception {
+        return new HashSet<Class<?>>();
     }
 
 }

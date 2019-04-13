@@ -3,8 +3,9 @@ package au.org.consumerdatastandards.codegen.generator.java;
 import au.org.consumerdatastandards.codegen.generator.AbstractCodeGenerator;
 import au.org.consumerdatastandards.codegen.generator.CodegenModel;
 import au.org.consumerdatastandards.codegen.generator.OptionsBase;
-import au.org.consumerdatastandards.codegen.generator.velocity.JavaVelocityFileHelper;
-import au.org.consumerdatastandards.codegen.generator.velocity.VelocityFileHelper;
+import au.org.consumerdatastandards.codegen.generator.velocity.VelocityHelperCDSAnnotation;
+import au.org.consumerdatastandards.codegen.generator.velocity.VelocityHelper;
+import au.org.consumerdatastandards.codegen.generator.velocity.model.CDSAnnotation;
 import au.org.consumerdatastandards.codegen.generator.velocity.model.VelocityFile;
 
 import org.apache.velocity.Template;
@@ -21,16 +22,18 @@ import java.util.Set;
 public class ClientGenerator extends AbstractCodeGenerator {
 
     @Override
-    public void generate(CodegenModel codegenModel) {
-
+    public void generate(CodegenModel codegenModel) throws Exception {
+        
+        VelocityHelper velocityHelper = new VelocityHelperCDSAnnotation(options.getOutputPath());
         /**
-         * We should abstract this further into a model handler (Default+Java)
+         * @fyang1024: I'm thinking we can read a json config file and push sets of config through CDSAnnotation variations.
+         *             Ideally CDSAnnotation would be retired and the json file would specify the Annotation type
+         *             but this requires recursive descent through the whole model....
+         *             
+         *             Another potential helper is a specific class matcher
          */
-        Set<Class<?>> allDataDefinitions = codegenModel.getDataDefinitions();
-        VelocityFileHelper fileHelper = new JavaVelocityFileHelper(options.getOutputPath());
-
-        for (Class<?> oneClass : allDataDefinitions) {
-            fileHelper.addFile(fileHelper.toVelocityFile(oneClass, "/java/model.vm", "src/gen"));
+        for (Class<?> oneClass : velocityHelper.getAnnotatedDefinitions(codegenModel, CDSAnnotation.DATA_DEFINITION)) {
+            velocityHelper.addFile(velocityHelper.toVelocityFile(oneClass, "/java/model.vm", "src/gen"));
         }
         
         /**
@@ -38,7 +41,7 @@ public class ClientGenerator extends AbstractCodeGenerator {
          * 
          * TODO: Add postProcessing hook to allow further modifications
          */
-        fileHelper.writeFiles();
+        velocityHelper.writeFiles();
 
         /**
 
@@ -76,13 +79,13 @@ public class ClientGenerator extends AbstractCodeGenerator {
     }
 
     @Override
-    public void print() {
+    public void print() throws Exception {
         // If print has been called we should be generating first
         this.generate();
         System.out.println("Client Generator output printer");
     }
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws Exception {
         new ClientGenerator().generate(null);
     }
 

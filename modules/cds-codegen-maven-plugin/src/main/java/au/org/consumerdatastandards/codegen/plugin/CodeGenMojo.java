@@ -123,7 +123,11 @@ public class CodeGenMojo extends AbstractMojo {
             
             CodegenModel myCodegenModel = new CodegenModel();
             ClientGenerator myGenerator = new ClientGenerator();
-            myGenerator.generate(myCodegenModel);
+            try {
+                myGenerator.generate(myCodegenModel);
+            } catch (Exception e) {
+                throw new MojoExecutionException(e.toString());
+            }
 
         } else {
             throw new MojoExecutionException(

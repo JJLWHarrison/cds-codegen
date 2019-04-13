@@ -10,7 +10,7 @@ import org.apache.commons.lang3.StringUtils;
 
 public class CodegenCLI {
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws Exception {
 
         Options options = new Options();
         JCommander commander = JCommander.newBuilder().addObject(options).build();
