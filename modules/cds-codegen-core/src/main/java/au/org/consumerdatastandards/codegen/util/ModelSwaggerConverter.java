@@ -215,7 +215,7 @@ public class ModelSwaggerConverter {
         return new RefParameter(reference);
     }
 
-    private static void buildSerializableParameter(ParamModel paramModel, Param param, AbstractSerializableParameter parameter) {
+    private static void buildSerializableParameter(ParamModel paramModel, Param param, AbstractSerializableParameter<?> parameter) {
         SwaggerTypeFormat swaggerTypeFormat = getSwaggerTypeFormat(paramModel.getParamDataType());
         if (paramModel.getStringFormat() != null) {
             swaggerTypeFormat.format = paramModel.getStringFormat().format().toString();
@@ -311,7 +311,7 @@ public class ModelSwaggerConverter {
         return sortedFields;
     }
 
-    private static ComposedModel convertToComposedModel(Swagger swagger, Class<?> dataType,Class[] allOf) {
+    private static ComposedModel convertToComposedModel(Swagger swagger, Class<?> dataType,Class<?>[] allOf) {
 
         ComposedModel composedModel = new ComposedModel();
         DataDefinition dataDefinition = dataType.getAnnotation(DataDefinition.class);
@@ -319,7 +319,7 @@ public class ModelSwaggerConverter {
             composedModel.setDescription(dataDefinition.description());
         }
         composedModel.setReference(dataType.getSimpleName());
-        for(Class allOfClass : allOf) {
+        for(Class<?> allOfClass : allOf) {
             composedModel.child(convertToModel(swagger, allOfClass));
         }
         composedModel.child(convertToModelImpl(swagger, dataType));
@@ -499,7 +499,7 @@ public class ModelSwaggerConverter {
         Object[] enumConstants = type.getEnumConstants();
         Set<String> values = new TreeSet<>();
         for (Object enumConstant : enumConstants) {
-            values.add(((Enum) enumConstant).name());
+            values.add(((Enum<?>) enumConstant).name());
         }
         return new ArrayList<>(values);
     }
@@ -540,7 +540,7 @@ public class ModelSwaggerConverter {
             Object defaultValue = FieldUtils.readField(field, target, true);
             if (defaultValue != null && !isTypeDefaultValue(defaultValue)) {
                 if (defaultValue.getClass().isEnum()) {
-                    args.put(PropertyBuilder.PropertyId.DEFAULT, ((Enum) defaultValue).name());
+                    args.put(PropertyBuilder.PropertyId.DEFAULT, ((Enum<?>) defaultValue).name());
                 } else {
                     args.put(PropertyBuilder.PropertyId.DEFAULT, defaultValue.toString());
                 }
@@ -561,12 +561,12 @@ public class ModelSwaggerConverter {
         args.put(PropertyBuilder.PropertyId.VENDOR_EXTENSIONS, CustomAttributesUtil.getGroupedAttributes(field));
     }
 
-    private static boolean isSetOrList(Class type) {
+    private static boolean isSetOrList(Class<?> type) {
 
         return Set.class.isAssignableFrom(type) || List.class.isAssignableFrom(type);
     }
 
-    private static Class getItemType(Class type, Type genericType) {
+    private static Class<?> getItemType(Class<?> type, Type genericType) {
 
         if (type.isArray()) {
             return type.getComponentType();
@@ -574,7 +574,7 @@ public class ModelSwaggerConverter {
         if (genericType instanceof ParameterizedType) {
             ParameterizedType aType = (ParameterizedType) genericType;
             Type[] fieldArgTypes = aType.getActualTypeArguments();
-            return (Class) fieldArgTypes[0];
+            return (Class<?>) fieldArgTypes[0];
         }
         return Object.class;
     }

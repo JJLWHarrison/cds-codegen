@@ -49,6 +49,7 @@ public class CustomAttributesUtil {
         
     }
 
+    @SuppressWarnings("unchecked")
     public static Map<String, Object> getGroupedAttributes(Set<CustomAttribute> attributes) {
         Map<String, Object> map = new LinkedHashMap<>();
         for (CustomAttribute attribute : attributes) {

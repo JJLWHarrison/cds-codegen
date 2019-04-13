@@ -1,14 +1,18 @@
 package au.org.consumerdatastandards.codegen.generator;
 
+import com.beust.jcommander.JCommander;
+
+import au.org.consumerdatastandards.codegen.generator.java.ClientGeneratorOptions;
 import au.org.consumerdatastandards.codegen.model.APIModel;
 
 public abstract class AbstractGenerator {
 
-    protected OptionsBase options;
+    protected ClientGeneratorOptions options;
     protected APIModel apiModel;
 
     abstract public void generate();
     abstract public void print();
+    abstract public void populateOptions(String[] commandLineArgs);
     
     public AbstractGenerator(APIModel newModel) {
         this.apiModel = newModel;
@@ -23,9 +27,9 @@ public abstract class AbstractGenerator {
     }
 
     public void setOptions(OptionsBase options) {
-        this.options = options;
+        this.options = (ClientGeneratorOptions) options;
     }
-
+   
     public void setModel(APIModel newModel) {
         this.apiModel = newModel;
     }

@@ -53,22 +53,24 @@ public class ModelCodegenConverter {
 
     private static void processResponse(CodegenModel codegenModel, EndpointResponse response) {
 
-        if (response.content().equals(Void.class)) {
-            codegenModel.addDataDefinition(response.content());
+        if (!response.content().equals(Void.class)) {
             processDataDefinition(codegenModel, response.content());
         }
     }
 
-    private static void processDataDefinition(CodegenModel codegenModel, Class dataDefinition) {
-
+    private static void processDataDefinition(CodegenModel codegenModel, Class<?> dataDefinition) {
         if (!codegenModel.containsDataDefinition(dataDefinition)) {
-            Class parent = dataDefinition.getSuperclass();
-            if (parent.isAnnotationPresent(DataDefinition.class)) {
-                processDataDefinition(codegenModel, parent);
-            }
             codegenModel.addDataDefinition(dataDefinition);
-            dataDefinition.getDeclaredFields();
-
+        
+            if (dataDefinition.isAnnotationPresent(DataDefinition.class)) {
+                processDataDefinition(codegenModel, dataDefinition);
+            }
+            
+            for(Field thisField : dataDefinition.getDeclaredFields()) {
+                if(thisField.getType().isAnnotationPresent(DataDefinition.class)) {
+                    processDataDefinition(codegenModel, thisField.getType());
+                }                
+            }
         }
     }
 

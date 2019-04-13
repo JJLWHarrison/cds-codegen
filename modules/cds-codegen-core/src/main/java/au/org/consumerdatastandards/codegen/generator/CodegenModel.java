@@ -9,7 +9,7 @@ public class CodegenModel {
 
     private Set<SectionModel> sectionModels;
 
-    private Set<Class> dataDefinitions = new HashSet<>();
+    private Set<Class<?>> dataDefinitions = new HashSet<>();
 
     public void setSectionModels(Set<SectionModel> sectionModels) {
 
@@ -20,13 +20,15 @@ public class CodegenModel {
         return sectionModels;
     }
 
-    public void addDataDefinition(Class dataDefinition) {
-
+    public void addDataDefinition(Class<?> dataDefinition) {
         dataDefinitions.add(dataDefinition);
     }
 
-    public boolean containsDataDefinition(Class dataDefinition) {
-
+    public boolean containsDataDefinition(Class<?> dataDefinition) {
         return dataDefinitions.contains(dataDefinition);
+    }
+    
+    public Set<Class<?>> getDataDefinitions() {
+        return dataDefinitions;
     }
 }

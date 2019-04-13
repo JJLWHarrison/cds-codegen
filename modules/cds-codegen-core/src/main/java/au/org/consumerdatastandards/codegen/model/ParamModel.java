@@ -14,7 +14,7 @@ public class ParamModel extends ModelBase implements Comparable<ParamModel> {
 
     private String name;
 
-    private Class paramDataType;
+    private Class<?> paramDataType;
 
     private CDSDataType cdsDataType;
 
@@ -50,7 +50,7 @@ public class ParamModel extends ModelBase implements Comparable<ParamModel> {
         return param;
     }
 
-    public Class getParamDataType() {
+    public Class<?> getParamDataType() {
         return paramDataType;
     }
 

@@ -1,12 +1,17 @@
 package au.org.consumerdatastandards.codegen.generator.openapi;
 
+import com.beust.jcommander.JCommander;
+
 import au.org.consumerdatastandards.codegen.generator.AbstractGenerator;
+import au.org.consumerdatastandards.codegen.generator.java.ClientGeneratorOptions;
 import au.org.consumerdatastandards.codegen.model.APIModel;
 import au.org.consumerdatastandards.codegen.util.ModelSwaggerConverter;
 import io.swagger.models.Swagger;
 import io.swagger.util.Json;
 
 public class SwaggerGenerator extends AbstractGenerator {
+    
+    SwaggerGeneratorOptions options;
 
 
     public SwaggerGenerator(APIModel newModel) {
@@ -34,5 +39,13 @@ public class SwaggerGenerator extends AbstractGenerator {
     @Override
     public String toString() {
         return Json.pretty(this.generateSwagger());
+    }
+    
+    @Override
+    public void populateOptions(String[] commandLineArgs) {
+        SwaggerGeneratorOptions generatorOptions = new SwaggerGeneratorOptions();
+        @SuppressWarnings("unused")
+        JCommander generatorCommander = JCommander.newBuilder().addObject(generatorOptions).build();
+        this.options = generatorOptions;
     }
 }

@@ -16,10 +16,7 @@ public class CodegenCLI {
         JCommander commander = JCommander.newBuilder().addObject(options).build();
         commander.setProgramName(CodegenCLI.class.getSimpleName());
         commander.parse(args);
-        if (options.isHelp()) {
-            commander.usage();
-            System.exit(0);
-        }
+
         try {
             AbstractGenerator generator = getGenerator(options.getGeneratorClassName());
             Class<? extends OptionsBase> optionsClass = generator.getOptionsClass();
@@ -33,6 +30,8 @@ public class CodegenCLI {
                     System.exit(0);
                 }
                 generator.setOptions(generatorOptions);
+                generator.populateOptions(args);
+                
             }
             ModelBuilder modelBuilder = new ModelBuilder(options);
             APIModel apiModel = modelBuilder.build();
@@ -41,6 +40,12 @@ public class CodegenCLI {
         } catch (ParameterException | IllegalAccessException | InstantiationException e) {
             System.out.println(String.format("ERROR: %s \n", e.getMessage()));
             commander.usage();
+        }
+        
+        // We want default help to include generator options if they apply
+        if (options.isHelp()) {
+            commander.usage();
+            System.exit(0);
         }
     }
 
@@ -51,7 +56,7 @@ public class CodegenCLI {
         }
 
         try {
-            Class targetGenerator = Class.forName(generatorClassName);
+            Class<?> targetGenerator = Class.forName(generatorClassName);
             return (AbstractGenerator) targetGenerator.newInstance();
         } catch (ClassNotFoundException e) {
             String message = String.format("The specified generator of \"%s\" is not found", generatorClassName);

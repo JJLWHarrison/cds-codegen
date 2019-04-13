@@ -9,7 +9,6 @@
         <relativePath>../..</relativePath>
     </parent>
     <artifactId>cds-codegen-maven-plugin</artifactId>
-    <version>0.0.2-SNAPSHOT</version>
     <name>cds-codegen-maven-plugin</name>
     <packaging>maven-plugin</packaging>
     <description>Maven plugin to build source from cds-models the Engineering library of the Consumer Data Standards</description>

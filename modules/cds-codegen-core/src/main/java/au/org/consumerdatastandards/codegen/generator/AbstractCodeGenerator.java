@@ -4,6 +4,7 @@ import au.org.consumerdatastandards.codegen.util.ModelCodegenConverter;
 
 public abstract class AbstractCodeGenerator extends AbstractGenerator {
 
+    @Override
     public void generate() {
 
         CodegenModel codegenModel = ModelCodegenConverter.convert(apiModel);
