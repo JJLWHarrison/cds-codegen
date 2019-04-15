@@ -1,0 +1,7 @@
+[
+  {
+    "handler": "au.org.consumerdatastandards.codegen.generator.code.DataDefinitionHandler",
+    "outputFolder": "src/gen",
+    "package": "au.com.nab.cds"
+  }
+]

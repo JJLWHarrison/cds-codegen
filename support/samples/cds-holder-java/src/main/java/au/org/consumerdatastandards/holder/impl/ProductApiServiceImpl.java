@@ -36,7 +36,7 @@ public class ProductApiServiceImpl implements ProductsApi {
          * Links/Meta objects
          */
         Links myLinks = new Links();
-        myLinks.setSelf(String.format("/banking/products?page=%s&page-size=%s", page, pageSize));
+        myLinks.setSelf(String.format("/banking/product/%s", productId));
         Meta myMeta = new Meta();
         
         myResponse.setLinks(myLinks);

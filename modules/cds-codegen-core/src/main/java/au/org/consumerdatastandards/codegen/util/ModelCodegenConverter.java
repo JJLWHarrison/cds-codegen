@@ -73,19 +73,4 @@ public class ModelCodegenConverter {
             }
         }
     }
-
-    /**
-     * Found this misleading... not in use at the moment.
-     * @param codegenModel
-     * @param fields
-     */
-    /**
-    private static void processFields(CodegenModel codegenModel, Field[] fields) {
-
-        for (Field field : fields) {
-            if (field.getType().isAnnotationPresent(DataDefinition.class)) {
-                processDataDefinition(codegenModel, field.getType());
-            }
-        }
-    }*/
 }

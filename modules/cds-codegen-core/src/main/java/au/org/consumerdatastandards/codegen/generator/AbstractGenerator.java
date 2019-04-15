@@ -1,35 +1,40 @@
 package au.org.consumerdatastandards.codegen.generator;
 
-import au.org.consumerdatastandards.codegen.generator.java.ClientGeneratorOptions;
 import au.org.consumerdatastandards.codegen.model.APIModel;
+import com.beust.jcommander.JCommander;
 
-public abstract class AbstractGenerator {
+public abstract class AbstractGenerator<O extends Options>  {
 
-    protected ClientGeneratorOptions options;
+    protected O options;
+
     protected APIModel apiModel;
 
+    private JCommander commander = null;
+
+    public AbstractGenerator(APIModel apiModel) {
+        this.apiModel = apiModel;
+    }
+
     abstract public void generate() throws Exception;
+
     abstract public void print() throws Exception;
-    abstract public void populateOptions(String[] commandLineArgs);
-    
-    public AbstractGenerator(APIModel newModel) {
-        this.apiModel = newModel;
+
+    abstract protected O createOptions();
+
+    public void populateOptions(String[] commandLineArgs) {
+        O options = createOptions();
+        if (options != null) {
+            commander = JCommander.newBuilder().addObject(options).build();
+            commander.parse(commandLineArgs);
+        }
+        this.options = options;
     }
 
-    public AbstractGenerator() {
-
+    public boolean hasOptions() {
+        return options != null;
     }
 
-    public Class<? extends OptionsBase> getOptionsClass() {
-        return null;
+    public void usage() {
+        if (commander != null) commander.usage();
     }
-
-    public void setOptions(OptionsBase options) {
-        this.options = (ClientGeneratorOptions) options;
-    }
-   
-    public void setModel(APIModel newModel) {
-        this.apiModel = newModel;
-    }
-
 }

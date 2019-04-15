@@ -7,10 +7,16 @@ import au.org.consumerdatastandards.codegen.generator.velocity.model.CDSAnnotati
 import au.org.consumerdatastandards.codegen.generator.velocity.model.VelocityFile;
 
 public interface VelocityHelper {
-    public Set<VelocityFile> getFiles();
-    public void addFile(VelocityFile inputVelocityFile);
-    public void clearFiles();
-    public VelocityFile toVelocityFile(Class<?> inputClass, String inputVelocityTemplate, String startPath);
-    public void writeFiles();
-    public Set<Class<?>> getAnnotatedDefinitions(CodegenModel codegenModel, CDSAnnotation dataDefinition) throws Exception;
+
+    Set<VelocityFile> getFiles();
+
+    void addFile(VelocityFile inputVelocityFile);
+
+    void clearFiles();
+
+    VelocityFile toVelocityFile(Class<?> inputClass, String inputVelocityTemplate, String startPath);
+
+    void writeFiles();
+
+    Set<Class<?>> getAnnotatedDefinitions(CodegenModel codegenModel, CDSAnnotation dataDefinition) throws Exception;
 }

@@ -15,12 +15,11 @@ public class CodegenModel {
     }
     
     public Set<Class<?>> getEndpointModels() {
-        Set<Class<?>> allModels = new HashSet<Class<?>>();
+        Set<Class<?>> allModels = new HashSet<>();
         for(SectionModel thisSection : getSectionModels()) {
             for(EndpointModel thisEndpoint : thisSection.getEndpointModels()) {
                 allModels.add(thisEndpoint.getClass());
             }
-           
         }
         return allModels;
     }
