@@ -12,8 +12,10 @@ import org.hibernate.SessionFactory;
 import au.org.consumerdatastandards.holder.DB;
 import au.org.consumerdatastandards.holder.api.*;
 import au.org.consumerdatastandards.models.BankingProduct;
+import au.org.consumerdatastandards.models.BankingProductDetail;
 import au.org.consumerdatastandards.models.Links;
 import au.org.consumerdatastandards.models.LinksPaginated;
+import au.org.consumerdatastandards.models.Meta;
 import au.org.consumerdatastandards.models.MetaPaginated;
 import au.org.consumerdatastandards.models.ResponseBankingProductById;
 import au.org.consumerdatastandards.models.ResponseBankingProductList;
@@ -23,8 +25,25 @@ public class ProductApiServiceImpl implements ProductsApi {
 
     @Override
     public ResponseBankingProductById getProductDetail(String productId, SecurityContext securityContext) {
-        // do some magic!
-        return new ResponseBankingProductById();
+        ResponseBankingProductById myResponse = new ResponseBankingProductById();
+        
+        Session session = DB.getSessionFactory().openSession();
+        session.beginTransaction();
+        
+        BankingProduct thisProduct = session.get(BankingProduct.class, productId);
+        
+        /**
+         * Links/Meta objects
+         */
+        Links myLinks = new Links();
+        myLinks.setSelf(String.format("/banking/products?page=%s&page-size=%s", page, pageSize));
+        Meta myMeta = new Meta();
+        
+        myResponse.setLinks(myLinks);
+        myResponse.setMeta(myMeta);
+        //myResponse.setData((BankingProductDetail)thisProduct);
+        
+        return myResponse;
     }
 
     @Override
