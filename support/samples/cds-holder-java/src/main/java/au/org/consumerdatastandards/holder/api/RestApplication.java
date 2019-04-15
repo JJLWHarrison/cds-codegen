@@ -1,9 +1,10 @@
-package au.org.consumerdatastandards.reference.api;
+package au.org.consumerdatastandards.holder.api;
 
 import javax.ws.rs.ApplicationPath;
 import javax.ws.rs.core.Application;
 
-import au.org.consumerdatastandards.reference.impl.ProductApiServiceImpl;
+import au.org.consumerdatastandards.holder.DB;
+import au.org.consumerdatastandards.holder.impl.ProductApiServiceImpl;
 
 import java.util.Set;
 import java.util.HashSet;
@@ -14,7 +15,11 @@ public class RestApplication extends Application {
     private Set<Object> singletons = new HashSet<Object>();
 
     public RestApplication() {
-        singletons.add(new ProductApiServiceImpl());
+        try {
+            singletons.add(new ProductApiServiceImpl());
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     @Override

@@ -1,4 +1,4 @@
-package au.org.consumerdatastandards.reference.api;
+package au.org.consumerdatastandards.holder.api;
 
 import java.util.Date;
 import javax.ws.rs.core.Context;
@@ -62,8 +62,8 @@ public interface ProductsApi {
             @QueryParam("updated-since") Date updatedSince, 
             @QueryParam("brand") String brand,
             @QueryParam("product-category") String productCategory, 
-            @QueryParam("page") Integer page,
-            @QueryParam("page-size") Integer pageSize,
+            @DefaultValue("1") @QueryParam("page") Integer page,
+            @DefaultValue("25") @QueryParam("page-size") Integer pageSize,
             @Context SecurityContext securityContext
     );
 }

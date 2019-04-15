@@ -1,0 +1,13 @@
+{
+	"applicationUri": "http://www.abcbank.com.au/super-deposit-account",
+	"brand": "ABC",
+	"brandName": "ABC Banking",
+	"description": "A boring banking deposit product",
+	"effectiveFrom": "2017-10-10T10:00:00+00:00",
+	"effectiveTo": "2019-10-10T10:00:00+00:00",
+	"isTailored": "false",
+	"lastUpdated": "2018-10-10T10:00:00+00:00",
+	"name": "Boring Deposit Account",
+	"productCategory": "TRANS_AND_SAVINGS_ACCOUNTS",
+	"productId": "cf22c3f0-a2a5-4701-a246-cb6f2978c02a"
+}
