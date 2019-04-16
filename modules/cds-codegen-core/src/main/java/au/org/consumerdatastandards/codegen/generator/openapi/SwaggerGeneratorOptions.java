@@ -9,5 +9,9 @@ public class SwaggerGeneratorOptions extends Options {
 
     @Parameter(names = {"--output-file", "-o"}, description = "Output file to place generated swagger")
     private String outputFile;
+    
+    public String getOutputFile() {
+        return outputFile;
+    }
 
 }
