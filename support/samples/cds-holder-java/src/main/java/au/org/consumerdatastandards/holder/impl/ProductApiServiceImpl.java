@@ -45,6 +45,8 @@ public class ProductApiServiceImpl implements ProductsApi {
         Session session = DB.getSessionFactory().openSession();
         session.beginTransaction();
         List<?> result = session.createQuery("from BankingProduct").list();
+        session.getTransaction().commit();
+        session.close();
         
         /**
          * Links/Meta objects

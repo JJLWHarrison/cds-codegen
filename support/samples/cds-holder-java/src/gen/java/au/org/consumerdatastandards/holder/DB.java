@@ -22,5 +22,4 @@ public class DB {
     public static SessionFactory getSessionFactory() {
         return sessionFactory;
     }
-
 }
