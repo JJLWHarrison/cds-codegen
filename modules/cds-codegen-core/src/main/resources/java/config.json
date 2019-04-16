@@ -1,7 +1,14 @@
-[
-  {
-    "handler": "au.org.consumerdatastandards.codegen.generator.code.DataDefinitionHandler",
-    "outputFolder": "src/gen",
-    "package": "au.com.nab.cds"
-  }
-]
+{
+    "handlers": [
+        {
+            "type": "ModelHandler",
+            "baseDirectory": "src/gen",
+            "templateName": "model.vm",
+            "fileName": "{$cdsModelsObject.getName()}.java",
+            "filePath": "$cdsModelsObject.getPackage().replace(\".\",\"/\")",
+            "additionalAttributes": {
+                "packageName": "$cdsModelsObject.getPackage()"
+            }
+        }
+    ]
+}

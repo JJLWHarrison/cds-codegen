@@ -1,12 +1,13 @@
 package au.org.consumerdatastandards.codegen.generator;
 
-import au.org.consumerdatastandards.codegen.model.APIModel;
 import com.beust.jcommander.JCommander;
 
+import au.org.consumerdatastandards.codegen.model.APIModel;
+
 public abstract class AbstractGenerator<O extends Options>  {
-
+    
     protected O options;
-
+    
     protected APIModel apiModel;
 
     private JCommander commander = null;

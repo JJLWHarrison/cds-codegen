@@ -2,23 +2,32 @@ package au.org.consumerdatastandards.codegen;
 
 import au.org.consumerdatastandards.codegen.generator.AbstractGenerator;
 import au.org.consumerdatastandards.codegen.generator.Options;
+import au.org.consumerdatastandards.codegen.generator.code.CodeGenerator;
 import au.org.consumerdatastandards.codegen.model.APIModel;
 import com.beust.jcommander.JCommander;
 import com.beust.jcommander.ParameterException;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.lang.reflect.InvocationTargetException;
 
 public class CodegenCLI {
+    
+    private static final Logger LOG = LogManager.getLogger(CodegenCLI.class);
+
 
     public static void main(String[] args) throws Exception {
 
         Options options = new Options();
         JCommander commander = JCommander.newBuilder().addObject(options).build();
         commander.setProgramName(CodegenCLI.class.getSimpleName());
+        commander.setAcceptUnknownOptions(true);
         commander.parse(args);
+        
 
         try {
+            
             ModelBuilder modelBuilder = new ModelBuilder(options);
             APIModel apiModel = modelBuilder.build();
             AbstractGenerator generator = getGenerator(options.getGeneratorClassName(), apiModel);
@@ -30,8 +39,11 @@ public class CodegenCLI {
                 generator.print();
             }
         } catch (ParameterException | IllegalAccessException | InstantiationException e) {
-            System.out.println(String.format("ERROR: %s \n", e.getMessage()));
+            LOG.error("Invalid parameter exceptions: {}", e.getMessage());
             commander.usage();
+        } catch (Exception e) {
+            LOG.error("Received exception: {}",  e.getMessage());
+            e.printStackTrace();
         }
     }
 
