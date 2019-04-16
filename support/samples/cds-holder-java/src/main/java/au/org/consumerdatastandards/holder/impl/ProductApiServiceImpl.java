@@ -1,25 +1,13 @@
 package au.org.consumerdatastandards.holder.impl;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
+import au.org.consumerdatastandards.holder.DB;
+import au.org.consumerdatastandards.holder.api.ProductsApi;
+import au.org.consumerdatastandards.models.*;
+import org.hibernate.Session;
 
 import javax.ws.rs.core.SecurityContext;
-
-import org.hibernate.Session;
-import org.hibernate.SessionFactory;
-
-import au.org.consumerdatastandards.holder.DB;
-import au.org.consumerdatastandards.holder.api.*;
-import au.org.consumerdatastandards.models.BankingProduct;
-import au.org.consumerdatastandards.models.BankingProductDetail;
-import au.org.consumerdatastandards.models.Links;
-import au.org.consumerdatastandards.models.LinksPaginated;
-import au.org.consumerdatastandards.models.Meta;
-import au.org.consumerdatastandards.models.MetaPaginated;
-import au.org.consumerdatastandards.models.ResponseBankingProductById;
-import au.org.consumerdatastandards.models.ResponseBankingProductList;
-import au.org.consumerdatastandards.models.ResponseBankingProductListData;
+import java.util.Date;
+import java.util.List;
 
 public class ProductApiServiceImpl implements ProductsApi {
 
@@ -31,6 +19,8 @@ public class ProductApiServiceImpl implements ProductsApi {
         session.beginTransaction();
         
         BankingProduct thisProduct = session.get(BankingProduct.class, productId);
+
+        session.close();
         
         /**
          * Links/Meta objects
@@ -40,8 +30,8 @@ public class ProductApiServiceImpl implements ProductsApi {
         Meta myMeta = new Meta();
         
         myResponse.setLinks(myLinks);
-        myResponse.setMeta(myMeta);
-        //myResponse.setData((BankingProductDetail)thisProduct);
+//        myResponse.setMeta(myMeta);
+        myResponse.setData(new BankingProductDetail(thisProduct));
         
         return myResponse;
     }
@@ -86,7 +76,7 @@ public class ProductApiServiceImpl implements ProductsApi {
 
         
         /**
-         * Wirte response
+         * Write response
          */
         myResponse.setMeta(myMeta);
         myResponse.setLinks(myLinks);

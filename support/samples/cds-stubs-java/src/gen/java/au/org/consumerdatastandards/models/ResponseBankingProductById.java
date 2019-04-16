@@ -1,23 +1,16 @@
 package au.org.consumerdatastandards.models;
 
-import java.util.Objects;
 import com.fasterxml.jackson.annotation.JsonProperty;
-
-import au.org.consumerdatastandards.models.BankingProductDetail;
-import au.org.consumerdatastandards.models.Links;
-import au.org.consumerdatastandards.models.Meta;
 import io.swagger.annotations.ApiModelProperty;
 
-import javax.validation.constraints.*;
+import javax.validation.constraints.NotNull;
+import java.util.Objects;
 
 public class ResponseBankingProductById {
 
     private BankingProductDetail data = null;
     private Links links = null;
     private Meta meta = null;
-
-    /**
-     **/
 
     @ApiModelProperty(required = true, value = "")
     @JsonProperty("data")
@@ -30,9 +23,6 @@ public class ResponseBankingProductById {
         this.data = data;
     }
 
-    /**
-     **/
-
     @ApiModelProperty(required = true, value = "")
     @JsonProperty("links")
     @NotNull
@@ -43,9 +33,6 @@ public class ResponseBankingProductById {
     public void setLinks(Links links) {
         this.links = links;
     }
-
-    /**
-     **/
 
     @ApiModelProperty(required = true, value = "")
     @JsonProperty("meta")
