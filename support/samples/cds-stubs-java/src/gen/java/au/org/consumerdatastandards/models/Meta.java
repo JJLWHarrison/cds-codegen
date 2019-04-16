@@ -9,11 +9,7 @@ public class Meta {
         if (this == o) {
             return true;
         }
-        if (o == null || getClass() != o.getClass()) {
-            return false;
-        }
-        Meta meta = (Meta) o;
-        return true;
+        return o != null && getClass() == o.getClass();
     }
 
     @Override
@@ -29,15 +25,4 @@ public class Meta {
         sb.append("}");
         return sb.toString();
     }
-
-    /**
-     * Convert the given object to string with each line indented by 4 spaces
-     * (except the first line).
-     * 
-     * ONLY inject this if objects have items
-     */
-    /**
-     * private String toIndentedString(Object o) { if (o == null) { return "null"; }
-     * return o.toString().replace("\n", "\n "); }
-     */
 }

@@ -19,7 +19,7 @@ import java.util.Date;
 import java.util.List;
 import javax.validation.constraints.*;
 
-public class BankingProductDetail {
+public class BankingProductDetail extends BankingProduct {
 
     private BankingProductAdditionalInformation additionalInformation = null;
     private String applicationUri = null;
@@ -40,6 +40,24 @@ public class BankingProductDetail {
     private List<BankingProductFeature> features = new ArrayList<BankingProductFeature>();
     private List<BankingProductFee> fees = new ArrayList<BankingProductFee>();
     private List<BankingProductLendingRate> lendingRates = new ArrayList<BankingProductLendingRate>();
+
+    public BankingProductDetail(BankingProduct product) {
+        setAdditionalInformation(product.getAdditionalInformation());
+        setApplicationUri(product.getApplicationUri());
+        setBrand(product.getBrand());
+        setBrandName(product.getBrandName());
+        setDescription(product.getDescription());
+        setEffectiveFrom(product.getEffectiveFrom());
+        setEffectiveTo(product.getEffectiveTo());
+        setIsTailored(product.isIsTailored());
+        setLastUpdated(product.getLastUpdated());
+        setName(product.getName());
+        setProductCategory(product.getProductCategory());
+        setProductId(product.getProductId());
+    }
+
+    public BankingProductDetail() {
+    }
 
     /**
      **/

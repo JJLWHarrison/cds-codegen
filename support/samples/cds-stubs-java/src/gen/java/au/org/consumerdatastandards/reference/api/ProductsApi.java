@@ -35,7 +35,7 @@ public interface ProductsApi {
             response = ResponseBankingProductById.class
         ) 
     })
-    public ResponseBankingProductById getProductDetail(
+    ResponseBankingProductById getProductDetail(
             @PathParam("productId") String productId,
             @Context SecurityContext securityContext
     );
@@ -57,7 +57,7 @@ public interface ProductsApi {
             response = ResponseBankingProductList.class
         ) 
     })
-    public ResponseBankingProductList listProducts(
+    ResponseBankingProductList listProducts(
             @QueryParam("effective") String effective,
             @QueryParam("updated-since") Date updatedSince, 
             @QueryParam("brand") String brand,
