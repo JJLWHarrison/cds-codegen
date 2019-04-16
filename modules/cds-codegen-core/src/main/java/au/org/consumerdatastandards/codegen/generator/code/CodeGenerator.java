@@ -17,8 +17,8 @@ import au.org.consumerdatastandards.codegen.generator.AbstractGenerator;
 import au.org.consumerdatastandards.codegen.generator.CodegenModel;
 import au.org.consumerdatastandards.codegen.generator.code.handler.AbstractHandler;
 import au.org.consumerdatastandards.codegen.generator.code.handler.AbstractHandlerConfig;
-import au.org.consumerdatastandards.codegen.generator.code.handler.model.ModelHandler;
-import au.org.consumerdatastandards.codegen.generator.code.handler.model.ModelHandlerConfig;
+import au.org.consumerdatastandards.codegen.generator.code.handler.datadefinition.DataDefinitionHandler;
+import au.org.consumerdatastandards.codegen.generator.code.handler.datadefinition.DataDefinitionHandlerConfig;
 import au.org.consumerdatastandards.codegen.model.APIModel;
 import au.org.consumerdatastandards.codegen.util.ModelCodegenConverter;
 
@@ -66,6 +66,7 @@ public class CodeGenerator extends AbstractGenerator<CodeGeneratorOptions> {
         /**
          * Try to render it
          */
+        VelocityHelper velocityHelper = new VelocityHelper(options.getOutputPath());
         ObjectMapper objectMapper = new ObjectMapper();
         TargetConfigModel targetConfig = objectMapper.readValue(configFileStream, TargetConfigModel.class);
         
@@ -74,11 +75,12 @@ public class CodeGenerator extends AbstractGenerator<CodeGeneratorOptions> {
             Set<Class<? extends AbstractHandler>> handlerClasses = reflections.getSubTypesOf(AbstractHandler.class);
             
             for(Class<? extends AbstractHandler> oneHandler : handlerClasses) {
-                System.out.println("Config is " + oneConfig);
                 if(oneHandler.newInstance().matchConfig(oneConfig)) {
                     AbstractHandler myHandler = oneHandler.newInstance();
                     myHandler.setConfig(oneConfig);
-                    myHandler.productOutput();
+                    myHandler.setCodegenModel(codegenModel);
+                    myHandler.setCodegenOptions(options);
+                    myHandler.populateVelocityFiles(velocityHelper);
                 }
             }
         }

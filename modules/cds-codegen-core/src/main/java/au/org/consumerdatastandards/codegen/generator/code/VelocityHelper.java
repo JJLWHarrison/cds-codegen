@@ -1,4 +1,4 @@
-package au.org.consumerdatastandards.codegen.generator.velocity;
+package au.org.consumerdatastandards.codegen.generator.code;
 
 import java.io.FileWriter;
 import java.io.IOException;
@@ -18,42 +18,29 @@ import au.org.consumerdatastandards.codegen.generator.CodegenModel;
 import au.org.consumerdatastandards.codegen.generator.velocity.model.CDSAnnotation;
 import au.org.consumerdatastandards.codegen.generator.velocity.model.VelocityFile;
 
-public class VelocityHelperDefault implements VelocityHelper {
+public class VelocityHelper {
 
     public Set<VelocityFile> velocityFiles = new HashSet<VelocityFile>();
     public String basePath;
     public String packagePathSeparator;
     public String classExtension;
 
-    @Override
     public Set<VelocityFile> getFiles() {
         return velocityFiles;
     }
 
-    @Override
     public void addFile(VelocityFile inputVelocityFile) {
         velocityFiles.add(inputVelocityFile);
     }
 
-    @Override
     public void clearFiles() {
         velocityFiles.clear();
     }
 
-    private String classToFileName(String inputClassName) {
-        inputClassName = inputClassName.substring(inputClassName.lastIndexOf('.') + 1).concat(this.classExtension);
-        return inputClassName;
-    }
-
-    private String classToPath(String inputPackageName, String startPath) {
-        return String.join("/", Arrays.asList(basePath, startPath, inputPackageName.replace(".", packagePathSeparator)));
-    }
-
-    public VelocityHelperDefault(String inputPath) {
+    public VelocityHelper(String inputPath) {
         basePath = inputPath;
     }
 
-    @Override
     public void writeFiles() {
         for (VelocityFile oneFile : velocityFiles) {
             try {
@@ -88,17 +75,4 @@ public class VelocityHelperDefault implements VelocityHelper {
 
         }
     }
-
-    @Override
-    public VelocityFile toVelocityFile(Class<?> inputClass, String inputVelocityTemplate, String startPath) {
-        return new VelocityFile(classToFileName(inputClass.getTypeName()),
-                classToPath(inputClass.getPackage().getName(), startPath), inputVelocityTemplate, inputClass);
-    }
-
-    @Override
-    public Set<Class<?>> getAnnotatedDefinitions(CodegenModel codegenModel, CDSAnnotation dataDefinition)
-            throws Exception {
-        return new HashSet<Class<?>>();
-    }
-
 }

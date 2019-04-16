@@ -1,7 +1,7 @@
 {
     "handlers": [
         {
-            "type": "ModelHandler",
+            "type": "DataDefinitionHandler",
             "baseDirectory": "src/gen",
             "templateName": "model.vm",
             "fileName": "{$cdsModelsObject.getName()}.java",

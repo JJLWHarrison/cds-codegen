@@ -1,10 +1,10 @@
-package au.org.consumerdatastandards.codegen.generator.code.handler.model;
+package au.org.consumerdatastandards.codegen.generator.code.handler.datadefinition;
 
 import java.util.Map;
 
 import au.org.consumerdatastandards.codegen.generator.code.handler.AbstractHandlerConfig;
 
-public class ModelHandlerConfig extends AbstractHandlerConfig {
+public class DataDefinitionHandlerConfig extends AbstractHandlerConfig {
     public String templateName;
     public String fileName;
     public String filePath;

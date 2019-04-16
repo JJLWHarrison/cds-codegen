@@ -13,9 +13,8 @@ import org.apache.logging.log4j.Logger;
 import java.lang.reflect.InvocationTargetException;
 
 public class CodegenCLI {
-    
-    private static final Logger LOG = LogManager.getLogger(CodegenCLI.class);
 
+    private static final Logger LOG = LogManager.getLogger(CodegenCLI.class);
 
     public static void main(String[] args) throws Exception {
 
@@ -24,25 +23,29 @@ public class CodegenCLI {
         commander.setProgramName(CodegenCLI.class.getSimpleName());
         commander.setAcceptUnknownOptions(true);
         commander.parse(args);
-        
+
+        ModelBuilder modelBuilder = new ModelBuilder(options);
+        APIModel apiModel = modelBuilder.build();
+        AbstractGenerator generator = getGenerator(options.getGeneratorClassName(), apiModel);
 
         try {
-            
-            ModelBuilder modelBuilder = new ModelBuilder(options);
-            APIModel apiModel = modelBuilder.build();
-            AbstractGenerator generator = getGenerator(options.getGeneratorClassName(), apiModel);
             generator.populateOptions(args);
             if (options.isHelp()) {
-                if (generator.hasOptions()) generator.usage();
-                else commander.usage();
+                if (generator.hasOptions())
+                    generator.usage();
+                else
+                    commander.usage();
             } else {
                 generator.print();
             }
         } catch (ParameterException | IllegalAccessException | InstantiationException e) {
             LOG.error("Invalid parameter exceptions: {}", e.getMessage());
-            commander.usage();
+            if (generator.hasOptions())
+                generator.usage();
+            else
+                commander.usage();
         } catch (Exception e) {
-            LOG.error("Received exception: {}",  e.getMessage());
+            LOG.error("Received exception: {}", e.getMessage());
             e.printStackTrace();
         }
     }
@@ -60,8 +63,9 @@ public class CodegenCLI {
             String message = String.format("The specified generator of \"%s\" is not found", generatorClassName);
             throw new ParameterException(message);
         } catch (InvocationTargetException | NoSuchMethodException | ClassCastException | InstantiationException
-            | IllegalAccessException | IllegalArgumentException | SecurityException e) {
-            String message = String.format("Unable to instantiate requested class %s due to: %s", generatorClassName, e.getCause());
+                | IllegalAccessException | IllegalArgumentException | SecurityException e) {
+            String message = String.format("Unable to instantiate requested class %s due to: %s", generatorClassName,
+                    e.getCause());
             throw new ParameterException(message);
         }
     }
