@@ -114,70 +114,11 @@ public class DataDefinitionHandler extends AbstractHandler<DataDefinitionHandler
         config = (DataDefinitionHandlerConfig) inputConfig;
     }
 
-    public DataDefinitionHandlerConfig perModelConfig(Object inputObject) throws IOException {
-                
-        ScriptEngineManager manager = new ScriptEngineManager();
-        manager.registerEngineName("velocity", new VelocityScriptEngineFactory());
-        ScriptEngine scriptEngine = manager.getEngineByName("velocity");
-        ScriptContext thisContext = scriptEngine.getContext();
-        thisContext.setAttribute("cds", inputObject, ScriptContext.GLOBAL_SCOPE);
-        scriptEngine.setContext(thisContext);
-        
-        
-        ObjectMapper objectMapper = new ObjectMapper();
-        JsonNode rootNode = objectMapper.readTree(objectMapper.writeValueAsString(config));
-        
-        
-        ObjectNode parentObjectNode = jsonThroughVelocity(scriptEngine, thisContext, (ObjectNode)rootNode);
-       
-        //LOG.debug("Processed Model Config JSON into: {}", objectMapper.writeValueAsString(parentObjectNode));
-        
-        DataDefinitionHandlerConfig myConfig = objectMapper.readValue(objectMapper.writeValueAsString(parentObjectNode), DataDefinitionHandlerConfig.class);
-        
-        /**
-         * Stuff field's into additional values field for direct access
-         */
-        for(Field declaredField : inputObject.getClass().getDeclaredFields()) {
-            declaredField.setAccessible(true);
-            try {
-                if(!myConfig.additionalAttributes.containsKey(declaredField.getName())) {
-                        //LOG.debug("Stuffing {} into additional attributes", declaredField.getName());                        
-                        myConfig.additionalAttributes.put(declaredField.getName(), declaredField.get(inputObject));
-                }
-            } catch (IllegalArgumentException | IllegalAccessException e) {
-                LOG.warn("Silently ignoring inability to read {}",  declaredField.getName());
-            }
-        }
-        
-        return myConfig;
-        
+    @Override
+    public Class<?> getAbstractHandlerConfigClass() {
+        return DataDefinitionHandlerConfig.class;
     }
     
-    private ObjectNode jsonThroughVelocity(ScriptEngine inputEngine, ScriptContext inputContext, ObjectNode rootNode) {
-        ObjectNode parentObjectNode = (ObjectNode) rootNode;
-        Iterator<Map.Entry<String,JsonNode>> fields = rootNode.fields();
-        
-        while (fields.hasNext()) {
-            Map.Entry<String,JsonNode> field = fields.next();
-            StringWriter instanceConfigString = new StringWriter();
-            inputContext.setWriter(instanceConfigString);
-
-            try {
-                if(field.getValue().isValueNode()) {
-                    inputEngine.eval(field.getValue().asText());
-                    parentObjectNode.put(field.getKey(), instanceConfigString.toString());
-                    instanceConfigString.flush();
-                } else {
-                    parentObjectNode.replace(field.getKey(), jsonThroughVelocity(inputEngine, inputContext, (ObjectNode) field.getValue()));
-                }
-            } catch (ScriptException e) {
-                LOG.error("Encountered a script rendering error while doing per model config on: {}", field.getValue().asText());
-            }
-        }
-        
-        return parentObjectNode;
-
-    }
 
     @Override
     public void populateVelocityFiles(VelocityHelper velocityHelper) throws IOException {
