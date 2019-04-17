@@ -15,5 +15,9 @@
         <Logger name="au.org.consumerdatastandards.codegen.generator.code.CodeGenerator" level="DEBUG">
             
         </Logger>
+        <Logger name="au.org.consumerdatastandards.codegen.generator.code.handler.datadefinition.DataDefinitionHandler" level="DEBUG">
+            
+        </Logger>
+        
     </Loggers>
 </Configuration>

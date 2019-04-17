@@ -2,12 +2,12 @@
     "handlers": [
         {
             "type": "DataDefinitionHandler",
-            "baseDirectory": "src/gen",
-            "templateName": "model.vm",
-            "fileName": "{$cdsModelsObject.getName()}.java",
-            "filePath": "$cdsModelsObject.getPackage().replace(\".\",\"/\")",
+            "baseDirectory": "src/gen/java",
+            "templateName": "java/model.vm",
+            "fileName": "${cds.getDefinitionName()}.java",
+            "filePath": "$cds.getPackageName().replace(\".\", \"/\")",
             "additionalAttributes": {
-                "packageName": "$cdsModelsObject.getPackage()"
+                "packageName": "$cds.getPackageName()"
             }
         }
     ]

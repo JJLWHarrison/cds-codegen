@@ -1,0 +1,3 @@
+#set( $fieldName = $field.getName() )
+#set( $fieldType = $field.getType() )
+#set( $fieldNameCapital = $field.getCapitalisedName() )

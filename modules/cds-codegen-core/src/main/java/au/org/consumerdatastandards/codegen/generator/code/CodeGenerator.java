@@ -85,6 +85,13 @@ public class CodeGenerator extends AbstractGenerator<CodeGeneratorOptions> {
             }
         }
         
+        /**
+         * We now have all velocity files ready for writing
+         *
+         * TODO: Add postProcessing hook to allow further modifications
+         */
+        velocityHelper.writeFiles();
+        
 
         /**
          * Ideally we'd wrap this in the json config as well so that we could support other types
@@ -102,12 +109,7 @@ public class CodeGenerator extends AbstractGenerator<CodeGeneratorOptions> {
          //   velocityHelper.addFile(velocityHelper.toVelocityFile(oneClass, "/java/model.vm", "src/gen"));
         //}
 
-        /**
-         * We now have all velocity files ready for writing
-         *
-         * TODO: Add postProcessing hook to allow further modifications
-         */
-        //velocityHelper.writeFiles();
+        
 
         /**
 

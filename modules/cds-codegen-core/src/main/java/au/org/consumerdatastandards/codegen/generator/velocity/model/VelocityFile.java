@@ -2,18 +2,22 @@ package au.org.consumerdatastandards.codegen.generator.velocity.model;
 
 import java.util.Arrays;
 
+import au.org.consumerdatastandards.codegen.generator.code.handler.AbstractHandlerConfig;
+
 public class VelocityFile {
 
     String name;
     String path;
     String velocityTemplate;
-    Class<?> fileClass;
+    AbstractHandlerConfig config;
+    Object context;
 
-    public VelocityFile(String inputFilename, String inputPath, String inputVelocityTemplate, Class<?> oneClass) {
+    public VelocityFile(String inputFilename, String inputPath, String inputVelocityTemplate, AbstractHandlerConfig modelConfig, Object renderingContext) {
         this.name = inputFilename;
         this.path = inputPath;
         this.velocityTemplate = inputVelocityTemplate;
-        this.fileClass = oneClass;
+        this.config = modelConfig;
+        this.context = renderingContext;
     }
 
     public String getFullPath() {
@@ -44,15 +48,12 @@ public class VelocityFile {
         this.velocityTemplate = velocityTemplate;
     }
 
-    public void setFileClass(Class<?> inputClass) {
-        this.fileClass = inputClass;
+    public AbstractHandlerConfig getConfig() {
+        return config;
     }
 
-    public Class<?> getFileClass() {
-        return fileClass;
+    public Object getContext() {
+        return context;
     }
 
-    public String getPackageName() {
-        return fileClass.getPackage().getName();
-    }
 }
