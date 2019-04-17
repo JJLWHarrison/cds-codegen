@@ -1,28 +1,32 @@
 #include("java/header.vm")
-package $package;
+package $packageName;
 
 import java.util.Objects;
 import com.google.gson.annotations.SerializedName;
 
 /**
-* $class.SimpleName
+* $definitionName
+* 
+* $WordUtils.wrap($definitionDescription, 60, "\n* ", false)
 */
-public class $class.SimpleName {
-#foreach($field in $class.DeclaredFields)
-    $field.setAccessible(true)
-#end
-#foreach($field in $class.DeclaredFields)
-    @SerializedName("$field.Name")
-    private $field.Type.SimpleName $field.Name;
+public class $definitionName #if($extendsOn)extends $extendsOn#end {
+#foreach($field in $fieldList)
+    #parse("common/datadefinition.vm")
+    // $WordUtils.wrap($fieldDescription, 60, "
+    // ", false)
+    SerializedName("$fieldName")     
+    private $fieldType $fieldName;
 #end
 
-#foreach($field in $class.DeclaredFields)
-    public $field.Type.SimpleName get$StringUtils.capitalize($field.Name)() {
-        return $field.Name;
+#foreach($field in $fieldList)
+    #parse("common/datadefinition.vm")
+    
+    public $fieldType get$fieldNameCapital() {
+        return $fieldName;
     }
 
-    public void set$StringUtils.capitalize($field.Name)($field.Type.SimpleName $field.Name) {
-        this.$field.Name = $field.Name;
+    public void set$fieldNameCapital($fieldType $fieldName) {
+        this.$fieldName = $fieldName;
     }
 #end
 
@@ -35,9 +39,13 @@ public class $class.SimpleName {
             return false;
         }
         
-        $class.SimpleName inputObject = ($class.SimpleName) o;
-#foreach($field in $class.DeclaredFields)
-        if(! ${field.Name}.equals(inputObject.get$StringUtils.capitalize($field.Name)()) { return false; }
+        #if($extendsOn)
+        if(!super.equals(o)) { return false; }
+        #end
+        $cds.definitionName inputModel = ($cds.definitionName) o;
+#foreach($field in $fieldList)
+#parse("common/datadefinition.vm")
+        if(! ${fieldName}.equals(inputModel.get$fieldNameCapital()) { return false; }
 #end
         return true;
     }
@@ -50,21 +58,19 @@ public class $class.SimpleName {
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();
-        sb.append("class $class.SimpleName {\n");
-#foreach($field in $class.DeclaredFields)
-        sb.append("    $field.Name: ").append(toIndentedString($field.Name)).append("\n");
-#end        sb.append("}");
-        return sb.toString();
-    }
+        sb.append(String.format("class %s {\n", getClass()));
 
-    /**
-    * Convert the given object to string with each line indented by 4 spaces
-    * (except the first line).
-    */
-    private String toIndentedString(java.lang.Object o) {
-        if (o == null) {
-            return "null";
+        for (Field oneField : getClass().getFields()) {
+            oneField.setAccessible(true);
+            try {
+                sb.append(String.format("    %s: %s\n", oneField.getName(), (oneField.get(Object.class) == null ? "null"
+                        : oneField.get(Object.class).toString().replace("\n", "\n    "))));
+            } catch (IllegalArgumentException | IllegalAccessException e) {
+                // I guess we won't print it
+                sb.append(String.format("    %s, [unreadable]\n", oneField.getName()));
+            }
         }
-        return o.toString().replace("\n", "\n    ");
+        sb.append("}");
+        return sb.toString();
     }
 }

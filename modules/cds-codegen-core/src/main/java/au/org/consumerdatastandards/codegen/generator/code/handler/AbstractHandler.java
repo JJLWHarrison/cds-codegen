@@ -1,5 +1,7 @@
 package au.org.consumerdatastandards.codegen.generator.code.handler;
 
+import java.io.IOException;
+
 import com.beust.jcommander.JCommander;
 
 import au.org.consumerdatastandards.codegen.generator.CodegenModel;
@@ -12,7 +14,7 @@ public abstract class AbstractHandler<O extends AbstractHandlerConfig>  {
     protected CodegenModel codegenModel;
     protected CodeGeneratorOptions options;
     abstract public boolean matchConfig(AbstractHandlerConfig inputConfig);
-    abstract public void populateVelocityFiles(VelocityHelper velocityHelper);
+    abstract public void populateVelocityFiles(VelocityHelper velocityHelper) throws IOException;
     abstract public void setConfig(AbstractHandlerConfig inputConfig);
     
     public void setCodegenModel(CodegenModel inputCodegen) {

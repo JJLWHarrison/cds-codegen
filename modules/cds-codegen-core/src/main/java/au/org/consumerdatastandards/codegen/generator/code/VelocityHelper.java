@@ -6,8 +6,11 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.HashSet;
+import java.util.Map.Entry;
 import java.util.Set;
 
+import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.text.WordUtils;
 import org.apache.velocity.Template;
 import org.apache.velocity.app.VelocityEngine;
 import org.apache.velocity.runtime.resource.loader.ClasspathResourceLoader;
@@ -58,10 +61,20 @@ public class VelocityHelper {
                 manager.setVelocityEngine(ve);
                 
                 ToolContext context = manager.createContext();
-                context.put("class", oneFile.getFileClass());
-                // TODO: I can't figure out how to get the DisplayTool working...
-                context.put("StringUtils", org.apache.commons.lang3.StringUtils.class);
-                context.put("package", oneFile.getPackageName());
+                context.put("cg", oneFile.getConfig());
+                context.put("cds", oneFile.getContext());
+                context.put("StringUtils", StringUtils.class);
+                context.put("WordUtils", WordUtils.class);
+                
+                /**
+                 * Stuff in additional attributes
+                 */
+                for(Entry<String, Object> oneEntry : oneFile.getConfig().getAdditionalAttributes().entrySet()) {
+                    if(!(oneEntry.getKey().equals("cg") || oneEntry.getKey().equals("cds"))) {
+                        context.put(oneEntry.getKey(), oneEntry.getValue());
+                    }
+                }
+                
                 t.merge(context, outputFileWriter);
                 
                 outputFileWriter.close();
