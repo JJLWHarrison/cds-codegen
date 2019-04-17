@@ -2,13 +2,24 @@ package au.org.consumerdatastandards.model;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import io.swagger.annotations.ApiModelProperty;
+import org.hibernate.annotations.GenericGenerator;
 
+import javax.persistence.*;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 import java.time.OffsetDateTime;
 import java.util.Objects;
 
+@Entity
 public class BankingProduct   {
+
+  @Id
+  @GeneratedValue(generator="system-uuid")
+  @GenericGenerator(name="system-uuid", strategy = "uuid2")
+  @JsonProperty("productId")
+  private String productId;
+
+  @Embedded
   @JsonProperty("additionalInformation")
   private BankingProductAdditionalInformation additionalInformation = null;
 
@@ -41,9 +52,6 @@ public class BankingProduct   {
 
   @JsonProperty("productCategory")
   private BankingEnumProductCategory productCategory;
-
-  @JsonProperty("productId")
-  private String productId;
 
   public BankingProduct additionalInformation(BankingProductAdditionalInformation additionalInformation) {
     this.additionalInformation = additionalInformation;
