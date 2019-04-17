@@ -41,6 +41,7 @@ import au.org.consumerdatastandards.codegen.generator.code.handler.AbstractHandl
 import au.org.consumerdatastandards.codegen.generator.code.handler.AbstractHandlerConfig;
 import au.org.consumerdatastandards.codegen.generator.openapi.SwaggerGeneratorOptions;
 import au.org.consumerdatastandards.codegen.generator.velocity.model.VelocityFile;
+import au.org.consumerdatastandards.support.data.CDSDataType;
 import au.org.consumerdatastandards.support.data.DataDefinition;
 import au.org.consumerdatastandards.support.data.Property;
 
@@ -56,52 +57,87 @@ public class DataDefinitionHandler extends AbstractHandler<DataDefinitionHandler
         List<DataDefinitionModel> dataDefinitions = new ArrayList<DataDefinitionModel>();
         for (Class<?> definitionClass : codegenModel.getDataDefinitions()) {
             LOG.debug("Parsing data definition named: {}", definitionClass.getName());
+
             DataDefinitionModel oneDataDefinition = new DataDefinitionModel();
             oneDataDefinition.definitionName = definitionClass.getSimpleName();
             oneDataDefinition.packageName = definitionClass.getPackage().getName();
-            
-            for(Annotation oneAnnotation : definitionClass.getAnnotations()) {
-                //LOG.debug("Parsing annotation called {}",  oneAnnotation.annotationType().toString());
-                if(oneAnnotation.annotationType().equals(DataDefinition.class)) {
-                    DataDefinition thisDefinition = (DataDefinition)oneAnnotation;
+            oneDataDefinition.isEnum = definitionClass.isEnum();
+
+            for (Annotation oneAnnotation : definitionClass.getAnnotations()) {
+                // LOG.debug("Parsing annotation called {}",
+                // oneAnnotation.annotationType().toString());
+                if (oneAnnotation.annotationType().equals(DataDefinition.class)) {
+                    DataDefinition thisDefinition = (DataDefinition) oneAnnotation;
                     oneDataDefinition.definitionDescription = thisDefinition.description();
                     Class<?>[] allOfClasses = thisDefinition.allOf();
-                    if(allOfClasses.length > 0) {
+                    if (allOfClasses.length > 0) {
                         oneDataDefinition.extendsOn = allOfClasses[0].getSimpleName();
                     }
-                    
+
                 }
-                
+
             }
-            
+
             Field[] definitionFields = definitionClass.getDeclaredFields();
             for (Field oneField : definitionFields) {
                 oneField.setAccessible(true);
                 DataDefinitionModelField oneModelField = new DataDefinitionModelField();
-                oneModelField.name = oneField.getName();
-                if(oneField.getType().isAssignableFrom(List.class)) {
-                    Class<?> innerType = (Class<?>)((ParameterizedType) oneField.getGenericType()).getActualTypeArguments()[0];
-                    oneModelField.type = targetConfig.getTypeMapping("List",  innerType.getSimpleName());
-                } else {
-                    if(targetConfig.hasTypeMapping(oneField.getType().getSimpleName())) {
-                        oneModelField.type = targetConfig.getTypeMapping(oneField.getType().getSimpleName(), null);
-                    } else {
-                        oneModelField.type = oneField.getType().getSimpleName();
-                    }                    
-                }
-                
-                for(Annotation oneAnnotation : oneField.getAnnotations()) {
-                    //LOG.debug("Parsing annotation called {}",  oneAnnotation.annotationType().toString());
-                    if(oneAnnotation.annotationType().equals(Property.class)) {
-                        Property thisProperty = (Property)oneAnnotation;
-                        oneModelField.description = thisProperty.description();
-                        oneModelField.required = thisProperty.required();                        
+
+                if (oneDataDefinition.isEnum) {
+                    if (oneField.isEnumConstant()) {
+                        oneModelField.name = oneField.getName();
+                        oneDataDefinition.fieldList.add(oneModelField);
                     }
-                    
+
+                } else {
+                    oneModelField.name = oneField.getName();
+                    if (oneField.getType().isAssignableFrom(List.class)) {
+                        Class<?> innerType = (Class<?>) ((ParameterizedType) oneField.getGenericType())
+                                .getActualTypeArguments()[0];
+                        oneModelField.type = targetConfig.getTypeMapping("List", innerType.getSimpleName());
+                    } else {
+                        if (targetConfig.hasTypeMapping(oneField.getType().getSimpleName())) {
+                            oneModelField.type = targetConfig.getTypeMapping(oneField.getType().getSimpleName());
+                        } else {
+                            oneModelField.type = oneField.getType().getSimpleName();
+                        }
+                    }
+
+                    for (Annotation oneAnnotation : oneField.getAnnotations()) {
+                        // LOG.debug("Parsing annotation called {}",
+                        // oneAnnotation.annotationType().toString());
+                        if (oneAnnotation.annotationType().equals(Property.class)) {
+                            Property thisProperty = (Property) oneAnnotation;
+                            oneModelField.description = thisProperty.description();
+                            oneModelField.required = thisProperty.required();
+                        }
+
+                        if (oneAnnotation.annotationType().equals(CDSDataType.class)) {
+                            CDSDataType thisDataType = (CDSDataType) oneAnnotation;
+                            if (thisDataType.value().getFormat() != null) {
+                                oneModelField.type = targetConfig
+                                        .getTypeMapping(thisDataType.value().getFormat().getJavaType());
+                            }
+
+                            if (thisDataType.value().getPattern() != null) {
+                                oneModelField.validationPattern = thisDataType.value().getPattern();
+                            }
+
+                            if (thisDataType.value().getMin() != null) {
+                                oneModelField.minValue = thisDataType.value().getMin();
+                            }
+
+                            if (thisDataType.value().getMax() != null) {
+                                oneModelField.maxValue = thisDataType.value().getMax();
+                            }
+                        }
+
+                    }
+                    oneDataDefinition.fieldList.add(oneModelField);
                 }
+
                 
-                oneDataDefinition.fieldList.add(oneModelField);
-                
+
             }
 
             dataDefinitions.add(oneDataDefinition);
@@ -119,17 +155,19 @@ public class DataDefinitionHandler extends AbstractHandler<DataDefinitionHandler
         return DataDefinitionHandlerConfig.class;
     }
     
-
     @Override
     public void populateVelocityFiles(VelocityHelper velocityHelper) throws IOException {
         List<DataDefinitionModel> dataDefinitions = collectDataDefinitions();
         for (DataDefinitionModel oneModel : dataDefinitions) {
-            // We reparse the supplied handler config in the context of this particular data definition model
+            // We reparse the supplied handler config in the context of this particular data
+            // definition model
             DataDefinitionHandlerConfig modelConfig = perModelConfig(oneModel);
 
+            String templateName = oneModel.isEnum ? modelConfig.enumTemplate : modelConfig.modelTemplate;
+
             VelocityFile oneFile = new VelocityFile(modelConfig.fileName,
-                    String.format("%s/%s/%s", options.getOutputPath(), modelConfig.baseDirectory, modelConfig.filePath), modelConfig.templateName,
-                    modelConfig, oneModel);
+                    String.format("%s/%s/%s", options.getOutputPath(), modelConfig.baseDirectory, modelConfig.filePath),
+                    templateName, modelConfig, oneModel);
             velocityHelper.addFile(oneFile);
         }
 

@@ -7,13 +7,18 @@ import com.google.gson.annotations.SerializedName;
 /**
 * $definitionName
 * 
-* $WordUtils.wrap($definitionDescription, 60, "\n* ", false)
+* #if($definitionDescription)
+* $WordUtils.wrap($definitionDescription, 60, "
+* ", false)
+* #end
 */
 public class $definitionName #if($extendsOn)extends $extendsOn#end {
 #foreach($field in $fieldList)
     #parse("common/datadefinition.vm")
+    #if($fieldDescription)
     // $WordUtils.wrap($fieldDescription, 60, "
     // ", false)
+    #end
     SerializedName("$fieldName")     
     private $fieldType $fieldName;
 #end
