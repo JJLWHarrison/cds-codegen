@@ -10,5 +10,9 @@
                 "packageName": "$cds.getPackageName()"
             }
         }
-    ]
+    ],
+    "typeMappings": {
+            "String": "String",
+            "List": "List<%s>"
+    }
 }

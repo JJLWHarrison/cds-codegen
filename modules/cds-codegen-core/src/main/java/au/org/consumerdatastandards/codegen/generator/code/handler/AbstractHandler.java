@@ -6,12 +6,14 @@ import com.beust.jcommander.JCommander;
 
 import au.org.consumerdatastandards.codegen.generator.CodegenModel;
 import au.org.consumerdatastandards.codegen.generator.code.CodeGeneratorOptions;
+import au.org.consumerdatastandards.codegen.generator.code.TargetConfigModel;
 import au.org.consumerdatastandards.codegen.generator.code.VelocityHelper;
 import au.org.consumerdatastandards.codegen.generator.code.handler.datadefinition.DataDefinitionHandlerConfig;
 
 public abstract class AbstractHandler<O extends AbstractHandlerConfig>  {
     protected O config;
     protected CodegenModel codegenModel;
+    protected TargetConfigModel targetConfig;
     protected CodeGeneratorOptions options;
     abstract public boolean matchConfig(AbstractHandlerConfig inputConfig);
     abstract public void populateVelocityFiles(VelocityHelper velocityHelper) throws IOException;
@@ -23,6 +25,9 @@ public abstract class AbstractHandler<O extends AbstractHandlerConfig>  {
     
     public void setCodegenOptions(CodeGeneratorOptions inputOptions) {
         options = inputOptions;
+    }
+    public void setTargetConfig(TargetConfigModel inputConfig) {
+        targetConfig = inputConfig;
     }
     
 }

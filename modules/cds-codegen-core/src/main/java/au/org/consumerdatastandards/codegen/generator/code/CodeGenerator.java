@@ -78,6 +78,7 @@ public class CodeGenerator extends AbstractGenerator<CodeGeneratorOptions> {
                 if(oneHandler.newInstance().matchConfig(oneConfig)) {
                     AbstractHandler myHandler = oneHandler.newInstance();
                     myHandler.setConfig(oneConfig);
+                    myHandler.setTargetConfig(targetConfig);
                     myHandler.setCodegenModel(codegenModel);
                     myHandler.setCodegenOptions(options);
                     myHandler.populateVelocityFiles(velocityHelper);
