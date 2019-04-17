@@ -24,6 +24,10 @@ public class TargetConfigModel {
         return String.format(typeMappings.get(inputType), inputValue);
     }
 
+    public String getTypeMapping(String inputType) {
+        return typeMappings.get(inputType);
+    }
+    
     public boolean hasTypeMapping(String simpleName) {
         return typeMappings.containsKey(simpleName);
     }
