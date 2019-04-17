@@ -10,11 +10,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
-/**
- * BankingProductDiscount
- */
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.SpringCodegen", date = "2019-04-16T16:57:32.382+10:00[Australia/Sydney]")
-
 public class BankingProductDiscount   {
   @JsonProperty("accruedRate")
   private String accruedRate;

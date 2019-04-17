@@ -10,8 +10,6 @@ import java.util.Objects;
 /**
  * ResponseBankingProductList
  */
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.SpringCodegen", date = "2019-04-16T16:57:32.382+10:00[Australia/Sydney]")
-
 public class ResponseBankingProductList   {
   @JsonProperty("data")
   private ResponseBankingProductListData data = null;

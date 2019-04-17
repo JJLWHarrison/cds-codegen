@@ -6,11 +6,6 @@ import io.swagger.annotations.ApiModelProperty;
 import javax.validation.constraints.NotNull;
 import java.util.Objects;
 
-/**
- * MetaPaginated
- */
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.SpringCodegen", date = "2019-04-16T16:57:32.382+10:00[Australia/Sydney]")
-
 public class MetaPaginated   {
   @JsonProperty("totalPages")
   private Integer totalPages;

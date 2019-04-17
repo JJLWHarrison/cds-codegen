@@ -8,11 +8,6 @@ import javax.validation.constraints.NotNull;
 import java.time.OffsetDateTime;
 import java.util.Objects;
 
-/**
- * BankingProduct
- */
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.SpringCodegen", date = "2019-04-16T16:57:32.382+10:00[Australia/Sydney]")
-
 public class BankingProduct   {
   @JsonProperty("additionalInformation")
   private BankingProductAdditionalInformation additionalInformation = null;

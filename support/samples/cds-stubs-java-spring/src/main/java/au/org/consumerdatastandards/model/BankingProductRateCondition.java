@@ -10,8 +10,6 @@ import java.util.Objects;
  * Defines a condition for the applicability of a tiered rate
  */
 @ApiModel(description = "Defines a condition for the applicability of a tiered rate")
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.SpringCodegen", date = "2019-04-16T16:57:32.382+10:00[Australia/Sydney]")
-
 public class BankingProductRateCondition   {
   @JsonProperty("additionalInfo")
   private String additionalInfo;
