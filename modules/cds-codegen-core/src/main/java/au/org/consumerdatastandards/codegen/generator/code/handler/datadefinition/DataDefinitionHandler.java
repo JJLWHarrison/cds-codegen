@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.io.StringWriter;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
+import java.lang.reflect.ParameterizedType;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -78,7 +79,16 @@ public class DataDefinitionHandler extends AbstractHandler<DataDefinitionHandler
                 oneField.setAccessible(true);
                 DataDefinitionModelField oneModelField = new DataDefinitionModelField();
                 oneModelField.name = oneField.getName();
-                oneModelField.type = oneField.getType().getSimpleName();
+                if(oneField.getType().isAssignableFrom(List.class)) {
+                    Class<?> innerType = (Class<?>)((ParameterizedType) oneField.getGenericType()).getActualTypeArguments()[0];
+                    oneModelField.type = targetConfig.getTypeMapping("List",  innerType.getSimpleName());
+                } else {
+                    if(targetConfig.hasTypeMapping(oneField.getType().getSimpleName())) {
+                        oneModelField.type = targetConfig.getTypeMapping(oneField.getType().getSimpleName(), null);
+                    } else {
+                        oneModelField.type = oneField.getType().getSimpleName();
+                    }                    
+                }
                 
                 for(Annotation oneAnnotation : oneField.getAnnotations()) {
                     //LOG.debug("Parsing annotation called {}",  oneAnnotation.annotationType().toString());
