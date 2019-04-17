@@ -10,6 +10,17 @@
             "additionalAttributes": {
                 "packageName": "$cds.getPackageName()"
             }
+        },
+        {
+            "type": "SectionHandler",
+            "baseDirectory": "src/gen/java",
+            "sectionTemplate": "java/api.vm",
+            "fileName": "${cds.getName().replace(\" \", \"\").concat(\"Api\")}.java",
+            "filePath": "au/org/consumerdatastandards/api",
+            "interfaceName": "${cds.getName().replace(\" \", \"\").concat(\"Api\")}",
+            "additionalAttributes": {
+                "packageName": "$cds.getPackageName()"
+            }
         }
     ],
     "typeMappings": {

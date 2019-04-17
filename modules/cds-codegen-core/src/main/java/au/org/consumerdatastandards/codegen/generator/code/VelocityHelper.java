@@ -4,7 +4,6 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Map.Entry;
 import java.util.Set;
@@ -17,8 +16,6 @@ import org.apache.velocity.runtime.resource.loader.ClasspathResourceLoader;
 import org.apache.velocity.tools.ToolContext;
 import org.apache.velocity.tools.ToolManager;
 
-import au.org.consumerdatastandards.codegen.generator.CodegenModel;
-import au.org.consumerdatastandards.codegen.generator.velocity.model.CDSAnnotation;
 import au.org.consumerdatastandards.codegen.generator.velocity.model.VelocityFile;
 
 public class VelocityHelper {

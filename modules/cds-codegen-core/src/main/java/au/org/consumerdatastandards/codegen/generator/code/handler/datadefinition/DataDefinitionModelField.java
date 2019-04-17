@@ -6,7 +6,7 @@ public class DataDefinitionModelField {
     public String name;
     public String type;
     public String description;
-    public boolean required;
+    public boolean isRequired;
     public String validationPattern;
     public Number minValue;
     public Number maxValue;
@@ -21,7 +21,7 @@ public class DataDefinitionModelField {
         return description;
     }
     public boolean isRequired() {
-        return required;
+        return isRequired;
     }
     public String getCapitalisedName() {
         return StringUtils.capitalize(name);

@@ -2,7 +2,6 @@ package au.org.consumerdatastandards.codegen;
 
 import au.org.consumerdatastandards.codegen.generator.AbstractGenerator;
 import au.org.consumerdatastandards.codegen.generator.Options;
-import au.org.consumerdatastandards.codegen.generator.code.CodeGenerator;
 import au.org.consumerdatastandards.codegen.model.APIModel;
 import com.beust.jcommander.JCommander;
 import com.beust.jcommander.ParameterException;
@@ -26,7 +25,7 @@ public class CodegenCLI {
 
         ModelBuilder modelBuilder = new ModelBuilder(options);
         APIModel apiModel = modelBuilder.build();
-        AbstractGenerator generator = getGenerator(options.getGeneratorClassName(), apiModel);
+        AbstractGenerator<?> generator = getGenerator(options.getGeneratorClassName(), apiModel);
 
         try {
             generator.populateOptions(args);
@@ -50,7 +49,7 @@ public class CodegenCLI {
         }
     }
 
-    private static AbstractGenerator getGenerator(String generatorClassName, APIModel apiModel) {
+    private static AbstractGenerator<?> getGenerator(String generatorClassName, APIModel apiModel) {
 
         if (StringUtils.isBlank(generatorClassName)) {
             throw new ParameterException("You must supply a generator name");
@@ -58,7 +57,7 @@ public class CodegenCLI {
 
         try {
             Class<?> targetGenerator = Class.forName(generatorClassName);
-            return (AbstractGenerator) targetGenerator.getConstructor(APIModel.class).newInstance(apiModel);
+            return (AbstractGenerator<?>) targetGenerator.getConstructor(APIModel.class).newInstance(apiModel);
         } catch (ClassNotFoundException e) {
             String message = String.format("The specified generator of \"%s\" is not found", generatorClassName);
             throw new ParameterException(message);

@@ -23,7 +23,7 @@ public class SectionModel extends ModelBase implements Comparable<SectionModel> 
 
         return name;
     }
-
+   
     public String[] getTags() {
 
         return tags;

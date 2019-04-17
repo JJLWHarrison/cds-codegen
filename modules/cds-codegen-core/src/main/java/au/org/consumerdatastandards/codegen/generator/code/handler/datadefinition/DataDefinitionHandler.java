@@ -1,45 +1,16 @@
 package au.org.consumerdatastandards.codegen.generator.code.handler.datadefinition;
 
 import java.io.IOException;
-import java.io.StringWriter;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
 import java.lang.reflect.ParameterizedType;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
-
-import javax.script.ScriptContext;
-import javax.script.ScriptEngine;
-import javax.script.ScriptEngineManager;
-import javax.script.ScriptException;
-
-import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.apache.velocity.Template;
-import org.apache.velocity.VelocityContext;
-import org.apache.velocity.app.Velocity;
-import org.apache.velocity.app.VelocityEngine;
-import org.apache.velocity.runtime.RuntimeConstants;
-import org.apache.velocity.runtime.resource.loader.StringResourceLoader;
-import org.apache.velocity.runtime.resource.util.StringResourceRepository;
-import org.apache.velocity.script.VelocityScriptEngine;
-import org.apache.velocity.script.VelocityScriptEngineFactory;
-
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.node.ObjectNode;
-
-import au.org.consumerdatastandards.codegen.generator.AbstractGenerator;
-import au.org.consumerdatastandards.codegen.generator.code.CodeGenerator;
-import au.org.consumerdatastandards.codegen.generator.code.TargetConfigModel;
 import au.org.consumerdatastandards.codegen.generator.code.VelocityHelper;
 import au.org.consumerdatastandards.codegen.generator.code.handler.AbstractHandler;
 import au.org.consumerdatastandards.codegen.generator.code.handler.AbstractHandlerConfig;
-import au.org.consumerdatastandards.codegen.generator.openapi.SwaggerGeneratorOptions;
 import au.org.consumerdatastandards.codegen.generator.velocity.model.VelocityFile;
 import au.org.consumerdatastandards.support.data.CDSDataType;
 import au.org.consumerdatastandards.support.data.DataDefinition;
@@ -104,12 +75,10 @@ public class DataDefinitionHandler extends AbstractHandler<DataDefinitionHandler
                     }
 
                     for (Annotation oneAnnotation : oneField.getAnnotations()) {
-                        // LOG.debug("Parsing annotation called {}",
-                        // oneAnnotation.annotationType().toString());
                         if (oneAnnotation.annotationType().equals(Property.class)) {
                             Property thisProperty = (Property) oneAnnotation;
                             oneModelField.description = thisProperty.description();
-                            oneModelField.required = thisProperty.required();
+                            oneModelField.isRequired = thisProperty.required();
                         }
 
                         if (oneAnnotation.annotationType().equals(CDSDataType.class)) {
