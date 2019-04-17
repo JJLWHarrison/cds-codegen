@@ -4,11 +4,13 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 
+import javax.persistence.Embeddable;
 import java.util.Objects;
 
 /**
  * Object that contains links to additional information on specific topics
  */
+@Embeddable
 @ApiModel(description = "Object that contains links to additional information on specific topics")
 public class BankingProductAdditionalInformation   {
   @JsonProperty("bundleUri")

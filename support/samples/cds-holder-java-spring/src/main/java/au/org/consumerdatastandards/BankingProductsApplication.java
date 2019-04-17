@@ -1,17 +1,23 @@
 package au.org.consumerdatastandards;
 
 import com.fasterxml.jackson.databind.Module;
+import org.h2.server.web.WebServlet;
 import org.openapitools.jackson.nullable.JsonNullableModule;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.ExitCodeGenerator;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.web.servlet.ServletRegistrationBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 @SpringBootApplication
-@ComponentScan(basePackages = {"au.org.consumerdatastandards.api" , "au.org.consumerdatastandards.configuration"})
+@ComponentScan(basePackages = {
+    "au.org.consumerdatastandards.api",
+    "au.org.consumerdatastandards.repository",
+    "au.org.consumerdatastandards.configuration"
+})
 public class BankingProductsApplication implements CommandLineRunner {
 
     @Override
@@ -51,6 +57,13 @@ public class BankingProductsApplication implements CommandLineRunner {
     @Bean
     public Module jsonNullableModule() {
         return new JsonNullableModule();
+    }
+
+    @Bean
+    public ServletRegistrationBean h2servletRegistration() {
+        ServletRegistrationBean registration = new ServletRegistrationBean(new WebServlet());
+        registration.addUrlMappings("/console/*");
+        return registration;
     }
 
 }
