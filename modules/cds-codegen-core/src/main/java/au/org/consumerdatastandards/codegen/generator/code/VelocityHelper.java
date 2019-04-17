@@ -9,6 +9,8 @@ import java.util.HashSet;
 import java.util.Map.Entry;
 import java.util.Set;
 
+import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.text.WordUtils;
 import org.apache.velocity.Template;
 import org.apache.velocity.app.VelocityEngine;
 import org.apache.velocity.runtime.resource.loader.ClasspathResourceLoader;
@@ -61,6 +63,9 @@ public class VelocityHelper {
                 ToolContext context = manager.createContext();
                 context.put("cg", oneFile.getConfig());
                 context.put("cds", oneFile.getContext());
+                context.put("StringUtils", StringUtils.class);
+                context.put("WordUtils", WordUtils.class);
+                
                 /**
                  * Stuff in additional attributes
                  */

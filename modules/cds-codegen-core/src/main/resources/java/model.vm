@@ -6,11 +6,15 @@ import com.google.gson.annotations.SerializedName;
 
 /**
 * $definitionName
+* 
+* $WordUtils.wrap($definitionDescription, 60, "\n* ", false)
 */
-public class $definitionName {
+public class $definitionName #if($extendsOn)extends $extendsOn#end {
 #foreach($field in $fieldList)
     #parse("common/datadefinition.vm")
-    SerializedName("$fieldName")
+    // $WordUtils.wrap($fieldDescription, 60, "
+    // ", false)
+    SerializedName("$fieldName")     
     private $fieldType $fieldName;
 #end
 
@@ -35,6 +39,9 @@ public class $definitionName {
             return false;
         }
         
+        #if($extendsOn)
+        if(!super.equals(o)) { return false; }
+        #end
         $cds.definitionName inputModel = ($cds.definitionName) o;
 #foreach($field in $fieldList)
 #parse("common/datadefinition.vm")
@@ -53,7 +60,7 @@ public class $definitionName {
         StringBuilder sb = new StringBuilder();
         sb.append(String.format("class %s {\n", getClass()));
 
-        for (Field oneField : getClass().getDeclaredFields()) {
+        for (Field oneField : getClass().getFields()) {
             oneField.setAccessible(true);
             try {
                 sb.append(String.format("    %s: %s\n", oneField.getName(), (oneField.get(Object.class) == null ? "null"

@@ -2,6 +2,7 @@ package au.org.consumerdatastandards.codegen.generator.code.handler.datadefiniti
 
 import java.io.IOException;
 import java.io.StringWriter;
+import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -39,6 +40,8 @@ import au.org.consumerdatastandards.codegen.generator.code.handler.AbstractHandl
 import au.org.consumerdatastandards.codegen.generator.code.handler.AbstractHandlerConfig;
 import au.org.consumerdatastandards.codegen.generator.openapi.SwaggerGeneratorOptions;
 import au.org.consumerdatastandards.codegen.generator.velocity.model.VelocityFile;
+import au.org.consumerdatastandards.support.data.DataDefinition;
+import au.org.consumerdatastandards.support.data.Property;
 
 public class DataDefinitionHandler extends AbstractHandler<DataDefinitionHandlerConfig> {
     private static final Logger LOG = LogManager.getLogger(DataDefinitionHandler.class);
@@ -51,17 +54,44 @@ public class DataDefinitionHandler extends AbstractHandler<DataDefinitionHandler
     public List<DataDefinitionModel> collectDataDefinitions() {
         List<DataDefinitionModel> dataDefinitions = new ArrayList<DataDefinitionModel>();
         for (Class<?> definitionClass : codegenModel.getDataDefinitions()) {
+            LOG.debug("Parsing data definition named: {}", definitionClass.getName());
             DataDefinitionModel oneDataDefinition = new DataDefinitionModel();
             oneDataDefinition.definitionName = definitionClass.getSimpleName();
             oneDataDefinition.packageName = definitionClass.getPackage().getName();
+            
+            for(Annotation oneAnnotation : definitionClass.getAnnotations()) {
+                //LOG.debug("Parsing annotation called {}",  oneAnnotation.annotationType().toString());
+                if(oneAnnotation.annotationType().equals(DataDefinition.class)) {
+                    DataDefinition thisDefinition = (DataDefinition)oneAnnotation;
+                    oneDataDefinition.definitionDescription = thisDefinition.description();
+                    Class<?>[] allOfClasses = thisDefinition.allOf();
+                    if(allOfClasses.length > 0) {
+                        oneDataDefinition.extendsOn = allOfClasses[0].getSimpleName();
+                    }
+                    
+                }
+                
+            }
             
             Field[] definitionFields = definitionClass.getDeclaredFields();
             for (Field oneField : definitionFields) {
                 oneField.setAccessible(true);
                 DataDefinitionModelField oneModelField = new DataDefinitionModelField();
                 oneModelField.name = oneField.getName();
-                oneModelField.type = oneField.getType().getSimpleName();                
+                oneModelField.type = oneField.getType().getSimpleName();
+                
+                for(Annotation oneAnnotation : oneField.getAnnotations()) {
+                    //LOG.debug("Parsing annotation called {}",  oneAnnotation.annotationType().toString());
+                    if(oneAnnotation.annotationType().equals(Property.class)) {
+                        Property thisProperty = (Property)oneAnnotation;
+                        oneModelField.description = thisProperty.description();
+                        oneModelField.required = thisProperty.required();                        
+                    }
+                    
+                }
+                
                 oneDataDefinition.fieldList.add(oneModelField);
+                
             }
 
             dataDefinitions.add(oneDataDefinition);
@@ -90,7 +120,7 @@ public class DataDefinitionHandler extends AbstractHandler<DataDefinitionHandler
         
         ObjectNode parentObjectNode = jsonThroughVelocity(scriptEngine, thisContext, (ObjectNode)rootNode);
        
-        LOG.debug("Processed Model Config JSON into: {}", objectMapper.writeValueAsString(parentObjectNode));
+        //LOG.debug("Processed Model Config JSON into: {}", objectMapper.writeValueAsString(parentObjectNode));
         
         DataDefinitionHandlerConfig myConfig = objectMapper.readValue(objectMapper.writeValueAsString(parentObjectNode), DataDefinitionHandlerConfig.class);
         
@@ -101,11 +131,11 @@ public class DataDefinitionHandler extends AbstractHandler<DataDefinitionHandler
             declaredField.setAccessible(true);
             try {
                 if(!myConfig.additionalAttributes.containsKey(declaredField.getName())) {
-                        LOG.debug("Stuffing {} into additional attributes", declaredField.getName());                        
+                        //LOG.debug("Stuffing {} into additional attributes", declaredField.getName());                        
                         myConfig.additionalAttributes.put(declaredField.getName(), declaredField.get(inputObject));
                 }
             } catch (IllegalArgumentException | IllegalAccessException e) {
-                LOG.debug("Silently ignoring inability to read {}",  declaredField.getName());
+                LOG.warn("Silently ignoring inability to read {}",  declaredField.getName());
             }
         }
         

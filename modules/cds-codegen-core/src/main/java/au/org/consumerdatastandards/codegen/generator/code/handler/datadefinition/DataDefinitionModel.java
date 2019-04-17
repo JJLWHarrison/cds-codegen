@@ -7,6 +7,8 @@ public class DataDefinitionModel {
     public String definitionName;
     public List<DataDefinitionModelField> fieldList = new ArrayList<DataDefinitionModelField>();
     public String packageName;
+    public String extendsOn;
+    public String definitionDescription;
     
     public String getDefinitionName() {
         return definitionName;
@@ -17,6 +19,9 @@ public class DataDefinitionModel {
     public String getPackageName() {
         return packageName;
     }
-
-
+    
+    public String getDefinitionDescription() {
+        return definitionDescription;
+    }
+    
 }
