@@ -6,12 +6,16 @@ import java.util.Map;
 import au.org.consumerdatastandards.codegen.generator.code.handler.AbstractHandlerConfig;
 
 public class DataDefinitionHandlerConfig extends AbstractHandlerConfig {
-    public String templateName;
+    public String modelTemplate;
+    public String enumTemplate;
     public String fileName;
     public String filePath;
     
-    public String getTemplateName() {
-        return templateName;
+    public String getModelTemplate() {
+        return modelTemplate;
+    }
+    public String getEnumTemplate() {
+        return enumTemplate;
     }
     public String getFileName() {
         return fileName;

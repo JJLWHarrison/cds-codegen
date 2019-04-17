@@ -7,6 +7,9 @@ public class DataDefinitionModelField {
     public String type;
     public String description;
     public boolean required;
+    public String validationPattern;
+    public Number minValue;
+    public Number maxValue;
     
     public String getName() {
         return name;

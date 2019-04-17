@@ -3,7 +3,8 @@
         {
             "type": "DataDefinitionHandler",
             "baseDirectory": "src/gen/java",
-            "templateName": "java/model.vm",
+            "modelTemplate": "java/model.vm",
+            "enumTemplate": "java/enum.vm",
             "fileName": "${cds.getDefinitionName()}.java",
             "filePath": "$cds.getPackageName().replace(\".\", \"/\")",
             "additionalAttributes": {
@@ -13,6 +14,9 @@
     ],
     "typeMappings": {
             "String": "String",
-            "List": "List<%s>"
+            "List": "List<%s>",
+            "DateTime": "DateTime",
+            "Date": "Date",
+            "URI": "URI"
     }
 }

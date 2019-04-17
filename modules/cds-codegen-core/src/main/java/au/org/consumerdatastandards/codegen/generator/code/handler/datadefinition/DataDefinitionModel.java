@@ -9,6 +9,7 @@ public class DataDefinitionModel {
     public String packageName;
     public String extendsOn;
     public String definitionDescription;
+    public boolean isEnum;
     
     public String getDefinitionName() {
         return definitionName;
