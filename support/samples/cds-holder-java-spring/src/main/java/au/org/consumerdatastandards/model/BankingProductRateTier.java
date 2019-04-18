@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 
+import javax.persistence.*;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 import java.math.BigDecimal;
@@ -12,8 +13,14 @@ import java.util.Objects;
 /**
  * Defines the criteria and conditions for which a rate applies
  */
+@Entity
 @ApiModel(description = "Defines the criteria and conditions for which a rate applies")
 public class BankingProductRateTier   {
+  @Id
+  @GeneratedValue(strategy = GenerationType.AUTO)
+  private Integer productRateTierId;
+
+  @ManyToOne
   @JsonProperty("applicabilityConditions")
   private BankingProductRateCondition applicabilityConditions = null;
 
@@ -29,11 +36,42 @@ public class BankingProductRateTier   {
   @JsonProperty("rateApplicationMethod")
   private RateApplicationMethod rateApplicationMethod;
 
+  @ManyToOne
   @JsonProperty("subTier")
   private BankingProductRateTierSubTier subTier = null;
 
   @JsonProperty("unitOfMeasure")
   private UnitOfMeasure unitOfMeasure;
+
+  @ManyToOne
+  private BankingProductDepositRate depositRate;
+
+  @ManyToOne
+  private BankingProductLendingRate lendingRate;
+
+  public Integer getProductRateTierId() {
+    return productRateTierId;
+  }
+
+  public void setProductRateTierId(Integer productRateTierId) {
+    this.productRateTierId = productRateTierId;
+  }
+
+  public BankingProductDepositRate getDepositRate() {
+    return depositRate;
+  }
+
+  public void setDepositRate(BankingProductDepositRate depositRate) {
+    this.depositRate = depositRate;
+  }
+
+  public BankingProductLendingRate getLendingRate() {
+    return lendingRate;
+  }
+
+  public void setLendingRate(BankingProductLendingRate lendingRate) {
+    this.lendingRate = lendingRate;
+  }
 
   public BankingProductRateTier applicabilityConditions(BankingProductRateCondition applicabilityConditions) {
     this.applicabilityConditions = applicabilityConditions;

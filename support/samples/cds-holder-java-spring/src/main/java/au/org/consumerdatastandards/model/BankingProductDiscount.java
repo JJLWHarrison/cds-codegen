@@ -3,6 +3,7 @@ package au.org.consumerdatastandards.model;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import io.swagger.annotations.ApiModelProperty;
 
+import javax.persistence.*;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
@@ -10,7 +11,13 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
+@Entity
 public class BankingProductDiscount   {
+
+  @Id
+  @GeneratedValue(strategy = GenerationType.AUTO)
+  private Integer productDiscountId;
+
   @JsonProperty("accruedRate")
   private String accruedRate;
 
@@ -35,6 +42,11 @@ public class BankingProductDiscount   {
   @JsonProperty("discountType")
   private DiscountType discountType;
 
+  @ManyToMany
+  @JoinTable(
+      name = "product_discount_eligibility",
+      joinColumns = @JoinColumn(name = "product_discount_id"),
+      inverseJoinColumns = @JoinColumn(name = "discount_eligibility_id"))
   @JsonProperty("eligibility")
   @Valid
   private List<BankingProductDiscountEligibility> eligibility = null;
@@ -44,6 +56,14 @@ public class BankingProductDiscount   {
 
   @JsonProperty("transactionRate")
   private String transactionRate;
+
+  public Integer getProductDiscountId() {
+    return productDiscountId;
+  }
+
+  public void setProductDiscountId(Integer productDiscountId) {
+    this.productDiscountId = productDiscountId;
+  }
 
   public BankingProductDiscount accruedRate(String accruedRate) {
     this.accruedRate = accruedRate;

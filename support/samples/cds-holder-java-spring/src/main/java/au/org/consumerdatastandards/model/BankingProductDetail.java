@@ -2,7 +2,9 @@ package au.org.consumerdatastandards.model;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import io.swagger.annotations.ApiModelProperty;
+import org.hibernate.annotations.GenericGenerator;
 
+import javax.persistence.*;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 import java.time.OffsetDateTime;
@@ -10,7 +12,16 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
+@Entity
+@Table(name = "BankingProduct")
 public class BankingProductDetail   {
+
+  @Id
+  @GeneratedValue(generator="system-uuid")
+  @GenericGenerator(name="system-uuid", strategy = "uuid2")
+  @JsonProperty("productId")
+  private String productId;
+
   @JsonProperty("additionalInformation")
   private BankingProductAdditionalInformation additionalInformation = null;
 
@@ -44,33 +55,65 @@ public class BankingProductDetail   {
   @JsonProperty("productCategory")
   private BankingEnumProductCategory productCategory;
 
-  @JsonProperty("productId")
-  private String productId;
-
+  @ManyToMany
+  @JoinTable(
+      name = "product_bundles",
+      joinColumns = @JoinColumn(name = "product_id"),
+      inverseJoinColumns = @JoinColumn(name = "bundle_id"))
   @JsonProperty("bundles")
   @Valid
   private List<BankingProductBundle> bundles = null;
 
+  @ManyToMany
+  @JoinTable(
+      name = "product_constraints",
+      joinColumns = @JoinColumn(name = "product_id"),
+      inverseJoinColumns = @JoinColumn(name = "constraint_id"))
   @JsonProperty("constraints")
   @Valid
   private List<BankingProductConstraint> constraints = null;
 
+  @ManyToMany
+  @JoinTable(
+      name = "product_deposit_rates",
+      joinColumns = @JoinColumn(name = "product_id"),
+      inverseJoinColumns = @JoinColumn(name = "deposit_rate_id"))
   @JsonProperty("depositRates")
   @Valid
   private List<BankingProductDepositRate> depositRates = null;
 
+  @ManyToMany
+  @JoinTable(
+      name = "product_eligibility",
+      joinColumns = @JoinColumn(name = "product_id"),
+      inverseJoinColumns = @JoinColumn(name = "eligibility_id"))
   @JsonProperty("eligibility")
   @Valid
   private List<BankingProductEligibility> eligibility = null;
 
+  @ManyToMany
+  @JoinTable(
+      name = "product_features",
+      joinColumns = @JoinColumn(name = "product_id"),
+      inverseJoinColumns = @JoinColumn(name = "feature_id"))
   @JsonProperty("features")
   @Valid
   private List<BankingProductFeature> features = null;
 
+  @ManyToMany
+  @JoinTable(
+      name = "product_fees",
+      joinColumns = @JoinColumn(name = "product_id"),
+      inverseJoinColumns = @JoinColumn(name = "fee_id"))
   @JsonProperty("fees")
   @Valid
   private List<BankingProductFee> fees = null;
 
+  @ManyToMany
+  @JoinTable(
+      name = "product_lending_rates",
+      joinColumns = @JoinColumn(name = "product_id"),
+      inverseJoinColumns = @JoinColumn(name = "lending_rate_id"))
   @JsonProperty("lendingRates")
   @Valid
   private List<BankingProductLendingRate> lendingRates = null;
@@ -84,7 +127,7 @@ public class BankingProductDetail   {
    * Get additionalInformation
    * @return additionalInformation
   */
-  @ApiModelProperty(value = "")
+  @ApiModelProperty()
 
   @Valid
 

@@ -3,13 +3,20 @@ package au.org.consumerdatastandards.model;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import io.swagger.annotations.ApiModelProperty;
 
+import javax.persistence.*;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
+@Entity
 public class BankingProductBundle   {
+
+  @Id
+  @GeneratedValue(strategy = GenerationType.AUTO)
+  private Integer productBundleId;
+
   @JsonProperty("additionalInfo")
   private String additionalInfo;
 
@@ -22,6 +29,7 @@ public class BankingProductBundle   {
   @JsonProperty("name")
   private String name;
 
+  @Transient
   @JsonProperty("productIds")
   @Valid
   private List<String> productIds = new ArrayList<>();
@@ -90,6 +98,14 @@ public class BankingProductBundle   {
   public BankingProductBundle name(String name) {
     this.name = name;
     return this;
+  }
+
+  public Integer getProductBundleId() {
+    return productBundleId;
+  }
+
+  public void setProductBundleId(Integer productBundleId) {
+    this.productBundleId = productBundleId;
   }
 
   /**

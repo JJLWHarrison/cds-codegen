@@ -3,6 +3,7 @@ package au.org.consumerdatastandards.model;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import io.swagger.annotations.ApiModelProperty;
 
+import javax.persistence.*;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
@@ -10,7 +11,13 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
+@Entity
 public class BankingProductLendingRate   {
+
+  @Id
+  @GeneratedValue(strategy = GenerationType.AUTO)
+  private Integer productLendingRateId;
+
   @JsonProperty("additionalInfo")
   private String additionalInfo;
 
@@ -38,9 +45,18 @@ public class BankingProductLendingRate   {
   @JsonProperty("rate")
   private String rate;
 
+  @OneToMany(mappedBy = "lendingRate")
   @JsonProperty("tiers")
   @Valid
   private List<BankingProductRateTier> tiers = null;
+
+  public Integer getProductLendingRateId() {
+    return productLendingRateId;
+  }
+
+  public void setProductLendingRateId(Integer productLendingRateId) {
+    this.productLendingRateId = productLendingRateId;
+  }
 
   public BankingProductLendingRate additionalInfo(String additionalInfo) {
     this.additionalInfo = additionalInfo;

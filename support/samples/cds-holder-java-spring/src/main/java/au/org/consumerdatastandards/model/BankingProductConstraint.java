@@ -3,11 +3,21 @@ package au.org.consumerdatastandards.model;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import io.swagger.annotations.ApiModelProperty;
 
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 import java.util.Objects;
 
+@Entity
 public class BankingProductConstraint   {
+
+  @Id
+  @GeneratedValue(strategy = GenerationType.AUTO)
+  private Integer productConstraintId;
+
   @JsonProperty("additionalInfo")
   private String additionalInfo;
 
@@ -102,6 +112,14 @@ public class BankingProductConstraint   {
     this.constraintType = constraintType;
   }
 
+
+  public Integer getProductConstraintId() {
+    return productConstraintId;
+  }
+
+  public void setProductConstraintId(Integer productConstraintId) {
+    this.productConstraintId = productConstraintId;
+  }
 
   @Override
   public boolean equals(java.lang.Object o) {

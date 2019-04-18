@@ -3,11 +3,20 @@ package au.org.consumerdatastandards.model;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import io.swagger.annotations.ApiModelProperty;
 
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 import java.util.Objects;
 
+@Entity
 public class BankingProductFeature   {
+  @Id
+  @GeneratedValue(strategy = GenerationType.AUTO)
+  private Integer productFeatureId;
+
   @JsonProperty("additionalInfo")
   private String additionalInfo;
 
@@ -19,6 +28,14 @@ public class BankingProductFeature   {
 
   @JsonProperty("featureType")
   private FeatureType featureType;
+
+  public Integer getProductFeatureId() {
+    return productFeatureId;
+  }
+
+  public void setProductFeatureId(Integer productFeatureId) {
+    this.productFeatureId = productFeatureId;
+  }
 
   public BankingProductFeature additionalInfo(String additionalInfo) {
     this.additionalInfo = additionalInfo;

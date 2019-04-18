@@ -43,7 +43,7 @@
 				<version>1.9.1</version>
 				<executions>
 					<execution>
-						<id>add-source</id>
+						<productBundleId>add-source</productBundleId>
 						<phase>generate-sources</phase>
 						<goals>
 							<goal>add-source</goal>
@@ -145,7 +145,7 @@
 	</dependencies>
 	<repositories>
 		<repository>
-			<id>sonatype-snapshots</id>
+			<productBundleId>sonatype-snapshots</productBundleId>
 			<url>https://oss.sonatype.org/content/repositories/snapshots</url>
 			<snapshots>
 				<enabled>true</enabled>

@@ -16,7 +16,8 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 @ComponentScan(basePackages = {
     "au.org.consumerdatastandards.api",
     "au.org.consumerdatastandards.repository",
-    "au.org.consumerdatastandards.configuration"
+    "au.org.consumerdatastandards.configuration",
+    "au.org.consumerdatastandards.service"
 })
 public class BankingProductsApplication implements CommandLineRunner {
 

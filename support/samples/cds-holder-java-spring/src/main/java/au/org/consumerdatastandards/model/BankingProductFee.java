@@ -3,6 +3,7 @@ package au.org.consumerdatastandards.model;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import io.swagger.annotations.ApiModelProperty;
 
+import javax.persistence.*;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
@@ -10,7 +11,13 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
+@Entity
 public class BankingProductFee   {
+
+  @Id
+  @GeneratedValue(strategy = GenerationType.AUTO)
+  private Integer productFeeId;
+
   @JsonProperty("accrualFrequency")
   private String accrualFrequency;
 
@@ -35,6 +42,11 @@ public class BankingProductFee   {
   @JsonProperty("currency")
   private String currency;
 
+  @ManyToMany
+  @JoinTable(
+      name = "product_fee_discounts",
+      joinColumns = @JoinColumn(name = "product_fee_id"),
+      inverseJoinColumns = @JoinColumn(name = "product_discount_id"))
   @JsonProperty("discounts")
   @Valid
   private List<BankingProductDiscount> discounts = null;
@@ -47,6 +59,14 @@ public class BankingProductFee   {
 
   @JsonProperty("transactionRate")
   private String transactionRate;
+
+  public Integer getProductFeeId() {
+    return productFeeId;
+  }
+
+  public void setProductFeeId(Integer productFeeId) {
+    this.productFeeId = productFeeId;
+  }
 
   public BankingProductFee accrualFrequency(String accrualFrequency) {
     this.accrualFrequency = accrualFrequency;

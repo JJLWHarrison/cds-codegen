@@ -3,11 +3,21 @@ package au.org.consumerdatastandards.model;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import io.swagger.annotations.ApiModelProperty;
 
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 import java.util.Objects;
 
+@Entity
 public class BankingProductDiscountEligibility   {
+
+  @Id
+  @GeneratedValue(strategy = GenerationType.AUTO)
+  private Integer productDsicountElegibilityId;
+
   @JsonProperty("additionalInfo")
   private String additionalInfo;
 
@@ -19,6 +29,14 @@ public class BankingProductDiscountEligibility   {
 
   @JsonProperty("discountEligibilityType")
   private DiscountEligibilityType discountEligibilityType;
+
+  public Integer getProductDsicountElegibilityId() {
+    return productDsicountElegibilityId;
+  }
+
+  public void setProductDsicountElegibilityId(Integer productDsicountElegibilityId) {
+    this.productDsicountElegibilityId = productDsicountElegibilityId;
+  }
 
   public BankingProductDiscountEligibility additionalInfo(String additionalInfo) {
     this.additionalInfo = additionalInfo;

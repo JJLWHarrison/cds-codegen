@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 
+import javax.persistence.*;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 import java.math.BigDecimal;
@@ -12,8 +13,15 @@ import java.util.Objects;
 /**
  * Defines the sub-tier criteria and conditions for which a rate applies
  */
+@Entity
 @ApiModel(description = "Defines the sub-tier criteria and conditions for which a rate applies")
 public class BankingProductRateTierSubTier   {
+
+  @Id
+  @GeneratedValue(strategy = GenerationType.AUTO)
+  private Integer productRateSubTierId;
+
+  @ManyToOne
   @JsonProperty("applicabilityConditions")
   private BankingProductRateCondition applicabilityConditions = null;
 
@@ -31,6 +39,14 @@ public class BankingProductRateTierSubTier   {
 
   @JsonProperty("unitOfMeasure")
   private UnitOfMeasure unitOfMeasure;
+
+  public Integer getProductRateSubTierId() {
+    return productRateSubTierId;
+  }
+
+  public void setProductRateSubTierId(Integer productRateSubTierId) {
+    this.productRateSubTierId = productRateSubTierId;
+  }
 
   public BankingProductRateTierSubTier applicabilityConditions(BankingProductRateCondition applicabilityConditions) {
     this.applicabilityConditions = applicabilityConditions;

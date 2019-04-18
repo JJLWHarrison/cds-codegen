@@ -4,18 +4,36 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
 import java.util.Objects;
 
 /**
  * Defines a condition for the applicability of a tiered rate
  */
+@Entity
 @ApiModel(description = "Defines a condition for the applicability of a tiered rate")
 public class BankingProductRateCondition   {
+
+  @Id
+  @GeneratedValue(strategy = GenerationType.AUTO)
+  private Integer productRateConditionId;
+
   @JsonProperty("additionalInfo")
   private String additionalInfo;
 
   @JsonProperty("additionalInfoUri")
   private String additionalInfoUri;
+
+  public Integer getProductRateConditionId() {
+    return productRateConditionId;
+  }
+
+  public void setProductRateConditionId(Integer productRateConditionId) {
+    this.productRateConditionId = productRateConditionId;
+  }
 
   public BankingProductRateCondition additionalInfo(String additionalInfo) {
     this.additionalInfo = additionalInfo;
