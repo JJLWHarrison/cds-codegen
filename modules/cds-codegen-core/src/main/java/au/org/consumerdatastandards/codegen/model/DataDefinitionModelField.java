@@ -1,4 +1,4 @@
-package au.org.consumerdatastandards.codegen.generator.code.handler.datadefinition;
+package au.org.consumerdatastandards.codegen.model;
 
 import org.apache.commons.lang3.StringUtils;
 

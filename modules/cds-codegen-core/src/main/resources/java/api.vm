@@ -15,10 +15,11 @@ import org.springframework.web.context.request.NativeWebRequest;
 import javax.validation.Valid;
 import java.time.OffsetDateTime;
 import java.util.Optional;
-// $cds.getName() 
+// $cds
+// $cg
 @Validated
 @Api(value = "$cds.getName()", description = "$cds.getDescription()")
-public interface $cg.getInterfaceName() {
+public interface $cds.getInterfaceName() {
 
     default Optional<NativeWebRequest> getRequest() {
         return Optional.empty();

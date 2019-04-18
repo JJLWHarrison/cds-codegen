@@ -1,4 +1,4 @@
-package au.org.consumerdatastandards.codegen.generator.code.handler.datadefinition;
+package au.org.consumerdatastandards.codegen.model;
 
 import java.util.ArrayList;
 import java.util.List;

@@ -12,6 +12,8 @@ import au.org.consumerdatastandards.codegen.generator.code.VelocityHelper;
 import au.org.consumerdatastandards.codegen.generator.code.handler.AbstractHandler;
 import au.org.consumerdatastandards.codegen.generator.code.handler.AbstractHandlerConfig;
 import au.org.consumerdatastandards.codegen.generator.velocity.model.VelocityFile;
+import au.org.consumerdatastandards.codegen.model.DataDefinitionModel;
+import au.org.consumerdatastandards.codegen.model.DataDefinitionModelField;
 import au.org.consumerdatastandards.support.data.CDSDataType;
 import au.org.consumerdatastandards.support.data.DataDefinition;
 import au.org.consumerdatastandards.support.data.Property;

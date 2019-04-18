@@ -6,7 +6,6 @@ public class SectionHandlerConfig extends AbstractHandlerConfig {
     public String sectionTemplate;
     public String fileName;
     public String filePath;
-    public String interfaceName;
     
     public String getSectionTemplate() {
         return sectionTemplate;
@@ -17,10 +16,7 @@ public class SectionHandlerConfig extends AbstractHandlerConfig {
     public String getFilePath() {
         return filePath;
     }
-    
-    public String getInterfaceName() {
-        return interfaceName;
-    }
+
 
     
 }
