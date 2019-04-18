@@ -60,7 +60,7 @@
                 <artifactId>maven-javadoc-plugin</artifactId>
                 <executions>
                     <execution>
-                        <productBundleId>attach-javadocs</productBundleId>
+                        <id>attach-javadocs</id>
                         <goals>
                             <goal>jar</goal>
                         </goals>
@@ -93,7 +93,7 @@
                     <version>2.2.1</version>
                     <executions>
                         <execution>
-                            <productBundleId>attach-sources</productBundleId>
+                            <id>attach-sources</id>
                             <goals>
                                 <goal>jar-no-fork</goal>
                             </goals>
@@ -117,7 +117,7 @@
                     <version>1.5</version>
                     <executions>
                         <execution>
-                            <productBundleId>sign-artifacts</productBundleId>
+                            <id>sign-artifacts</id>
                             <phase>verify</phase>
                             <goals>
                                 <goal>sign</goal>
@@ -131,7 +131,7 @@
                     <version>2.9.1</version>
                     <executions>
                         <execution>
-                            <productBundleId>attach-javadocs</productBundleId>
+                            <id>attach-javadocs</id>
                             <goals>
                                 <goal>jar</goal>
                             </goals>

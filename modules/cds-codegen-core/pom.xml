@@ -79,7 +79,7 @@
                 <artifactId>maven-source-plugin</artifactId>
                 <executions>
                     <execution>
-                        <productBundleId>attach-sources</productBundleId>
+                        <id>attach-sources</id>
                         <goals>
                             <goal>jar-no-fork</goal>
                         </goals>
@@ -101,7 +101,7 @@
                 <artifactId>maven-javadoc-plugin</artifactId>
                 <executions>
                     <execution>
-                        <productBundleId>attach-javadocs</productBundleId>
+                        <id>attach-javadocs</id>
                         <goals>
                             <goal>jar</goal>
                         </goals>
@@ -191,7 +191,7 @@
     </dependencies>
     <profiles>
         <profile>
-            <productBundleId>snapshot</productBundleId>
+            <id>snapshot</id>
             <activation>
                 <activeByDefault>true</activeByDefault>
             </activation>
@@ -200,12 +200,12 @@
                     <snapshots>
                         <enabled>true</enabled>
                     </snapshots>
-                    <productBundleId>central</productBundleId>
+                    <id>central</id>
                     <name>Maven Repository Switchboard</name>
                     <url>http://repo1.maven.org/maven2</url>
                 </repository>
                 <repository>
-                    <productBundleId>sonatype-snapshots</productBundleId>
+                    <id>sonatype-snapshots</id>
                     <url>http://oss.sonatype.org/content/repositories/snapshots</url>
                     <layout>default</layout>
                     <releases>
@@ -218,10 +218,10 @@
             </repositories>
         </profile>
         <profile>
-            <productBundleId>release</productBundleId>
+            <id>release</id>
             <pluginRepositories>
                 <pluginRepository>
-                    <productBundleId>bintray-cy6ergn0m-maven</productBundleId>
+                    <id>bintray-cy6ergn0m-maven</id>
                     <name>bintray-plugins</name>
                     <url>http://dl.bintray.com/cy6ergn0m/maven</url>
                 </pluginRepository>

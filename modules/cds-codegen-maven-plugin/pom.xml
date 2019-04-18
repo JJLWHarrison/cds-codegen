@@ -50,14 +50,14 @@
                     </configuration>
                     <executions>
                         <execution>
-                            <productBundleId>mojo-descriptor</productBundleId>
+                            <id>mojo-descriptor</id>
                             <phase>process-classes</phase>
                             <goals>
                                 <goal>descriptor</goal>
                             </goals>
                         </execution>
                         <execution>
-                            <productBundleId>help-goal</productBundleId>
+                            <id>help-goal</id>
                             <goals>
                                 <goal>helpmojo</goal>
                             </goals>
