@@ -1,6 +1,6 @@
-# Based on OpenAPI generated server
+# CDS Data Holder Sample Server
 
-Spring Boot Server 
+Based on OpenAPI generated springboot application server
 
 
 ## Overview  
