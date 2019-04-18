@@ -10,6 +10,7 @@ import org.threeten.bp.OffsetDateTime;
 
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.UUID;
 
 @ShellComponent
 public class CdsClient {
@@ -24,6 +25,12 @@ public class CdsClient {
             this.serverUrl = url;
             ApiClient client = new ApiClient();
             client.setBasePath(serverUrl);
+            client.addDefaultHeader("x-v", "1");
+            client.addDefaultHeader("x-min-v", "1");
+            client.addDefaultHeader("x-fapi-financial-id", "blah");
+            client.addDefaultHeader("x-fapi-customer-last-logged-time", "");
+            client.addDefaultHeader("x-fapi-customer-ip-address", "192.168.1.2");
+            client.addDefaultHeader("x-fapi-interaction-id", UUID.randomUUID().toString());
             api.setApiClient(client);
             System.out.println("Server URL is set to " + this.serverUrl);
         } else {

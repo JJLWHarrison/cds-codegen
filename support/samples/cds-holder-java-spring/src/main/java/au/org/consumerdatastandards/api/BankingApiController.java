@@ -2,10 +2,11 @@ package au.org.consumerdatastandards.api;
 
 import au.org.consumerdatastandards.model.*;
 import au.org.consumerdatastandards.service.BankingProductsService;
-import au.org.consumerdatastandards.util.WebLinkUtil;
+import au.org.consumerdatastandards.util.WebUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -13,11 +14,10 @@ import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.context.request.NativeWebRequest;
 
-import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 import java.time.OffsetDateTime;
-import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 @Controller
 @RequestMapping("${openapi.consumerDataStandards.base-path:/cds-au/v1}")
@@ -40,10 +40,14 @@ public class BankingApiController implements BankingApi {
 
     @Override
     public ResponseEntity<ResponseBankingProductById> getProductDetail(String productId) {
+        if (!WebUtil.hasSupportedVersion(request)) {
+            return ResponseEntity.status(HttpStatus.NOT_ACCEPTABLE).build();
+        }
+        HttpHeaders headers = WebUtil.processHeaders(request);
         return new ResponseEntity<>(new ResponseBankingProductById()
             .data(service.getProductDetail(productId))
             .links(new Links()
-                .self(WebLinkUtil.getOriginalUrl(request))), HttpStatus.OK);
+                .self(WebUtil.getOriginalUrl(request))), headers, HttpStatus.OK);
     }
 
     @Override
@@ -55,6 +59,10 @@ public class BankingApiController implements BankingApi {
         @Valid Integer page,
         @Valid Integer pageSize)
     {
+        if (!WebUtil.hasSupportedVersion(request)) {
+            return ResponseEntity.status(HttpStatus.NOT_ACCEPTABLE).build();
+        }
+        HttpHeaders headers = WebUtil.processHeaders(request);
         BankingProduct example = new BankingProduct()
             .lastUpdated(updatedSince)
             .brand(brand);
@@ -71,15 +79,16 @@ public class BankingApiController implements BankingApi {
         Integer actualPageSize = getPagingValue(pageSize, 25);
         Page<BankingProduct> productsPage = service.findProductsLike(effective, example, PageRequest.of(actualPage -1, actualPageSize));
 
-        String self = WebLinkUtil.getPaginatedLink(request, actualPage, actualPageSize);
+        String self = WebUtil.getPaginatedLink(request, actualPage, actualPageSize);
         return new ResponseEntity<>(new ResponseBankingProductList()
             .data(new ResponseBankingProductListData().products(productsPage.getContent()))
-            .links(new LinksPaginated().first(WebLinkUtil.getPaginatedLink(request,1, actualPageSize))
+            .links(new LinksPaginated().first(WebUtil.getPaginatedLink(request,1, actualPageSize))
                 .self(self)
-                .prev(productsPage.isFirst() || productsPage.getTotalPages() == 0 ? self : WebLinkUtil.getPaginatedLink(request, actualPage - 1, actualPageSize))
-                .next(productsPage.isLast() || productsPage.getTotalPages() == 0 ? self : WebLinkUtil.getPaginatedLink(request, actualPage + 1, actualPageSize))
-                .last(productsPage.getTotalPages() == 0? self: WebLinkUtil.getPaginatedLink(request, productsPage.getTotalPages(), actualPageSize)))
+                .prev(productsPage.isFirst() || productsPage.getTotalPages() == 0 ? self : WebUtil.getPaginatedLink(request, actualPage - 1, actualPageSize))
+                .next(productsPage.isLast() || productsPage.getTotalPages() == 0 ? self : WebUtil.getPaginatedLink(request, actualPage + 1, actualPageSize))
+                .last(productsPage.getTotalPages() == 0? self: WebUtil.getPaginatedLink(request, productsPage.getTotalPages(), actualPageSize)))
             .meta(new MetaPaginated().totalPages(productsPage.getTotalPages()).totalRecords((int)productsPage.getTotalElements())),
+            headers,
             HttpStatus.OK);
     }
 
