@@ -55,7 +55,7 @@ public class BankingProductDetail   {
   @JsonProperty("productCategory")
   private BankingEnumProductCategory productCategory;
 
-  @ManyToMany
+  @ManyToMany(cascade = CascadeType.ALL)
   @JoinTable(
       name = "product_bundles",
       joinColumns = @JoinColumn(name = "product_id"),
@@ -64,7 +64,7 @@ public class BankingProductDetail   {
   @Valid
   private List<BankingProductBundle> bundles = null;
 
-  @ManyToMany
+  @ManyToMany(cascade = CascadeType.ALL)
   @JoinTable(
       name = "product_constraints",
       joinColumns = @JoinColumn(name = "product_id"),
@@ -73,7 +73,7 @@ public class BankingProductDetail   {
   @Valid
   private List<BankingProductConstraint> constraints = null;
 
-  @ManyToMany
+  @ManyToMany(cascade = CascadeType.ALL)
   @JoinTable(
       name = "product_deposit_rates",
       joinColumns = @JoinColumn(name = "product_id"),
@@ -82,7 +82,7 @@ public class BankingProductDetail   {
   @Valid
   private List<BankingProductDepositRate> depositRates = null;
 
-  @ManyToMany
+  @ManyToMany(cascade = CascadeType.ALL)
   @JoinTable(
       name = "product_eligibility",
       joinColumns = @JoinColumn(name = "product_id"),
@@ -91,7 +91,7 @@ public class BankingProductDetail   {
   @Valid
   private List<BankingProductEligibility> eligibility = null;
 
-  @ManyToMany
+  @ManyToMany(cascade = CascadeType.ALL)
   @JoinTable(
       name = "product_features",
       joinColumns = @JoinColumn(name = "product_id"),
@@ -100,7 +100,7 @@ public class BankingProductDetail   {
   @Valid
   private List<BankingProductFeature> features = null;
 
-  @ManyToMany
+  @ManyToMany(cascade = CascadeType.ALL)
   @JoinTable(
       name = "product_fees",
       joinColumns = @JoinColumn(name = "product_id"),
@@ -109,7 +109,7 @@ public class BankingProductDetail   {
   @Valid
   private List<BankingProductFee> fees = null;
 
-  @ManyToMany
+  @ManyToMany(cascade = CascadeType.ALL)
   @JoinTable(
       name = "product_lending_rates",
       joinColumns = @JoinColumn(name = "product_id"),

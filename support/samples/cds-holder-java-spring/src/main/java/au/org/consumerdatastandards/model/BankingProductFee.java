@@ -42,7 +42,7 @@ public class BankingProductFee   {
   @JsonProperty("currency")
   private String currency;
 
-  @ManyToMany
+  @ManyToMany(cascade = CascadeType.ALL)
   @JoinTable(
       name = "product_fee_discounts",
       joinColumns = @JoinColumn(name = "product_fee_id"),

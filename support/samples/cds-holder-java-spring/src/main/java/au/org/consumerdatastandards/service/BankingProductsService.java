@@ -47,7 +47,7 @@ public class BankingProductsService {
             if (example.getLastUpdated() != null) {
                 predicates.add(criteriaBuilder.and(criteriaBuilder.greaterThanOrEqualTo(root.get("lastUpdated"), example.getLastUpdated())));
             }
-            if (StringUtils.isEmpty(example.getBrand())) {
+            if (!StringUtils.isEmpty(example.getBrand())) {
                 predicates.add(criteriaBuilder.and(criteriaBuilder.like(root.get("brand"), "%" + example.getBrand() + "%")));
             }
             return criteriaBuilder.and(predicates.toArray(new Predicate[0]));

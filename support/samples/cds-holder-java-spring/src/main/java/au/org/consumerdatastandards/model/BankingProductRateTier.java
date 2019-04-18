@@ -20,7 +20,7 @@ public class BankingProductRateTier   {
   @GeneratedValue(strategy = GenerationType.AUTO)
   private Integer productRateTierId;
 
-  @ManyToOne
+  @ManyToOne(cascade = CascadeType.ALL)
   @JsonProperty("applicabilityConditions")
   private BankingProductRateCondition applicabilityConditions = null;
 
@@ -36,7 +36,7 @@ public class BankingProductRateTier   {
   @JsonProperty("rateApplicationMethod")
   private RateApplicationMethod rateApplicationMethod;
 
-  @ManyToOne
+  @ManyToOne(cascade = CascadeType.ALL)
   @JsonProperty("subTier")
   private BankingProductRateTierSubTier subTier = null;
 

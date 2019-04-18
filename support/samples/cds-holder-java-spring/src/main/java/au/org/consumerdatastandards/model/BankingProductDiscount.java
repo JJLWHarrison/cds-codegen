@@ -42,7 +42,7 @@ public class BankingProductDiscount   {
   @JsonProperty("discountType")
   private DiscountType discountType;
 
-  @ManyToMany
+  @ManyToMany(cascade = CascadeType.ALL)
   @JoinTable(
       name = "product_discount_eligibility",
       joinColumns = @JoinColumn(name = "product_discount_id"),

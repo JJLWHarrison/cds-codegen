@@ -69,7 +69,7 @@ public class BankingApiController implements BankingApi {
 
         Integer actualPage = getPagingValue(page, 1);
         Integer actualPageSize = getPagingValue(pageSize, 25);
-        Page<BankingProduct> productsPage = service.findProductsLike(effective, example, PageRequest.of(actualPage, actualPageSize));
+        Page<BankingProduct> productsPage = service.findProductsLike(effective, example, PageRequest.of(actualPage -1, actualPageSize));
 
         String self = WebLinkUtil.getPaginatedLink(request, actualPage, actualPageSize);
         return new ResponseEntity<>(new ResponseBankingProductList()
