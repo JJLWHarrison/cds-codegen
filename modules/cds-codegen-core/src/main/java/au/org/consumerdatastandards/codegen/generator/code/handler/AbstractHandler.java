@@ -15,7 +15,6 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.apache.velocity.script.VelocityScriptEngineFactory;
 
-import com.beust.jcommander.JCommander;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
@@ -25,7 +24,7 @@ import au.org.consumerdatastandards.codegen.generator.code.CodeGeneratorOptions;
 import au.org.consumerdatastandards.codegen.generator.code.TargetConfigModel;
 import au.org.consumerdatastandards.codegen.generator.code.VelocityHelper;
 import au.org.consumerdatastandards.codegen.generator.code.handler.datadefinition.DataDefinitionHandler;
-import au.org.consumerdatastandards.codegen.generator.code.handler.datadefinition.DataDefinitionHandlerConfig;
+import au.org.consumerdatastandards.codegen.model.APIModel;
 
 public abstract class AbstractHandler<O extends AbstractHandlerConfig>  {
     protected O config;
@@ -51,7 +50,7 @@ public abstract class AbstractHandler<O extends AbstractHandlerConfig>  {
     }
     
     private ObjectNode jsonThroughVelocity(ScriptEngine inputEngine, ScriptContext inputContext, ObjectNode rootNode) {
-        ObjectNode parentObjectNode = (ObjectNode) rootNode;
+        ObjectNode parentObjectNode = rootNode;
         Iterator<Map.Entry<String,JsonNode>> fields = rootNode.fields();
         
         while (fields.hasNext()) {

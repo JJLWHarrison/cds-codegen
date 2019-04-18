@@ -47,6 +47,8 @@ public class ModelBuilder {
 
     private SectionModel buildSectionModel(Section section, Class<?> sectionClass) {
         SectionModel sectionModel = new SectionModel(section);
+        sectionModel.setInterfaceName(sectionClass.getSimpleName());
+        sectionModel.setPackageName(sectionClass.getPackage().getName());
         CustomAttributesUtil.addCustomAttributes(sectionClass, sectionModel);
         for (Method method : MethodUtils.getMethodsListWithAnnotation(sectionClass, Endpoint.class, true, true)) {
             EndpointModel endpointModel = buildEndpointModel(method);

@@ -1,0 +1,47 @@
+#include("java/header.vm")
+package $packageName;
+
+import io.swagger.annotations.*;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.context.request.NativeWebRequest;
+
+import javax.validation.Valid;
+import java.time.OffsetDateTime;
+import java.util.Optional;
+// $cds
+// $cg
+@Validated
+@Api(value = "$cds.getName()", description = "$cds.getDescription()")
+public interface $cds.getInterfaceName() {
+
+    default Optional<NativeWebRequest> getRequest() {
+        return Optional.empty();
+    }
+
+    @ApiOperation(value = "Get Product Detail", nickname = "getProductDetail", notes = "Obtain detailed information on a single product offered openly to the market", response = ResponseBankingProductById.class, tags={ "Products","Banking APIs", })
+    @ApiResponses(value = { 
+        @ApiResponse(code = 200, message = "Successful response for Get Product Detail", response = ResponseBankingProductById.class) })
+    @RequestMapping(value = "/banking/products/{productId}",
+        produces = { "application/json" }, 
+        method = RequestMethod.GET)
+    default ResponseEntity<ResponseBankingProductById> getProductDetail(@ApiParam(value = "ID of the specific product requested",required=true) @PathVariable("productId") String productId) {
+        getRequest().ifPresent(request -> {
+            for (MediaType mediaType: MediaType.parseMediaTypes(request.getHeader("Accept"))) {
+                if (mediaType.isCompatibleWith(MediaType.valueOf("application/json"))) {
+                    ApiUtil.setExampleResponse(request, "application/json", "{  \"meta\" : \"{}\",  \"links\" : {    \"self\" : \"http://example.com/aeiou\"  }}");
+                    break;
+                }
+            }
+        });
+        return new ResponseEntity<>(HttpStatus.OK);
+
+    }
+
+}

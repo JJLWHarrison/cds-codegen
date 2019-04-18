@@ -1,10 +1,8 @@
 package au.org.consumerdatastandards.codegen.generator.code;
 
-import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.util.Set;
 
 import org.apache.logging.log4j.LogManager;
@@ -17,8 +15,6 @@ import au.org.consumerdatastandards.codegen.generator.AbstractGenerator;
 import au.org.consumerdatastandards.codegen.generator.CodegenModel;
 import au.org.consumerdatastandards.codegen.generator.code.handler.AbstractHandler;
 import au.org.consumerdatastandards.codegen.generator.code.handler.AbstractHandlerConfig;
-import au.org.consumerdatastandards.codegen.generator.code.handler.datadefinition.DataDefinitionHandler;
-import au.org.consumerdatastandards.codegen.generator.code.handler.datadefinition.DataDefinitionHandlerConfig;
 import au.org.consumerdatastandards.codegen.model.APIModel;
 import au.org.consumerdatastandards.codegen.util.ModelCodegenConverter;
 
@@ -33,7 +29,6 @@ public class CodeGenerator extends AbstractGenerator<CodeGeneratorOptions> {
 
     @Override
     public void generate() throws Exception {
-
         CodegenModel codegenModel = ModelCodegenConverter.convert(apiModel);
         generate(codegenModel);
     }
@@ -72,11 +67,12 @@ public class CodeGenerator extends AbstractGenerator<CodeGeneratorOptions> {
         
         for(AbstractHandlerConfig oneConfig : targetConfig.getHandlers()) {
             Reflections reflections = new Reflections(BASE_PACKAGE);
+            @SuppressWarnings("rawtypes")
             Set<Class<? extends AbstractHandler>> handlerClasses = reflections.getSubTypesOf(AbstractHandler.class);
             
-            for(Class<? extends AbstractHandler> oneHandler : handlerClasses) {
+            for(@SuppressWarnings("rawtypes") Class<? extends AbstractHandler> oneHandler : handlerClasses) {
                 if(oneHandler.newInstance().matchConfig(oneConfig)) {
-                    AbstractHandler myHandler = oneHandler.newInstance();
+                    AbstractHandler<?> myHandler = oneHandler.newInstance();
                     myHandler.setConfig(oneConfig);
                     myHandler.setTargetConfig(targetConfig);
                     myHandler.setCodegenModel(codegenModel);
