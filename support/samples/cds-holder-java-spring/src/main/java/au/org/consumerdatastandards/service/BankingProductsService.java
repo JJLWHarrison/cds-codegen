@@ -33,7 +33,9 @@ public class BankingProductsService {
     public Page<BankingProduct> findProductsLike(String effective, BankingProduct example, Pageable pageable) {
         return productsRepository.findAll((Specification<BankingProduct>) (root, criteriaQuery, criteriaBuilder) -> {
             List<Predicate> predicates = new ArrayList<>();
-            if("CURRENT".equals(effective)) {
+            if("CURRENT".equals(effective) || effective == null) {
+                // If Effective is not supplied, assume CURRENT as per Standard
+                // https://consumerdatastandardsaustralia.github.io/standards/#get-products
                 OffsetDateTime now = OffsetDateTime.now();
                 predicates.add(criteriaBuilder.and(criteriaBuilder.lessThanOrEqualTo(root.get("effectiveFrom"), now)));
                 predicates.add(criteriaBuilder.and(criteriaBuilder.greaterThanOrEqualTo(root.get("effectiveTo"), now)));
