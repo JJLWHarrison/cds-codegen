@@ -1,4 +1,4 @@
-# cds-java-client
+# cds-client-java
 
 Consumer Data Standards
 - API version: 1
