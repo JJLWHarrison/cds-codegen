@@ -62,8 +62,8 @@ public class BankingProductsApplication implements CommandLineRunner {
     }
 
     @Bean
-    public ServletRegistrationBean h2servletRegistration() {
-        ServletRegistrationBean registration = new ServletRegistrationBean(new WebServlet());
+    public ServletRegistrationBean<WebServlet> h2servletRegistration() {
+        ServletRegistrationBean<WebServlet> registration = new ServletRegistrationBean<WebServlet>(new WebServlet());
         registration.addUrlMappings("/console/*");
         return registration;
     }

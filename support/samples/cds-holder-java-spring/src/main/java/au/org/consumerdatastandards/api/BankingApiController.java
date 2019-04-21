@@ -17,7 +17,6 @@ import org.springframework.web.context.request.NativeWebRequest;
 import javax.validation.Valid;
 import java.time.OffsetDateTime;
 import java.util.Optional;
-import java.util.UUID;
 
 @Controller
 @RequestMapping("${openapi.consumerDataStandards.base-path:/cds-au/v1}")
