@@ -22,7 +22,6 @@ import java.util.Optional;
 public class BankingProductsService {
 
     private final BankingProductsRepository productsRepository;
-
     private final BankingProductDetailsRepository productDetailsRepository;
 
     @Autowired
