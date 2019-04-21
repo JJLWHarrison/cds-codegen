@@ -40,7 +40,7 @@ Add this dependency to your project's POM:
 <dependency>
   <groupId>au.org.consumerdatastandards</groupId>
   <artifactId>cds-java-client</artifactId>
-  <version>1.0.0</version>
+  <version>0.0.1</version>
   <scope>compile</scope>
 </dependency>
 ```
@@ -55,12 +55,12 @@ mvn clean package
 
 Then manually install the following JARs:
 
-* `target/cds-java-client-1.0.0.jar`
+* `target/cds-java-client-0.0.1.jar`
 * `target/lib/*.jar`
 
 ## Getting Started
 
-1. You can run CdsClientShell go to start a shell and use command to interact with service endpoints.
+1. There is a CLI which uses this library available at cds-cli-java.
 
 ![Alt CDS-client-shell](./cds-client-shell.png?raw=true "CDS Client Shell")
 
