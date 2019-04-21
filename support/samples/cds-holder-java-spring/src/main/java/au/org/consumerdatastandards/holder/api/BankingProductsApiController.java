@@ -21,14 +21,14 @@ import java.util.Optional;
 
 @Controller
 @RequestMapping("${openapi.consumerDataStandards.base-path:/cds-au/v1}")
-public class BankingApiController implements BankingApi {
+public class BankingProductsApiController implements BankingProductsApi {
 
     private final BankingProductsService service;
 
     private final NativeWebRequest request;
 
     @Autowired
-    public BankingApiController(NativeWebRequest request, BankingProductsService service) {
+    public BankingProductsApiController(NativeWebRequest request, BankingProductsService service) {
         this.request = request;
         this.service = service;
     }

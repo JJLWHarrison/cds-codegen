@@ -15,12 +15,12 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 @SpringBootApplication
 @ComponentScan(basePackages = {
     "au.org.consumerdatastandards.holder.api",
-    "au.org.consumerdatastandards.repository",
+    "au.org.consumerdatastandards.holder.repository",
     "au.org.consumerdatastandards.holder.configuration",
     "au.org.consumerdatastandards.holder.service",
     "au.org.consumerdatastandards.holder.util",
 })
-public class BankingProductsApplication implements CommandLineRunner {
+public class HolderApplication implements CommandLineRunner {
 
     @Override
     public void run(String... arg0) throws Exception {
@@ -30,7 +30,7 @@ public class BankingProductsApplication implements CommandLineRunner {
     }
 
     public static void main(String[] args) throws Exception {
-        new SpringApplication(BankingProductsApplication.class).run(args);
+        new SpringApplication(HolderApplication.class).run(args);
     }
 
     class ExitException extends RuntimeException implements ExitCodeGenerator {
