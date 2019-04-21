@@ -1,12 +1,6 @@
 package au.org.consumerdatastandards.codegen.generator.code.handler.section;
 
 import java.io.IOException;
-import java.lang.annotation.Annotation;
-import java.lang.reflect.Field;
-import java.lang.reflect.ParameterizedType;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import au.org.consumerdatastandards.codegen.generator.code.VelocityHelper;
@@ -14,11 +8,9 @@ import au.org.consumerdatastandards.codegen.generator.code.handler.AbstractHandl
 import au.org.consumerdatastandards.codegen.generator.code.handler.AbstractHandlerConfig;
 import au.org.consumerdatastandards.codegen.generator.velocity.model.VelocityFile;
 import au.org.consumerdatastandards.codegen.model.SectionModel;
-import au.org.consumerdatastandards.support.data.CDSDataType;
-import au.org.consumerdatastandards.support.data.DataDefinition;
-import au.org.consumerdatastandards.support.data.Property;
 
 public class SectionHandler extends AbstractHandler<SectionHandlerConfig> {
+    @SuppressWarnings("unused")
     private static final Logger LOG = LogManager.getLogger(SectionHandler.class);
 
     @Override

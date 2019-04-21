@@ -24,7 +24,6 @@ import au.org.consumerdatastandards.codegen.generator.code.CodeGeneratorOptions;
 import au.org.consumerdatastandards.codegen.generator.code.TargetConfigModel;
 import au.org.consumerdatastandards.codegen.generator.code.VelocityHelper;
 import au.org.consumerdatastandards.codegen.generator.code.handler.datadefinition.DataDefinitionHandler;
-import au.org.consumerdatastandards.codegen.model.APIModel;
 
 public abstract class AbstractHandler<O extends AbstractHandlerConfig>  {
     protected O config;
@@ -97,6 +96,7 @@ public abstract class AbstractHandler<O extends AbstractHandlerConfig>  {
        
         //LOG.debug("Processed Model Config JSON into: {}", objectMapper.writeValueAsString(parentObjectNode));
         
+        @SuppressWarnings("unchecked")
         C myConfig = (C) objectMapper.readValue(objectMapper.writeValueAsString(parentObjectNode), getAbstractHandlerConfigClass());
         
         /**

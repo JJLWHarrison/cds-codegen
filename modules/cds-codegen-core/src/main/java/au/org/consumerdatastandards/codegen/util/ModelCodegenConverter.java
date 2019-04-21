@@ -18,6 +18,7 @@ import org.apache.logging.log4j.Logger;
 
 public class ModelCodegenConverter {
     
+    @SuppressWarnings("unused")
     private static final Logger LOG = LogManager.getLogger(ModelCodegenConverter.class);
     private static final Set<Class<?>> BASE_TYPES = getBaseTypes();
 
