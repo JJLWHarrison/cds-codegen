@@ -4,7 +4,7 @@
  *
  */
 
-package au.org.consumerdatastandards.model;
+package au.org.consumerdatastandards.client.model;
 
 import com.google.gson.TypeAdapter;
 import com.google.gson.annotations.JsonAdapter;

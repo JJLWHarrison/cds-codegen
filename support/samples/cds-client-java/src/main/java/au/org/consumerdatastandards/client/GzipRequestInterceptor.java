@@ -5,7 +5,7 @@
  */
 
 
-package au.org.consumerdatastandards;
+package au.org.consumerdatastandards.client;
 
 import okhttp3.*;
 import okio.Buffer;

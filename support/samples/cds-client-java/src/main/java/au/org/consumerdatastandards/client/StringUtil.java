@@ -4,7 +4,7 @@
  *
  */
 
-package au.org.consumerdatastandards;
+package au.org.consumerdatastandards.client;
 
 public class StringUtil {
   /**

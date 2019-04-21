@@ -5,21 +5,21 @@
  */
 
 
-package au.org.consumerdatastandards.api;
-
-import au.org.consumerdatastandards.ApiCallback;
-import au.org.consumerdatastandards.ApiClient;
-import au.org.consumerdatastandards.ApiException;
-import au.org.consumerdatastandards.ApiResponse;
-import au.org.consumerdatastandards.Configuration;
-import au.org.consumerdatastandards.Pair;
+package au.org.consumerdatastandards.client.api;
 
 import com.google.gson.reflect.TypeToken;
 
 
 import org.threeten.bp.OffsetDateTime;
-import au.org.consumerdatastandards.model.ResponseBankingProductById;
-import au.org.consumerdatastandards.model.ResponseBankingProductList;
+
+import au.org.consumerdatastandards.client.ApiCallback;
+import au.org.consumerdatastandards.client.ApiClient;
+import au.org.consumerdatastandards.client.ApiException;
+import au.org.consumerdatastandards.client.ApiResponse;
+import au.org.consumerdatastandards.client.Configuration;
+import au.org.consumerdatastandards.client.Pair;
+import au.org.consumerdatastandards.client.model.ResponseBankingProductById;
+import au.org.consumerdatastandards.client.model.ResponseBankingProductList;
 
 import java.lang.reflect.Type;
 import java.util.ArrayList;
@@ -53,7 +53,7 @@ public class BankingProductsApi {
      * @return Call to execute
      * @throws ApiException If fail to serialize the request body object
      */
-    public okhttp3.Call getProductDetailCall(String productId, final ApiCallback _callback) throws ApiException {
+    public okhttp3.Call getProductDetailCall(String productId, final ApiCallback<ResponseBankingProductById> _callback) throws ApiException {
         Object localVarPostBody = new Object();
 
         // create path and map variables
@@ -82,8 +82,7 @@ public class BankingProductsApi {
         return localVarApiClient.buildCall(localVarPath, "GET", localVarQueryParams, localVarCollectionQueryParams, localVarPostBody, localVarHeaderParams, localVarFormParams, localVarAuthNames, _callback);
     }
 
-    @SuppressWarnings("rawtypes")
-    private okhttp3.Call getProductDetailValidateBeforeCall(String productId, final ApiCallback _callback) throws ApiException {
+    private okhttp3.Call getProductDetailValidateBeforeCall(String productId, final ApiCallback<ResponseBankingProductById> _callback) throws ApiException {
         
         // verify the required parameter 'productId' is set
         if (productId == null) {
@@ -148,7 +147,7 @@ public class BankingProductsApi {
      * @return Call to execute
      * @throws ApiException If fail to serialize the request body object
      */
-    public okhttp3.Call listProductsCall(String effective, OffsetDateTime updatedSince, String brand, String productCategory, Integer page, Integer pageSize, final ApiCallback _callback) throws ApiException {
+    public okhttp3.Call listProductsCall(String effective, OffsetDateTime updatedSince, String brand, String productCategory, Integer page, Integer pageSize, final ApiCallback<ResponseBankingProductList> _callback) throws ApiException {
         Object localVarPostBody = new Object();
 
         // create path and map variables
@@ -200,10 +199,7 @@ public class BankingProductsApi {
         return localVarApiClient.buildCall(localVarPath, "GET", localVarQueryParams, localVarCollectionQueryParams, localVarPostBody, localVarHeaderParams, localVarFormParams, localVarAuthNames, _callback);
     }
 
-    @SuppressWarnings("rawtypes")
-    private okhttp3.Call listProductsValidateBeforeCall(String effective, OffsetDateTime updatedSince, String brand, String productCategory, Integer page, Integer pageSize, final ApiCallback _callback) throws ApiException {
-        
-
+    private okhttp3.Call listProductsValidateBeforeCall(String effective, OffsetDateTime updatedSince, String brand, String productCategory, Integer page, Integer pageSize, final ApiCallback<ResponseBankingProductList> _callback) throws ApiException {
         okhttp3.Call localVarCall = listProductsCall(effective, updatedSince, brand, productCategory, page, pageSize, _callback);
         return localVarCall;
 

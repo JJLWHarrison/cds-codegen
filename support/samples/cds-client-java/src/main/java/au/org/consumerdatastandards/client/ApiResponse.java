@@ -5,7 +5,7 @@
  */
 
 
-package au.org.consumerdatastandards;
+package au.org.consumerdatastandards.client;
 
 import java.util.List;
 import java.util.Map;

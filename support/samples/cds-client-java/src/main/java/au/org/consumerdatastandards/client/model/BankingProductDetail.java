@@ -11,28 +11,20 @@
  */
 
 
-package au.org.consumerdatastandards.model;
+package au.org.consumerdatastandards.client.model;
 
 import java.util.Objects;
-import java.util.Arrays;
-import au.org.consumerdatastandards.model.BankingEnumProductCategory;
-import au.org.consumerdatastandards.model.BankingProduct;
-import au.org.consumerdatastandards.model.BankingProductAdditionalInformation;
-import au.org.consumerdatastandards.model.BankingProductBundle;
-import au.org.consumerdatastandards.model.BankingProductConstraint;
-import au.org.consumerdatastandards.model.BankingProductDepositRate;
-import au.org.consumerdatastandards.model.BankingProductEligibility;
-import au.org.consumerdatastandards.model.BankingProductFeature;
-import au.org.consumerdatastandards.model.BankingProductFee;
-import au.org.consumerdatastandards.model.BankingProductLendingRate;
-import com.google.gson.TypeAdapter;
-import com.google.gson.annotations.JsonAdapter;
 import com.google.gson.annotations.SerializedName;
-import com.google.gson.stream.JsonReader;
-import com.google.gson.stream.JsonWriter;
-import io.swagger.annotations.ApiModel;
+import au.org.consumerdatastandards.client.model.BankingEnumProductCategory;
+import au.org.consumerdatastandards.client.model.BankingProductAdditionalInformation;
+import au.org.consumerdatastandards.client.model.BankingProductBundle;
+import au.org.consumerdatastandards.client.model.BankingProductConstraint;
+import au.org.consumerdatastandards.client.model.BankingProductDepositRate;
+import au.org.consumerdatastandards.client.model.BankingProductEligibility;
+import au.org.consumerdatastandards.client.model.BankingProductFeature;
+import au.org.consumerdatastandards.client.model.BankingProductFee;
+import au.org.consumerdatastandards.client.model.BankingProductLendingRate;
 import io.swagger.annotations.ApiModelProperty;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import org.threeten.bp.OffsetDateTime;

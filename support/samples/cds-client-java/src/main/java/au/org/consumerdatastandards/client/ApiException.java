@@ -5,11 +5,12 @@
  */
 
 
-package au.org.consumerdatastandards;
+package au.org.consumerdatastandards.client;
 
 import java.util.Map;
 import java.util.List;
 
+@SuppressWarnings("serial")
 public class ApiException extends Exception {
     private int code = 0;
     private Map<String, List<String>> responseHeaders = null;

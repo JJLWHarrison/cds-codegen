@@ -5,7 +5,7 @@
  */
 
 
-package au.org.consumerdatastandards.model;
+package au.org.consumerdatastandards.client.model;
 
 import com.google.gson.annotations.SerializedName;
 import io.swagger.annotations.ApiModelProperty;

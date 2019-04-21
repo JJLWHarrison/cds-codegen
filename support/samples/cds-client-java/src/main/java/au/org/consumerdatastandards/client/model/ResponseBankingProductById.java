@@ -5,20 +5,13 @@
  */
 
 
-package au.org.consumerdatastandards.model;
+package au.org.consumerdatastandards.client.model;
 
 import java.util.Objects;
-import java.util.Arrays;
-import au.org.consumerdatastandards.model.BankingProductDetail;
-import au.org.consumerdatastandards.model.Links;
-import com.google.gson.TypeAdapter;
-import com.google.gson.annotations.JsonAdapter;
 import com.google.gson.annotations.SerializedName;
-import com.google.gson.stream.JsonReader;
-import com.google.gson.stream.JsonWriter;
-import io.swagger.annotations.ApiModel;
+import au.org.consumerdatastandards.client.model.BankingProductDetail;
+import au.org.consumerdatastandards.client.model.Links;
 import io.swagger.annotations.ApiModelProperty;
-import java.io.IOException;
 
 /**
  * ResponseBankingProductById

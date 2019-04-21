@@ -5,7 +5,7 @@
  */
 
 
-package au.org.consumerdatastandards;
+package au.org.consumerdatastandards.client;
 
 public class Pair {
     private String name = "";

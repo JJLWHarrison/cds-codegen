@@ -5,7 +5,7 @@
  */
 
 
-package au.org.consumerdatastandards;
+package au.org.consumerdatastandards.client;
 
 import okhttp3.MediaType;
 import okhttp3.ResponseBody;
@@ -21,10 +21,10 @@ import okio.Source;
 public class ProgressResponseBody extends ResponseBody {
 
     private final ResponseBody responseBody;
-    private final ApiCallback callback;
+    private final ApiCallback<?> callback;
     private BufferedSource bufferedSource;
 
-    public ProgressResponseBody(ResponseBody responseBody, ApiCallback callback) {
+    public ProgressResponseBody(ResponseBody responseBody, ApiCallback<?> callback) {
         this.responseBody = responseBody;
         this.callback = callback;
     }

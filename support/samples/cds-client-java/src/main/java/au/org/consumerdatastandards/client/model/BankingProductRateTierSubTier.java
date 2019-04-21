@@ -5,21 +5,15 @@
  */
 
 
-package au.org.consumerdatastandards.model;
+package au.org.consumerdatastandards.client.model;
 
 import java.util.Objects;
-import java.util.Arrays;
-import au.org.consumerdatastandards.model.BankingProductRateCondition;
-import au.org.consumerdatastandards.model.RateApplicationMethod;
-import au.org.consumerdatastandards.model.UnitOfMeasure;
-import com.google.gson.TypeAdapter;
-import com.google.gson.annotations.JsonAdapter;
 import com.google.gson.annotations.SerializedName;
-import com.google.gson.stream.JsonReader;
-import com.google.gson.stream.JsonWriter;
+import au.org.consumerdatastandards.client.model.BankingProductRateCondition;
+import au.org.consumerdatastandards.client.model.RateApplicationMethod;
+import au.org.consumerdatastandards.client.model.UnitOfMeasure;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
-import java.io.IOException;
 import java.math.BigDecimal;
 
 /**

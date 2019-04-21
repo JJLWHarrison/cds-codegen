@@ -7,10 +7,13 @@
 
 package au.org.consumerdatastandards.api;
 
-import au.org.consumerdatastandards.ApiException;
 import org.threeten.bp.OffsetDateTime;
-import au.org.consumerdatastandards.model.ResponseBankingProductById;
-import au.org.consumerdatastandards.model.ResponseBankingProductList;
+
+import au.org.consumerdatastandards.client.ApiException;
+import au.org.consumerdatastandards.client.api.BankingProductsApi;
+import au.org.consumerdatastandards.client.model.ResponseBankingProductById;
+import au.org.consumerdatastandards.client.model.ResponseBankingProductList;
+
 import org.junit.Test;
 import org.junit.Ignore;
 
@@ -35,7 +38,7 @@ public class BankingProductsApiTest {
     public void getProductDetailTest() throws ApiException {
         String productId = "1";
         ResponseBankingProductById response = api.getProductDetail(productId);
-
+        response.toString();
         // TODO: test validations
     }
     
@@ -56,7 +59,7 @@ public class BankingProductsApiTest {
         Integer page = null;
         Integer pageSize = null;
         ResponseBankingProductList response = api.listProducts(effective, updatedSince, brand, productCategory, page, pageSize);
-
+        response.toString();
         // TODO: test validations
     }
     

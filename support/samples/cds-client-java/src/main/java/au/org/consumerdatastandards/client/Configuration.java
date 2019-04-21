@@ -5,7 +5,7 @@
  */
 
 
-package au.org.consumerdatastandards;
+package au.org.consumerdatastandards.client;
 
 public class Configuration {
     private static ApiClient defaultApiClient = new ApiClient();
