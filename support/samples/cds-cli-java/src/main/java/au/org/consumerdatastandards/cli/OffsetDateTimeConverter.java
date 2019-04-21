@@ -1,4 +1,4 @@
-package au.org.consumerdatastandards;
+package au.org.consumerdatastandards.cli;
 
 import org.springframework.core.convert.converter.Converter;
 import org.springframework.stereotype.Component;
