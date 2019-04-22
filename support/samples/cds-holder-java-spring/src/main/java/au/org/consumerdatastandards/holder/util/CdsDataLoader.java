@@ -7,6 +7,9 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jdk8.Jdk8Module;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.fasterxml.jackson.module.paramnames.ParameterNamesModule;
+
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -19,6 +22,9 @@ import java.nio.file.Paths;
 public class CdsDataLoader {
 
     private BankingProductDetailsRepository productDetailsRepository;
+    
+    private static final Logger LOG = LogManager.getLogger(CdsDataLoader.class);
+
 
     @Autowired
     public CdsDataLoader(BankingProductDetailsRepository productDetailsRepository) {
@@ -34,7 +40,7 @@ public class CdsDataLoader {
                 loadProducts(oneFile.getAbsolutePath());
             }
         } else {
-            System.out.println("Reading " + file.getAbsolutePath());
+            LOG.info("Reading {}", file.getAbsolutePath());
             byte[] jsonData;
             try {
                 jsonData = Files.readAllBytes(Paths.get(file.getCanonicalPath()));
@@ -46,11 +52,9 @@ public class CdsDataLoader {
 
                 productDetailsRepository.save(productDetail);
 
-                System.out.println("Saved the following to database:");
-                System.out.println();
-                System.out.println(new String(jsonData));
+                LOG.info("Saved the following to database: \n{}", new String(jsonData));
             } catch (IOException e) {
-                System.out.println("Failed to read " + file.getName());
+                LOG.error("Failed to read: {}", file.getName());
                 throw e;
             }
         }
