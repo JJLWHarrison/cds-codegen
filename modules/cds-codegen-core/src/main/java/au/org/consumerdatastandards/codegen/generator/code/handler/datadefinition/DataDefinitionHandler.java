@@ -81,6 +81,7 @@ public class DataDefinitionHandler extends AbstractHandler<DataDefinitionHandler
                             Property thisProperty = (Property) oneAnnotation;
                             oneModelField.description = thisProperty.description();
                             oneModelField.isRequired = thisProperty.required();
+                            oneModelField.isId = thisProperty.isId();
                         }
 
                         if (oneAnnotation.annotationType().equals(CDSDataType.class)) {
@@ -135,7 +136,7 @@ public class DataDefinitionHandler extends AbstractHandler<DataDefinitionHandler
             DataDefinitionHandlerConfig modelConfig = perModelConfig(oneModel);
 
             String templateName = oneModel.isEnum ? modelConfig.enumTemplate : modelConfig.modelTemplate;
-
+            LOG.debug("Writing file to {}/{}/{} with template {}", options.getOutputPath(), modelConfig.baseDirectory, modelConfig.filePath, templateName);
             VelocityFile oneFile = new VelocityFile(modelConfig.fileName,
                     String.format("%s/%s/%s", options.getOutputPath(), modelConfig.baseDirectory, modelConfig.filePath),
                     templateName, modelConfig, oneModel);

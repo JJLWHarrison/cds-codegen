@@ -1,4 +1,4 @@
-#include("java/header.vm")
+#include("java-holder/shared/header.vm")
 package $packageName;
 
 import java.util.Objects;
@@ -25,7 +25,18 @@ public enum $definitionName {
     }
     
     @Override
+    @JsonValue
     public String toString() {
       return String.valueOf(value);
+    }
+
+    @JsonCreator
+    public static $definitionName fromValue(String value) {
+      for ($definitionName b : $definitionName.values()) {
+        if (b.value.equals(value)) {
+          return b;
+        }
+      }
+      throw new IllegalArgumentException("Unexpected value '" + value + "'");
     }
 }

@@ -10,7 +10,6 @@ import au.org.consumerdatastandards.codegen.generator.velocity.model.VelocityFil
 import au.org.consumerdatastandards.codegen.model.SectionModel;
 
 public class SectionHandler extends AbstractHandler<SectionHandlerConfig> {
-    @SuppressWarnings("unused")
     private static final Logger LOG = LogManager.getLogger(SectionHandler.class);
 
     @Override
@@ -33,7 +32,7 @@ public class SectionHandler extends AbstractHandler<SectionHandlerConfig> {
         for (SectionModel oneSection : codegenModel.getSectionModels()) {
             // We reparse the supplied section
             SectionHandlerConfig modelConfig = perModelConfig(oneSection);
-
+            LOG.debug("Writing file to {}/{}/{} with template {}", options.getOutputPath(), modelConfig.baseDirectory, modelConfig.filePath, modelConfig.sectionTemplate);
             VelocityFile oneFile = new VelocityFile(modelConfig.fileName,
                     String.format("%s/%s/%s", options.getOutputPath(), modelConfig.baseDirectory, modelConfig.filePath),
                     modelConfig.sectionTemplate, modelConfig, oneSection);

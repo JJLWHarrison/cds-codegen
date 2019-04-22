@@ -10,6 +10,7 @@ public class DataDefinitionModelField {
     public String validationPattern;
     public Number minValue;
     public Number maxValue;
+    public boolean isId;
     
     public String getName() {
         return name;

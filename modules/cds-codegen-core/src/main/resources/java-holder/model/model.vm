@@ -1,4 +1,4 @@
-#include("java/header.vm")
+#include("java-holder/shared/header.vm")
 package $packageName;
 
 import java.util.Objects;
@@ -12,6 +12,7 @@ import com.google.gson.annotations.SerializedName;
 * ", false)
 * #end
 */
+@Entity
 public class $definitionName #if($extendsOn)extends $extendsOn#end {
 #foreach($field in $fieldList)
     #parse("common/datadefinition.vm")
@@ -19,7 +20,12 @@ public class $definitionName #if($extendsOn)extends $extendsOn#end {
     // $WordUtils.wrap($fieldDescription, 60, "
     // ", false)
     #end
-    SerializedName("$fieldName")     
+    #if($fieldIsId)
+    @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    #else
+    @JsonProperty("$fieldName")
+    #end
     private $fieldType $fieldName;
 #end
 
