@@ -8,6 +8,8 @@ import java.util.ArrayList;
 import java.util.List;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.apache.velocity.shaded.commons.io.FilenameUtils;
+
 import au.org.consumerdatastandards.codegen.generator.code.VelocityHelper;
 import au.org.consumerdatastandards.codegen.generator.code.handler.AbstractHandler;
 import au.org.consumerdatastandards.codegen.generator.code.handler.AbstractHandlerConfig;
@@ -136,11 +138,15 @@ public class DataDefinitionHandler extends AbstractHandler<DataDefinitionHandler
             DataDefinitionHandlerConfig modelConfig = perModelConfig(oneModel);
 
             String templateName = oneModel.isEnum ? modelConfig.enumTemplate : modelConfig.modelTemplate;
-            LOG.debug("Writing file to {}/{}/{} with template {}", options.getOutputPath(), modelConfig.baseDirectory, modelConfig.filePath, templateName);
-            VelocityFile oneFile = new VelocityFile(modelConfig.fileName,
-                    String.format("%s/%s/%s", options.getOutputPath(), modelConfig.baseDirectory, modelConfig.filePath),
-                    templateName, modelConfig, oneModel);
-            velocityHelper.addFile(oneFile);
+            if(oneModel.isEnum) {
+                LOG.debug("Skipping writing of file {}/{}/{}/{} on basis that target is Enum and no Enum template supplied",  options.getOutputPath(), modelConfig.baseDirectory, modelConfig.filePath, modelConfig.fileName);
+            } else {
+                LOG.debug("Writing file to {}/{}/{}/{} with template {}", options.getOutputPath(), modelConfig.baseDirectory, modelConfig.filePath, modelConfig.fileName, templateName);
+                VelocityFile oneFile = new VelocityFile(modelConfig.fileName,
+                        FilenameUtils.normalize(String.format("%s/%s/%s", options.getOutputPath(), modelConfig.baseDirectory, modelConfig.filePath)),
+                        templateName, modelConfig, oneModel);
+                velocityHelper.addFile(oneFile);
+            }
         }
 
     }

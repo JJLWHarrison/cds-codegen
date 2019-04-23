@@ -1,6 +1,7 @@
 package au.org.consumerdatastandards.codegen.generator;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import com.beust.jcommander.Parameter;
 import com.beust.jcommander.Parameters;

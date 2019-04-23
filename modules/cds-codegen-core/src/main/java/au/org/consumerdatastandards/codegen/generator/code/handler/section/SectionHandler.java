@@ -29,7 +29,7 @@ public class SectionHandler extends AbstractHandler<SectionHandlerConfig> {
     
     @Override
     public void populateVelocityFiles(VelocityHelper velocityHelper) throws IOException {
-        for (SectionModel oneSection : codegenModel.getSectionModels()) {
+       /** for (SectionModel oneSection : codegenModel.getSectionModels()) {
             // We reparse the supplied section
             SectionHandlerConfig modelConfig = perModelConfig(oneSection);
             LOG.debug("Writing file to {}/{}/{} with template {}", options.getOutputPath(), modelConfig.baseDirectory, modelConfig.filePath, modelConfig.sectionTemplate);
@@ -37,7 +37,7 @@ public class SectionHandler extends AbstractHandler<SectionHandlerConfig> {
                     String.format("%s/%s/%s", options.getOutputPath(), modelConfig.baseDirectory, modelConfig.filePath),
                     modelConfig.sectionTemplate, modelConfig, oneSection);
             velocityHelper.addFile(oneFile);
-        }
+        }*/
 
     }
 

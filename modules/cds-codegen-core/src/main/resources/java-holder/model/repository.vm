@@ -1,0 +1,15 @@
+#include("java-holder/shared/header.vm")
+package ${packageName}.repository;
+
+import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
+import org.springframework.data.repository.PagingAndSortingRepository;
+import org.springframework.stereotype.Repository;
+
+import ${packageName}.${definitionName};
+
+
+@Repository
+public interface ${definitionName}Repository
+    extends PagingAndSortingRepository<${definitionName}, String>, JpaSpecificationExecutor<${definitionName}> {
+
+}

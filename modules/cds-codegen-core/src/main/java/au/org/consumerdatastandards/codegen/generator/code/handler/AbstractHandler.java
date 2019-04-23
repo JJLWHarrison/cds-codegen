@@ -5,6 +5,7 @@ import java.io.StringWriter;
 import java.lang.reflect.Field;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import javax.script.ScriptContext;
 import javax.script.ScriptEngine;
@@ -91,13 +92,27 @@ public abstract class AbstractHandler<O extends AbstractHandlerConfig>  {
         ObjectMapper objectMapper = new ObjectMapper();
         JsonNode rootNode = objectMapper.readTree(objectMapper.writeValueAsString(config));
         
+        /**
+         * Stuff global variables into context so jsonThroughVelocity
+         * can parse them.
+         */
+        for(Entry<String, String> oneEntry : targetConfig.getGlobalVariables().entrySet()) {
+            thisContext.setAttribute(oneEntry.getKey(), oneEntry.getValue(), ScriptContext.GLOBAL_SCOPE);
+        }
+        
         
         ObjectNode parentObjectNode = jsonThroughVelocity(scriptEngine, thisContext, (ObjectNode)rootNode);
-       
-        //LOG.debug("Processed Model Config JSON into: {}", objectMapper.writeValueAsString(parentObjectNode));
-        
+                       
         @SuppressWarnings("unchecked")
         C myConfig = (C) objectMapper.readValue(objectMapper.writeValueAsString(parentObjectNode), getAbstractHandlerConfigClass());
+        
+        /**
+         * Stuff Global config into additionalAttributes for direct access,
+         * VelocityHelper transfers this to be directly available
+         */
+        for(Entry<String, String> oneEntry : targetConfig.getGlobalVariables().entrySet()) {
+            myConfig.additionalAttributes.put(oneEntry.getKey(), oneEntry.getValue());
+        }
         
         /**
          * Stuff field's into additional values field for direct access

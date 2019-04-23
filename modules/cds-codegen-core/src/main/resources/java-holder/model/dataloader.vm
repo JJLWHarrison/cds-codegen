@@ -1,4 +1,5 @@
-package au.org.consumerdatastandards.holder.util;
+#include("java-holder/shared/header.vm")
+package ${packageName}.util;
 
 import au.org.consumerdatastandards.holder.model.BankingProductDetail;
 import au.org.consumerdatastandards.holder.repository.BankingProductDetailsRepository;
@@ -19,25 +20,25 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 
 @Component
-public class CdsDataLoader {
+public class ${definitionName}DataLoader {
 
-    private BankingProductDetailsRepository productDetailsRepository;
+    private ${definitionName}Repository oneRepository;
     
-    private static final Logger LOG = LogManager.getLogger(CdsDataLoader.class);
+    private static final Logger LOG = LogManager.getLogger(${definitionName}DataLoader.class);
 
 
     @Autowired
-    public CdsDataLoader(BankingProductDetailsRepository productDetailsRepository) {
-        this.productDetailsRepository = productDetailsRepository;
+    public ${definitionName}DataLoader(${definitionName}Repository inputRepository) {
+        this.oneRepository = inputRepository;
     }
 
-    public void loadProducts(String fileOrFolder) throws IOException {
+    public void load(String fileOrFolder) throws IOException {
 
         File file = new File(fileOrFolder);
         if (file.isDirectory()) {
             File[] files = file.listFiles();
             for (File oneFile : files) {
-                loadProducts(oneFile.getAbsolutePath());
+                load(oneFile.getAbsolutePath());
             }
         } else {
             LOG.info("Reading {}", file.getAbsolutePath());
@@ -48,9 +49,9 @@ public class CdsDataLoader {
                     .registerModule(new ParameterNamesModule())
                     .registerModule(new Jdk8Module())
                     .registerModule(new JavaTimeModule());
-                BankingProductDetail productDetail = objectMapper.readValue(jsonData, BankingProductDetail.class);
+                ${definitionName} importValue = objectMapper.readValue(jsonData, ${definitionName}.class);
 
-                productDetailsRepository.save(productDetail);
+                oneRepository.save(importValue);
 
                 LOG.info("Saved the following to database: \n{}", jsonData.toString());
             } catch (IOException e) {

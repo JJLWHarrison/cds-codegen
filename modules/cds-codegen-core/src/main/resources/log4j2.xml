@@ -21,6 +21,9 @@
         <Logger name="au.org.consumerdatastandards.codegen.util.ModelCodegenConverter" level="DEBUG">
             
         </Logger>
+        <Logger name="au.org.consumerdatastandards.codegen.generator.code.handler.generic.GenericHandler" level="DEBUG">
+            
+        </Logger>
         
     </Loggers>
 </Configuration>
