@@ -1,4 +1,5 @@
-package au.org.consumerdatastandards.holder;
+#include("java-holder/shared/header.vm")
+package ${packageName};
 
 import com.fasterxml.jackson.databind.Module;
 import org.h2.server.web.WebServlet;
@@ -14,11 +15,11 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 @SpringBootApplication
 @ComponentScan(basePackages = {
-    "au.org.consumerdatastandards.holder.api",
-    "au.org.consumerdatastandards.holder.repository",
-    "au.org.consumerdatastandards.holder.configuration",
-    "au.org.consumerdatastandards.holder.service",
-    "au.org.consumerdatastandards.holder.util",
+    "${packageName}.api",
+    "${packageName}.repository",
+    "${packageName}.configuration",
+    "${packageName}.service",
+    "${packageName}.util",
 })
 public class HolderApplication implements CommandLineRunner {
 

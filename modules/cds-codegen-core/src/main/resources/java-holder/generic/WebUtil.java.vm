@@ -1,4 +1,5 @@
-package au.org.consumerdatastandards.holder.util;
+#include("java-holder/shared/header.vm")
+package ${packageName}.util;
 
 import org.springframework.http.HttpHeaders;
 import org.springframework.util.StringUtils;

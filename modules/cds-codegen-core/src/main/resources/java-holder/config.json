@@ -1,13 +1,17 @@
 {
+    "globalVariables": {
+        "basePackageName": "au.org.consumerdatastandards.holder",
+        "basePackagePath": "au/org/consumerdatastandards/holder"
+    },
     "handlers": [
         {
             "type": "SectionHandler",
             "baseDirectory": "src/gen/java",
             "templateFile": "java-holder/section/interface.vm",
             "fileName": "${cds.getSectionName()}.java",
-            "filePath": "${cds.getPackageName().replace(\".\", \"/\")}/api",
+            "filePath": "${basePackagePath}/api",
             "additionalAttributes": {
-                "packageName": "${cds.getPackageName()}.api"
+                "packageName": "${basePackageName}.api"
             }
         },   
         {
@@ -15,30 +19,20 @@
             "baseDirectory": "src/gen/java",
             "templateFile": "java-holder/section/impl.vm",
             "fileName": "${cds.getSectionName()}Controller.java",
-            "filePath": "${cds.getPackageName().replace(\".\", \"/\")}/api",
+            "filePath": "${basePackagePath}/api",
             "additionalAttributes": {
-                "packageName": "${cds.getPackageName()}.api"
+                "packageName": "${basePackageName}.api"
             }
-        },   
-        {
-            "type": "SectionHandler",
-            "baseDirectory": "src/gen/java",
-            "templateFile": "java-holder/section/dataloader.vm",
-            "fileName": "${cds.getSectionName()}DataLoder.java",
-            "filePath": "${cds.getPackageName().replace(\".\", \"/\")}/util",
-            "additionalAttributes": {
-                "packageName": "${cds.getPackageName()}.util"
-            }
-        },               
+        },            
         {
             "type": "DataDefinitionHandler",
             "baseDirectory": "src/gen/java",
             "modelTemplate": "java-holder/model/model.vm",
             "enumTemplate": "java-holder/model/enum.vm",
             "fileName": "${cds.getDefinitionName()}.java",
-            "filePath": "${cds.getPackageName().replace(\".\", \"/\")}/model",
+            "filePath": "${basePackagePath}/model",
             "additionalAttributes": {
-                "packageName": "${cds.getPackageName()}.model"
+                "packageName": "${basePackageName}.model"
             }
         },
         {
@@ -46,30 +40,49 @@
             "baseDirectory": "src/gen/java",
             "modelTemplate": "java-holder/model/repository.vm",
             "fileName": "${cds.getDefinitionName()}Repository.java",
-            "filePath": "${cds.getPackageName().replace(\".\", \"/\")}/repository",
+            "filePath": "${basePackagePath}/repository",
             "additionalAttributes": {
-                "packageName": "${cds.getPackageName()}.repository"
+                "packageName": "${basePackageName}.repository"
             }
-        },                     
+        },    
+        {
+            "type": "DataDefinitionHandler",
+            "baseDirectory": "src/gen/java",
+            "modelTemplate": "java-holder/model/dataloader.vm",
+            "fileName": "${cds.getDefinitionName()}DataLoader.java",
+            "filePath": "${basePackagePath}/util",
+            "additionalAttributes": {
+                "packageName": "${basePackageName}.util"
+            }
+        },                         
         {
             "type": "GenericHandler",
             "baseDirectory": "src/gen/java",
             "fileMapping": {
-                "java-holder/static/HolderApplication.vm": "au/org/consumerdatastandards/holder/HolderApplication.java",
-                "java-holder/static/HomeController.vm": "au/org/consumerdatastandards/holder/configuration/HomeController.java",
-                "java-holder/static/OpenAPIDocumentationConfig.vm": "au/org/consumerdatastandards/holder/configuration/OpenAPIDocumentationConfig.java",
-                "java-holder/static/ContextEventListener.vm": "au/org/consumerdatastandards/holder/util/ContextEventListener.java",
-                "java-holder/static/WebUtil.vm": "au/org/consumerdatastandards/holder/util/WebUtil.java"
+                "java-holder/generic/HolderApplication.java.vm": "${basePackagePath}/HolderApplication.java",
+                "java-holder/generic/HomeController.java.vm": "${basePackagePath}/configuration/HomeController.java",
+                "java-holder/generic/OpenAPIDocumentationConfig.java.vm": "${basePackagePath}/configuration/OpenAPIDocumentationConfig.java",
+                "java-holder/generic/WebUtil.java.vm": "${basePackagePath}/util/WebUtil.java",
+                "java-holder/generic/pom.xml.vm": "../../../pom.xml"
             },
             "additionalAttributes": {
-                "packageName": "${cds.getPackageName()}"
+                "packageName": "${basePackageName}",
+                "basePath": "/cds-au/v1",
+                "titleName": "Consumer Data Standards",
+                "titleDescription": "API sets created by the Australian Consumer Data Standards to meet the needs of the Consumer Data Right",                
+                "licenseName": "MIT License",
+                "licenseUrl": "https://opensource.org/licenses/MIT",
+                "contactName": "Data61",
+                "contactUrl": "https://consumerdatastandards.org.au",
+                "contactEmail": "cdr-data61@csiro.au",
+                "tosUrl": "https://www.csiro.au/en/About/Footer/Legal-notice"
             }            
         }
     ],
     "typeMappings": {
             "String": "String",
             "List": "List<%s>",
-            "DateTime": "DateTime",
+            "DateTime": "OffsetDateTime",
             "Date": "Date",
             "URI": "URI"
     }

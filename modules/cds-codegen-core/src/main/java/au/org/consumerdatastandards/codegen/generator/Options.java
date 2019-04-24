@@ -1,6 +1,7 @@
 package au.org.consumerdatastandards.codegen.generator;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import com.beust.jcommander.Parameter;
 import com.beust.jcommander.Parameters;
@@ -11,10 +12,13 @@ public class Options {
     @Parameter(names= {"--generator", "-g"}, description = "Class name of cds-codegen generator", order = 1)
     private String generatorClassName = "au.org.consumerdatastandards.codegen.generator.openapi.SwaggerGenerator";
 
-    @Parameter(names = {"--included", "-i"}, description = "Include Section", order = 2, variableArity = true)
-    private List<String> includedSections = new ArrayList<>();
+    @Parameter(names = {"--included", "-i"}, description = "Include Section (comma separated)", order = 2)
+    private String includedSectionsString;
     
-    @Parameter(names = {"--excluded", "-e"}, description = "Exclude Section", order = 3, variableArity = true)
+    @Parameter(names = {"--excluded", "-e"}, description = "Exclude Section (comma separated)", order = 3)
+    private String excludedSectionsString;
+    
+    private List<String> includedSections = new ArrayList<>();
     private List<String> excludedSections = new ArrayList<>();
 
     @Parameter(names = {"--help", "-?", "-h" }, help = true)
@@ -27,6 +31,16 @@ public class Options {
 
     public Options() {
        // zer0
+    }
+    
+    public void translateIncludeExcludes() {
+        if(excludedSectionsString != null) {
+            this.excludedSections = Arrays.asList(excludedSectionsString.split(","));
+        }
+        
+        if(includedSectionsString != null) {
+            this.includedSections = Arrays.asList(includedSectionsString.split(","));
+        }
     }
 
     public String getGeneratorClassName() {

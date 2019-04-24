@@ -7,6 +7,7 @@ import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonSubTypes.Type;
 
 import au.org.consumerdatastandards.codegen.generator.code.handler.datadefinition.DataDefinitionHandlerConfig;
+import au.org.consumerdatastandards.codegen.generator.code.handler.generic.GenericHandlerConfig;
 import au.org.consumerdatastandards.codegen.generator.code.handler.section.SectionHandlerConfig;
 
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
@@ -14,7 +15,8 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo;
 @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.PROPERTY, property = "type")
 @JsonSubTypes({ 
     @Type(value = DataDefinitionHandlerConfig.class, name = "DataDefinitionHandler"),
-    @Type(value = SectionHandlerConfig.class, name = "SectionHandler") 
+    @Type(value = SectionHandlerConfig.class, name = "SectionHandler"),
+    @Type(value = GenericHandlerConfig.class, name = "GenericHandler")
 })
 public abstract class AbstractHandlerConfig {
     public String endpointType;

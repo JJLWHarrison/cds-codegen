@@ -1,12 +1,15 @@
-package au.org.consumerdatastandards.holder.util;
+#include("java-holder/shared/header.vm")
+package ${packageName};
 
-import au.org.consumerdatastandards.holder.model.BankingProductDetail;
-import au.org.consumerdatastandards.holder.repository.BankingProductDetailsRepository;
+import au.org.consumerdatastandards.holder.model.${definitionName};
+import au.org.consumerdatastandards.holder.repository.${definitionName}Repository;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jdk8.Jdk8Module;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.fasterxml.jackson.module.paramnames.ParameterNamesModule;
+import org.springframework.context.ApplicationListener;
+import org.springframework.context.event.ContextRefreshedEvent;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -17,27 +20,37 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.util.Arrays;
 
 @Component
-public class CdsDataLoader {
+public class ${definitionName}DataLoader implements ApplicationListener<ContextRefreshedEvent> {
 
-    private BankingProductDetailsRepository productDetailsRepository;
+    private ${definitionName}Repository oneRepository;
     
-    private static final Logger LOG = LogManager.getLogger(CdsDataLoader.class);
+    private static final Logger LOG = LogManager.getLogger(${definitionName}DataLoader.class);
 
 
     @Autowired
-    public CdsDataLoader(BankingProductDetailsRepository productDetailsRepository) {
-        this.productDetailsRepository = productDetailsRepository;
+    public ${definitionName}DataLoader(${definitionName}Repository inputRepository) {
+        this.oneRepository = inputRepository;
+    }
+    
+    @Override
+    public void onApplicationEvent(ContextRefreshedEvent contextRefreshedEvent) {
+        try {
+            load(String.join(",", Arrays.asList("payloads", ${definitionName}.class.getName())));
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 
-    public void loadProducts(String fileOrFolder) throws IOException {
+    public void load(String fileOrFolder) throws IOException {
 
         File file = new File(fileOrFolder);
         if (file.isDirectory()) {
             File[] files = file.listFiles();
             for (File oneFile : files) {
-                loadProducts(oneFile.getAbsolutePath());
+                load(oneFile.getAbsolutePath());
             }
         } else {
             LOG.info("Reading {}", file.getAbsolutePath());
@@ -48,9 +61,9 @@ public class CdsDataLoader {
                     .registerModule(new ParameterNamesModule())
                     .registerModule(new Jdk8Module())
                     .registerModule(new JavaTimeModule());
-                BankingProductDetail productDetail = objectMapper.readValue(jsonData, BankingProductDetail.class);
+                ${definitionName} importValue = objectMapper.readValue(jsonData, ${definitionName}.class);
 
-                productDetailsRepository.save(productDetail);
+                oneRepository.save(importValue);
 
                 LOG.info("Saved the following to database: \n{}", jsonData.toString());
             } catch (IOException e) {

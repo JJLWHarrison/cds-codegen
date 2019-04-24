@@ -8,6 +8,8 @@ import java.util.ArrayList;
 import java.util.List;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.apache.velocity.shaded.commons.io.FilenameUtils;
+
 import au.org.consumerdatastandards.codegen.generator.code.VelocityHelper;
 import au.org.consumerdatastandards.codegen.generator.code.handler.AbstractHandler;
 import au.org.consumerdatastandards.codegen.generator.code.handler.AbstractHandlerConfig;
@@ -41,7 +43,7 @@ public class DataDefinitionHandler extends AbstractHandler<DataDefinitionHandler
                 // oneAnnotation.annotationType().toString());
                 if (oneAnnotation.annotationType().equals(DataDefinition.class)) {
                     DataDefinition thisDefinition = (DataDefinition) oneAnnotation;
-                    oneDataDefinition.definitionDescription = thisDefinition.description();
+                    oneDataDefinition.definitionDescription = thisDefinition.description().replaceAll("\n"," ");
                     Class<?>[] allOfClasses = thisDefinition.allOf();
                     if (allOfClasses.length > 0) {
                         oneDataDefinition.extendsOn = allOfClasses[0].getSimpleName();
@@ -79,7 +81,7 @@ public class DataDefinitionHandler extends AbstractHandler<DataDefinitionHandler
                     for (Annotation oneAnnotation : oneField.getAnnotations()) {
                         if (oneAnnotation.annotationType().equals(Property.class)) {
                             Property thisProperty = (Property) oneAnnotation;
-                            oneModelField.description = thisProperty.description();
+                            oneModelField.description = thisProperty.description().replaceAll("\n"," ");
                             oneModelField.isRequired = thisProperty.required();
                             oneModelField.isId = thisProperty.isId();
                         }
@@ -136,11 +138,15 @@ public class DataDefinitionHandler extends AbstractHandler<DataDefinitionHandler
             DataDefinitionHandlerConfig modelConfig = perModelConfig(oneModel);
 
             String templateName = oneModel.isEnum ? modelConfig.enumTemplate : modelConfig.modelTemplate;
-            LOG.debug("Writing file to {}/{}/{} with template {}", options.getOutputPath(), modelConfig.baseDirectory, modelConfig.filePath, templateName);
-            VelocityFile oneFile = new VelocityFile(modelConfig.fileName,
-                    String.format("%s/%s/%s", options.getOutputPath(), modelConfig.baseDirectory, modelConfig.filePath),
-                    templateName, modelConfig, oneModel);
-            velocityHelper.addFile(oneFile);
+            if(oneModel.isEnum && templateName.equals("null")) {
+                LOG.debug("Skipping writing of file {}/{}/{}/{} on basis that target is Enum and no Enum template supplied",  options.getOutputPath(), modelConfig.baseDirectory, modelConfig.filePath, modelConfig.fileName);
+            } else {
+                LOG.debug("Writing file to {}/{}/{}/{} with template {}", options.getOutputPath(), modelConfig.baseDirectory, modelConfig.filePath, modelConfig.fileName, templateName);
+                VelocityFile oneFile = new VelocityFile(modelConfig.fileName,
+                        FilenameUtils.normalize(String.format("%s/%s/%s", options.getOutputPath(), modelConfig.baseDirectory, modelConfig.filePath)),
+                        templateName, modelConfig, oneModel);
+                velocityHelper.addFile(oneFile);
+            }
         }
 
     }

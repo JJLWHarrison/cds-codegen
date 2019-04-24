@@ -11,10 +11,14 @@ import au.org.consumerdatastandards.codegen.generator.code.handler.AbstractHandl
 
 public class TargetConfigModel {
     
+    @JsonProperty("handlers")
     List<AbstractHandlerConfig> handlers = new ArrayList<AbstractHandlerConfig>();
     
     @JsonProperty("typeMappings")
     Map<String,String> typeMappings = new HashMap<String,String>();
+    
+    @JsonProperty("globalVariables")
+    Map<String,String> globalVariables = new HashMap<String,String>();
 
     public List<AbstractHandlerConfig> getHandlers() {
         return handlers;
@@ -30,6 +34,10 @@ public class TargetConfigModel {
     
     public boolean hasTypeMapping(String simpleName) {
         return typeMappings.containsKey(simpleName);
+    }
+
+    public Map<String, String> getGlobalVariables() {
+        return globalVariables;
     }
 
 }

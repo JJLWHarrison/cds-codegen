@@ -22,6 +22,9 @@ public class CodegenCLI {
         commander.setProgramName(CodegenCLI.class.getSimpleName());
         commander.setAcceptUnknownOptions(true);
         commander.parse(args);
+        
+        // Do split of command line into List to workaround cbeust/jcommander#377
+        options.translateIncludeExcludes();
 
         ModelBuilder modelBuilder = new ModelBuilder(options);
         APIModel apiModel = modelBuilder.build();

@@ -2,6 +2,8 @@ package au.org.consumerdatastandards.codegen.generator.velocity.model;
 
 import java.util.Arrays;
 
+import org.apache.velocity.shaded.commons.io.FilenameUtils;
+
 import au.org.consumerdatastandards.codegen.generator.code.handler.AbstractHandlerConfig;
 
 public class VelocityFile {
@@ -21,7 +23,7 @@ public class VelocityFile {
     }
 
     public String getFullPath() {
-        return String.join("/", Arrays.asList(getPath(), getName()));
+        return FilenameUtils.normalize(String.join("/", Arrays.asList(getPath(), getName())));
     }
 
     public String getName() {
