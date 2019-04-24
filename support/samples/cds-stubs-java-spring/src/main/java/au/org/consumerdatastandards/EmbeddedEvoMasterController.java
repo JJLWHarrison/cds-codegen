@@ -74,15 +74,16 @@ public class EmbeddedEvoMasterController extends EmbeddedSutController {
 
     }
 
+    private Map getSource(String s) {
+        return (Map) ctx.getEnvironment().getPropertySources().get(s).getSource();
+    }
+
     protected int getSutPort() {
-        return (Integer) ((Map) ctx.getEnvironment()
-            .getPropertySources().get("server.ports").getSource())
-            .get("local.server.port");
+        return (Integer) getSource("server.ports").get("local.server.port");
     }
 
     protected String getSwaggerJsonPath() {
-        return ((Map) ctx.getEnvironment()
-            .getPropertySources().get("applicationConfig: [classpath:/application.properties]").getSource())
+        return getSource("applicationConfig: [classpath:/application.properties]")
             .get("springfox.documentation.swagger.v2.path").toString();
     }
 }
