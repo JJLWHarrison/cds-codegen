@@ -10,6 +10,8 @@ import au.org.consumerdatastandards.support.Endpoint;
 import au.org.consumerdatastandards.support.Param;
 import au.org.consumerdatastandards.support.Section;
 import org.apache.commons.lang3.reflect.MethodUtils;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.reflections.Reflections;
 
 import java.lang.reflect.Method;
@@ -19,11 +21,13 @@ import java.util.Set;
 /**
  * APIModel builder
  *
- * @author stuart, fyang1024
+ * @author csirostu, fyang1024
  */
 public class ModelBuilder {
 
     private final static String BASE_PACKAGE = "au.org.consumerdatastandards.api";
+    private static final Logger LOG = LogManager.getLogger(ModelBuilder.class);
+
 
     private Options options;
 
@@ -60,6 +64,8 @@ public class ModelBuilder {
     private EndpointModel buildEndpointModel(Method method) {
         Endpoint endpoint = method.getAnnotation(Endpoint.class);
         EndpointModel endpointModel = new EndpointModel(endpoint);
+        LOG.debug("Default response for {} is {}", method.getName(), method.getReturnType().getSimpleName());
+        endpointModel.setDefaultResponse(method.getReturnType().getSimpleName());
         CustomAttributesUtil.addCustomAttributes(method, endpointModel);
         Parameter[] parameters = method.getParameters();
         for (Parameter parameter : parameters) {

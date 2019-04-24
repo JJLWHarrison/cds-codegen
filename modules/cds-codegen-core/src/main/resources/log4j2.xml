@@ -18,12 +18,17 @@
         <Logger name="au.org.consumerdatastandards.codegen.generator.code.handler.datadefinition.DataDefinitionHandler" level="DEBUG">
             
         </Logger>
+        <Logger name="au.org.consumerdatastandards.codegen.ModelBuilder" level="DEBUG">
+            
+        </Logger>
         <Logger name="au.org.consumerdatastandards.codegen.util.ModelCodegenConverter" level="DEBUG">
             
         </Logger>
         <Logger name="au.org.consumerdatastandards.codegen.generator.code.handler.generic.GenericHandler" level="DEBUG">
             
         </Logger>
-        
+        <Logger name="au.org.consumerdatastandards.codegen.generator.code.handler.section.SectionHandler" level="DEBUG">
+            
+        </Logger>      
     </Loggers>
 </Configuration>

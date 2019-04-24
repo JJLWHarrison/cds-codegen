@@ -1,0 +1,7 @@
+#set( $endpointSummary = $endpoint.getEndpoint().summary() )
+#set( $endpointDescription = $endpoint.getEndpoint().description().replaceAll("\n", "\\n") )
+#set( $endpointPath = $endpoint.getEndpoint().path() )
+#set( $endpointOperationId = $endpoint.getEndpoint().operationId() )
+#set( $endpointMethod = $endpoint.getEndpoint().requestMethod() )
+#set( $endpointDefaultResponse = $endpoint.getDefaultResponse() )
+#set( $endpointResponses = $endpoint.getEndpoint().responses() )

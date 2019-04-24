@@ -1,8 +1,4 @@
-package au.org.consumerdatastandards.holder.api;
-
-import au.org.consumerdatastandards.holder.model.*;
-import au.org.consumerdatastandards.holder.service.BankingProductsService;
-import au.org.consumerdatastandards.holder.util.WebUtil;
+package $packageName;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -20,15 +16,15 @@ import java.time.OffsetDateTime;
 import java.util.Optional;
 
 @Controller
-@RequestMapping("${openapi.consumerDataStandards.base-path:/cds-au/v1}")
-public class BankingProductsApiController implements BankingProductsApi {
+@RequestMapping("$basePath")
+public class ${interfaceName}Controller implements $interfaceName {
 
-    private final BankingProductsService service;
+    private final ${interfaceName}Service service;
 
     private final NativeWebRequest request;
 
     @Autowired
-    public BankingProductsApiController(NativeWebRequest request, BankingProductsService service) {
+    public BankingProductsApiController(NativeWebRequest request, ${interfaceName}Service service) {
         this.request = request;
         this.service = service;
     }
@@ -37,60 +33,23 @@ public class BankingProductsApiController implements BankingProductsApi {
     public Optional<NativeWebRequest> getRequest() {
         return Optional.ofNullable(request);
     }
-
+    
+#foreach($endpoint in $cds.getEndpointModels())
+    #parse("common/endpointdefinition.vm")
     @Override
-    public ResponseEntity<ResponseBankingProductById> getProductDetail(String productId) {
+    public ResponseEntity<$endpointDefaultResponse> ${endpointOperationId}(#foreach($oneParam in $endpoint.getParamModels())
+        $oneParam.getParamDataType().getSimpleName() $oneParam.getCamelCaseName()#if( $foreach.hasNext ),#end
+    #end) {
         if (!WebUtil.hasSupportedVersion(request)) {
             return ResponseEntity.status(HttpStatus.NOT_ACCEPTABLE).build();
         }
         HttpHeaders headers = WebUtil.processHeaders(request);
-        return new ResponseEntity<>(new ResponseBankingProductById()
-            .data(service.getProductDetail(productId))
+        return new ResponseEntity<>(new ${endpointDefaultResponse}()
+            .data(service.${endpointOperationId}(productId))
             .links(new Links()
                 .self(WebUtil.getOriginalUrl(request))), headers, HttpStatus.OK);
     }
-
-    @Override
-    public ResponseEntity<ResponseBankingProductList> listProducts(
-        @Valid String effective,
-        @Valid OffsetDateTime updatedSince,
-        @Valid String brand,
-        @Valid String productCategory,
-        @Valid Integer page,
-        @Valid Integer pageSize)
-    {
-        if (!WebUtil.hasSupportedVersion(request)) {
-            return ResponseEntity.status(HttpStatus.NOT_ACCEPTABLE).build();
-        }
-        HttpHeaders headers = WebUtil.processHeaders(request);
-        BankingProduct example = new BankingProduct()
-            .lastUpdated(updatedSince)
-            .brand(brand);
-
-        if (!StringUtils.isEmpty(productCategory)) {
-            try {
-                example.productCategory(BankingEnumProductCategory.fromValue(productCategory));
-            } catch (IllegalArgumentException e) {
-                // ignored
-            }
-        }
-
-        Integer actualPage = getPagingValue(page, 1);
-        Integer actualPageSize = getPagingValue(pageSize, 25);
-        Page<BankingProduct> productsPage = service.findProductsLike(effective, example, PageRequest.of(actualPage -1, actualPageSize));
-
-        String self = WebUtil.getPaginatedLink(request, actualPage, actualPageSize);
-        return new ResponseEntity<>(new ResponseBankingProductList()
-            .data(new ResponseBankingProductListData().products(productsPage.getContent()))
-            .links(new LinksPaginated().first(WebUtil.getPaginatedLink(request,1, actualPageSize))
-                .self(self)
-                .prev(productsPage.isFirst() || productsPage.getTotalPages() == 0 ? self : WebUtil.getPaginatedLink(request, actualPage - 1, actualPageSize))
-                .next(productsPage.isLast() || productsPage.getTotalPages() == 0 ? self : WebUtil.getPaginatedLink(request, actualPage + 1, actualPageSize))
-                .last(productsPage.getTotalPages() == 0? self: WebUtil.getPaginatedLink(request, productsPage.getTotalPages(), actualPageSize)))
-            .meta(new MetaPaginated().totalPages(productsPage.getTotalPages()).totalRecords((int)productsPage.getTotalElements())),
-            headers,
-            HttpStatus.OK);
-    }
+#end
 
     private Integer getPagingValue(@Valid Integer page, int defaultValue) {
         return page != null && page > 0 ? page : defaultValue;

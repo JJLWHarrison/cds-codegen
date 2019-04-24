@@ -29,7 +29,7 @@ public class TargetConfigModel {
     }
 
     public String getTypeMapping(String inputType) {
-        return typeMappings.get(inputType);
+        return typeMappings.get(inputType) != null ? typeMappings.get(inputType) : inputType;
     }
     
     public boolean hasTypeMapping(String simpleName) {

@@ -1,24 +1,28 @@
 {
     "globalVariables": {
         "basePackageName": "au.org.consumerdatastandards.holder",
-        "basePackagePath": "au/org/consumerdatastandards/holder"
+        "basePackagePath": "au/org/consumerdatastandards/holder",
+        "basePath": "/cds-au/v1"
     },
     "handlers": [
         {
             "type": "SectionHandler",
             "baseDirectory": "src/gen/java",
             "templateFile": "java-holder/section/interface.vm",
-            "fileName": "${cds.getSectionName()}.java",
+            "fileName": "${cds.getInterfaceName()}.java",
             "filePath": "${basePackagePath}/api",
             "additionalAttributes": {
-                "packageName": "${basePackageName}.api"
+                "packageName": "${basePackageName}.api",
+                "sectionName": "${cds.getName()}",
+                "interfaceName": "${cds.getInterfaceName()}",
+                "modelPackage": "${basePackageName}.model"
             }
         },   
         {
             "type": "SectionHandler",
             "baseDirectory": "src/gen/java",
             "templateFile": "java-holder/section/impl.vm",
-            "fileName": "${cds.getSectionName()}Controller.java",
+            "fileName": "${cds.getInterfaceName()}Controller.java",
             "filePath": "${basePackagePath}/api",
             "additionalAttributes": {
                 "packageName": "${basePackageName}.api"
@@ -67,7 +71,6 @@
             },
             "additionalAttributes": {
                 "packageName": "${basePackageName}",
-                "basePath": "/cds-au/v1",
                 "titleName": "Consumer Data Standards",
                 "titleDescription": "API sets created by the Australian Consumer Data Standards to meet the needs of the Consumer Data Right",                
                 "licenseName": "MIT License",

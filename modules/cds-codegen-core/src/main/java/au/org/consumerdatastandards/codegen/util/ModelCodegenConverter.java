@@ -46,12 +46,12 @@ public class ModelCodegenConverter {
     private static void processEndpoints(CodegenModel codegenModel, Set<EndpointModel> endpointModels) {
 
         for (EndpointModel endpointModel : endpointModels) {
+            LOG.debug("Default response for {} currently set to {}", endpointModel.getEndpoint().operationId(), endpointModel.getDefaultResponse());
             processEndpoint(codegenModel, endpointModel);
         }
     }
 
     private static void processEndpoint(CodegenModel codegenModel, EndpointModel endpointModel) {
-
         processResponses(codegenModel, endpointModel.getEndpoint().responses());
     }
 
