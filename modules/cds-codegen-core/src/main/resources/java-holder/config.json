@@ -62,7 +62,6 @@
                 "java-holder/generic/HolderApplication.java.vm": "${basePackagePath}/HolderApplication.java",
                 "java-holder/generic/HomeController.java.vm": "${basePackagePath}/configuration/HomeController.java",
                 "java-holder/generic/OpenAPIDocumentationConfig.java.vm": "${basePackagePath}/configuration/OpenAPIDocumentationConfig.java",
-                "java-holder/generic/ContextEventListener.java.vm": "${basePackagePath}/util/ContextEventListener.java",
                 "java-holder/generic/WebUtil.java.vm": "${basePackagePath}/util/WebUtil.java",
                 "java-holder/generic/pom.xml.vm": "../../../pom.xml"
             },
@@ -83,7 +82,7 @@
     "typeMappings": {
             "String": "String",
             "List": "List<%s>",
-            "DateTime": "DateTime",
+            "DateTime": "OffsetDateTime",
             "Date": "Date",
             "URI": "URI"
     }

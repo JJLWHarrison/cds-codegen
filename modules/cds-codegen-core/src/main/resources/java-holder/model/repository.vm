@@ -1,11 +1,11 @@
 #include("java-holder/shared/header.vm")
-package ${packageName}.repository;
+package ${packageName};
 
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.repository.PagingAndSortingRepository;
 import org.springframework.stereotype.Repository;
 
-import ${packageName}.${definitionName};
+import ${basePackageName}.model.${definitionName};
 
 
 @Repository
