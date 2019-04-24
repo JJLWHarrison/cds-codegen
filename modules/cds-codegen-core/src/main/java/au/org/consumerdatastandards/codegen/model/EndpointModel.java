@@ -13,6 +13,8 @@ public class EndpointModel extends ModelBase implements Comparable<EndpointModel
 
     private Map<ParamLocation, Set<ParamModel>> paramsByLocation = new HashMap<>();
 
+    private String defaultResponseTypeName;
+
     public EndpointModel(Endpoint endpoint) {
         this.endpoint = endpoint;
     }
@@ -69,5 +71,13 @@ public class EndpointModel extends ModelBase implements Comparable<EndpointModel
     public Set<ParamModel> getCookieParams() {
 
         return paramsByLocation.get(ParamLocation.COOKIE);
+    }
+
+    public void setDefaultResponse(String name) {
+        defaultResponseTypeName = name;
+    }
+    
+    public String getDefaultResponse() {
+        return defaultResponseTypeName;
     }
 }

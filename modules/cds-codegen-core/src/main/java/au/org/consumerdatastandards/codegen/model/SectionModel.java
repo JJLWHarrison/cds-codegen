@@ -57,6 +57,10 @@ public class SectionModel extends ModelBase implements Comparable<SectionModel> 
 
         endpointModels.add(endpointModel);
     }
+    
+    public void setEndpointModels(Set<EndpointModel> inputModels) {
+        endpointModels = inputModels;
+    }
 
     @Override
     public int compareTo(SectionModel sectionModel) {
