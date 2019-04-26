@@ -16,6 +16,7 @@ import au.org.consumerdatastandards.codegen.generator.code.handler.AbstractHandl
 import au.org.consumerdatastandards.codegen.generator.velocity.model.VelocityFile;
 import au.org.consumerdatastandards.codegen.model.DataDefinitionModel;
 import au.org.consumerdatastandards.codegen.model.DataDefinitionModelField;
+import au.org.consumerdatastandards.codegen.util.ModelCodegenConverter;
 import au.org.consumerdatastandards.support.data.CDSDataType;
 import au.org.consumerdatastandards.support.data.DataDefinition;
 import au.org.consumerdatastandards.support.data.Property;
@@ -48,9 +49,15 @@ public class DataDefinitionHandler extends AbstractHandler<DataDefinitionHandler
                     if (allOfClasses.length > 0) {
                         oneDataDefinition.extendsOn = allOfClasses[0].getSimpleName();
                     }
-
                 }
-
+            }
+            
+            /**
+             * Override extendsOn from data definition annotation if this is a full blown 
+             * superclass, like for instance BaseResponse, but not base types
+             */
+            if(definitionClass.getSuperclass() != null && !ModelCodegenConverter.BASE_TYPES.contains(definitionClass.getSuperclass())) {
+                oneDataDefinition.extendsOn = definitionClass.getSuperclass().getSimpleName();
             }
 
             Field[] definitionFields = definitionClass.getDeclaredFields();

@@ -22,7 +22,7 @@ public interface $interfaceName {
         return Optional.empty();
     }
     
-#foreach($endpoint in $cds.getEndpointModels())
+#foreach($endpoint in $cds.getEndpointModelsWithDataOperations())
     #parse("common/endpointdefinition.vm")
     
     /**

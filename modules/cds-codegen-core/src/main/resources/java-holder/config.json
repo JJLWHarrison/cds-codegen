@@ -25,7 +25,22 @@
             "fileName": "${cds.getInterfaceName()}Controller.java",
             "filePath": "${basePackagePath}/api",
             "additionalAttributes": {
-                "packageName": "${basePackageName}.api"
+                "packageName": "${basePackageName}.api",
+                "modelPackage": "${basePackageName}.model",
+                "servicePackage": "${basePackageName}.service",
+                "utilPackage": "${basePackageName}.util"
+            }
+        },        
+        {
+            "type": "SectionHandler",
+            "baseDirectory": "src/gen/java",
+            "templateFile": "java-holder/section/service.vm",
+            "fileName": "${cds.getInterfaceName()}Service.java",
+            "filePath": "${basePackagePath}/service",
+            "additionalAttributes": {
+                "packageName": "${basePackageName}.service",
+                "modelPackage": "${basePackageName}.model",
+                "repositoryPackage": "${basePackageName}.repository"                            
             }
         },            
         {

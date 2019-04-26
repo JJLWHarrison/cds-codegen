@@ -3,3 +3,4 @@
 #set( $fieldNameCapital = $field.getCapitalisedName() )
 #set( $fieldRequired = $field.isRequired() )
 #set( $fieldDescription = $field.getDescription() )
+#set( $fieldIsId = $field.isId() )

@@ -35,9 +35,9 @@ public class $definitionName #if($extendsOn)extends $extendsOn#end {
     #if($fieldIsId)
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    #else
-    @JsonProperty("$fieldName")
+    @GenericGenerator(name="system-uuid", strategy = "uuid2")    
     #end
+    @JsonProperty("$fieldName")
     private $fieldType $fieldName;
 #end
 

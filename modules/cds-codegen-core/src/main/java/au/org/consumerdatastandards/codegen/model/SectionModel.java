@@ -3,6 +3,7 @@ package au.org.consumerdatastandards.codegen.model;
 import au.org.consumerdatastandards.support.Section;
 
 import java.lang.reflect.Field;
+import java.util.HashSet;
 import java.util.Set;
 import java.util.TreeSet;
 
@@ -26,15 +27,15 @@ public class SectionModel extends ModelBase implements Comparable<SectionModel> 
 
         return name;
     }
-    
+
     public String getPackageName() {
         return packageName;
     }
-    
+
     public void setPackageName(String inputPackage) {
         this.packageName = inputPackage;
     }
-    
+
     public String getInterfaceName() {
         return interfaceName;
     }
@@ -42,22 +43,32 @@ public class SectionModel extends ModelBase implements Comparable<SectionModel> 
     public void setInterfaceName(String inputName) {
         this.interfaceName = inputName;
     }
-   
+
     public String[] getTags() {
 
         return tags;
     }
-    
+
     public Set<EndpointModel> getEndpointModels() {
 
         return endpointModels;
+    }
+
+    public Set<EndpointModel> getEndpointModelsWithDataOperations() {
+        Set<EndpointModel> allModels = new HashSet<>();
+        for (EndpointModel thisEndpoint : endpointModels) {
+            if (thisEndpoint.hasDataOperation()) {
+                allModels.add(thisEndpoint);
+            }
+        }
+        return allModels;
     }
 
     public void add(EndpointModel endpointModel) {
 
         endpointModels.add(endpointModel);
     }
-    
+
     public void setEndpointModels(Set<EndpointModel> inputModels) {
         endpointModels = inputModels;
     }
@@ -67,7 +78,7 @@ public class SectionModel extends ModelBase implements Comparable<SectionModel> 
 
         return name.compareTo(sectionModel.name);
     }
-    
+
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();

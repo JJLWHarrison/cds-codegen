@@ -28,5 +28,9 @@ public class DataDefinitionModelField {
         return StringUtils.capitalize(name);
     }
     
+    public boolean isId() {
+        return isId;
+    }
+    
     
 }

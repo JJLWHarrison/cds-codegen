@@ -3,6 +3,7 @@ package au.org.consumerdatastandards.codegen.util;
 import au.org.consumerdatastandards.codegen.generator.CodegenModel;
 import au.org.consumerdatastandards.codegen.model.APIModel;
 import au.org.consumerdatastandards.codegen.model.EndpointModel;
+import au.org.consumerdatastandards.codegen.model.ParamModel;
 import au.org.consumerdatastandards.codegen.model.SectionModel;
 import au.org.consumerdatastandards.support.EndpointResponse;
 import au.org.consumerdatastandards.support.data.DataDefinition;
@@ -20,7 +21,7 @@ public class ModelCodegenConverter {
     
     @SuppressWarnings("unused")
     private static final Logger LOG = LogManager.getLogger(ModelCodegenConverter.class);
-    private static final Set<Class<?>> BASE_TYPES = getBaseTypes();
+    public static final Set<Class<?>> BASE_TYPES = getBaseTypes();
 
 
     public static CodegenModel convert(APIModel apiModel) {
@@ -53,6 +54,14 @@ public class ModelCodegenConverter {
 
     private static void processEndpoint(CodegenModel codegenModel, EndpointModel endpointModel) {
         processResponses(codegenModel, endpointModel.getEndpoint().responses());
+        processParamModels(codegenModel, endpointModel.getParamModels());
+    }
+    
+    public static void processParamModels(CodegenModel codegenModel, Set<ParamModel> paramModels) {
+        // Parameters are data definitions too!
+        for(ParamModel oneParam : paramModels) {
+            processDataDefinition(codegenModel, oneParam.getParamDataType());
+        }
     }
 
     private static void processResponses(CodegenModel codegenModel, EndpointResponse[] responses) {
@@ -75,6 +84,10 @@ public class ModelCodegenConverter {
         
             if (dataDefinition.isAnnotationPresent(DataDefinition.class)) {
                 processDataDefinition(codegenModel, dataDefinition);
+            }
+            
+            if (dataDefinition.getSuperclass() != null) {
+                processDataDefinition(codegenModel, dataDefinition.getSuperclass());
             }
             
             for(Field thisField : dataDefinition.getDeclaredFields()) {
@@ -102,6 +115,8 @@ public class ModelCodegenConverter {
         ret.add(Double.class);
         ret.add(Void.class);
         ret.add(String.class);
+        ret.add(Enum.class);
+        ret.add(Object.class);
         return ret;
     }
 }

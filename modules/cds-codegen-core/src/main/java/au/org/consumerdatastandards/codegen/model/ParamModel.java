@@ -88,7 +88,11 @@ public class ParamModel extends ModelBase implements Comparable<ParamModel> {
     }
     
     public String getCamelCaseName() {
-        return CaseUtils.toCamelCase(param.name(), false, new char[]{'-'});
+        if(param.name().indexOf("-") != -1) {
+            return CaseUtils.toCamelCase(param.name(), false, new char[]{'-'});
+        } else {
+            return param.name();
+        }
     }
     
     public List<String> getAllowableValues() {

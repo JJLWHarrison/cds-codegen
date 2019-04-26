@@ -15,6 +15,10 @@ public class EndpointModel extends ModelBase implements Comparable<EndpointModel
 
     private String defaultResponseTypeName;
 
+    private DataOperationModel dataOperationModel;
+    
+    private boolean isPaginated = false;
+
     public EndpointModel(Endpoint endpoint) {
         this.endpoint = endpoint;
     }
@@ -80,4 +84,17 @@ public class EndpointModel extends ModelBase implements Comparable<EndpointModel
     public String getDefaultResponse() {
         return defaultResponseTypeName;
     }
+
+    public DataOperationModel getDataOperationModel() {
+        return this.dataOperationModel;
+    }
+
+    public void setDataOperationModel(DataOperationModel inputModel) {
+        this.dataOperationModel = inputModel;
+    }
+    
+    public boolean hasDataOperation() {
+        return this.dataOperationModel != null ? true : false;
+    }
+
 }

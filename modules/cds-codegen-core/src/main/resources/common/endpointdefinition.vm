@@ -1,3 +1,4 @@
+#set( $dataOperation = false )
 #set( $endpointSummary = $endpoint.getEndpoint().summary() )
 #set( $endpointDescription = $endpoint.getEndpoint().description().replaceAll("\n", "\\n") )
 #set( $endpointPath = $endpoint.getEndpoint().path() )
@@ -5,3 +6,11 @@
 #set( $endpointMethod = $endpoint.getEndpoint().requestMethod() )
 #set( $endpointDefaultResponse = $endpoint.getDefaultResponse() )
 #set( $endpointResponses = $endpoint.getEndpoint().responses() )
+#set( $endpointPaginated = $endpoint.isPaginated() )
+#if( $endpoint.hasDataOperation() )
+    #set( $dataOperation = true )
+    #set( $dataOperationType = $endpoint.getDataOperationModel().getOperationType() )
+    #set( $dataOperationDefinition = $endpoint.getDataOperationModel().getDataDefinition() )
+    #set( $dataOperationDefinitionCamelised = $endpoint.getDataOperationModel().getDataDefinitionCamelised() )
+    #set( $dataOperationAttributes = $endpoint.getDataOperationModel().getAttributeModels() )
+#end

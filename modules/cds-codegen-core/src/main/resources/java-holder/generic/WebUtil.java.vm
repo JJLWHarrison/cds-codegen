@@ -1,11 +1,13 @@
 #include("java-holder/shared/header.vm")
 package ${packageName}.util;
-
 import org.springframework.http.HttpHeaders;
 import org.springframework.util.StringUtils;
 import org.springframework.web.context.request.NativeWebRequest;
 
 import javax.servlet.http.HttpServletRequest;
+
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.UUID;
 
 public class WebUtil {
@@ -17,7 +19,7 @@ public class WebUtil {
 
     public static String getPaginatedLink(NativeWebRequest request, Integer page, Integer pageSize) {
         HttpServletRequest servletRequest = request.getNativeRequest(HttpServletRequest.class);
-        String paginatedLink = getOriginalUrl(servletRequest);
+        String paginatedLink = getOriginalUrl(servletRequest).toString();
         String originalPage = servletRequest.getParameter("page");
         if (StringUtils.isEmpty(originalPage)) {
             String pageParam = servletRequest.getParameterMap().isEmpty() ? "?page=" : "&page=";
@@ -34,7 +36,7 @@ public class WebUtil {
         return paginatedLink;
     }
 
-    public static String getOriginalUrl(NativeWebRequest request) {
+    public static URI getOriginalUrl(NativeWebRequest request) {
         return getOriginalUrl(request.getNativeRequest(HttpServletRequest.class));
     }
 
@@ -54,14 +56,21 @@ public class WebUtil {
         return responseHeaders;
     }
 
-    private static String getOriginalUrl(HttpServletRequest request) {
+    private static URI getOriginalUrl(HttpServletRequest request) {
+        // TODO: @csirostu: This looks really messy and should be fixed....
         StringBuilder requestURL = new StringBuilder(request.getRequestURL().toString());
         String queryString = request.getQueryString();
+        try {
+            if (queryString == null) {
+                return new URI(requestURL.toString());
 
-        if (queryString == null) {
-            return requestURL.toString();
-        } else {
-            return requestURL.append('?').append(queryString).toString();
+            } else {
+                return new URI(requestURL.append('?').append(queryString).toString());
+            }
+        } catch (URISyntaxException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+            return null;
         }
     }
 
@@ -72,7 +81,7 @@ public class WebUtil {
     public static boolean hasSupportedVersion(NativeWebRequest request) {
         Integer maxVersion = null;
         String xv = request.getHeader(V);
-        if(!StringUtils.isEmpty(xv)) {
+        if (!StringUtils.isEmpty(xv)) {
             try {
                 maxVersion = Integer.parseInt(xv);
             } catch (NumberFormatException e) {
@@ -81,7 +90,7 @@ public class WebUtil {
         }
         Integer minVersion = null;
         String minv = request.getHeader(MIN_V);
-        if(!StringUtils.isEmpty(minv)) {
+        if (!StringUtils.isEmpty(minv)) {
             try {
                 minVersion = Integer.parseInt(minv);
             } catch (NumberFormatException e) {

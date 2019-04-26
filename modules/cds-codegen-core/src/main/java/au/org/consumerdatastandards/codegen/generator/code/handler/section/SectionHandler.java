@@ -38,7 +38,7 @@ public class SectionHandler extends AbstractHandler<SectionHandlerConfig> {
         for(EndpointModel oneEndpoint : oneSection.getEndpointModels()) {
             // Perform type mapping on default response
             oneEndpoint.setDefaultResponse(targetConfig.getTypeMapping(oneEndpoint.getDefaultResponse()));
-            
+                        
             // Rebuild set
             newEndpointModelSet.add(oneEndpoint);
         }
