@@ -1,9 +1,11 @@
 package au.org.consumerdatastandards;
 
-import org.evomaster.clientJava.controller.EmbeddedSutController;
-import org.evomaster.clientJava.controller.InstrumentedSutStarter;
-import org.evomaster.clientJava.controller.internal.SutController;
-import org.evomaster.clientJava.controllerApi.dto.AuthenticationDto;
+import org.evomaster.client.java.controller.EmbeddedSutController;
+import org.evomaster.client.java.controller.InstrumentedSutStarter;
+import org.evomaster.client.java.controller.api.dto.AuthenticationDto;
+import org.evomaster.client.java.controller.api.dto.SutInfoDto;
+import org.evomaster.client.java.controller.problem.ProblemInfo;
+import org.evomaster.client.java.controller.problem.RestProblem;
 import org.springframework.boot.SpringApplication;
 import org.springframework.context.ConfigurableApplicationContext;
 
@@ -13,19 +15,40 @@ import java.util.Map;
 
 public class EmbeddedEvoMasterController extends EmbeddedSutController {
 
-    public static void main(String[] args){
+    public static void main(String[] args) {
 
-        SutController controller = new EmbeddedEvoMasterController();
+        EmbeddedEvoMasterController controller = new EmbeddedEvoMasterController();
         InstrumentedSutStarter starter = new InstrumentedSutStarter(controller);
 
         starter.start();
     }
 
+
     private ConfigurableApplicationContext ctx;
+
+
+    @Override
+    public String startSut() {
+
+        ctx = SpringApplication.run(BankingProductsApplication.class);
+        return "http://localhost:" + getSutPort();
+    }
+
+    private int getSutPort() {
+        return (Integer) ((Map) ctx.getEnvironment()
+            .getPropertySources().get("server.ports").getSource())
+            .get("local.server.port");
+    }
+
 
     @Override
     public boolean isSutRunning() {
         return ctx != null && ctx.isRunning();
+    }
+
+    @Override
+    public void stopSut() {
+        ctx.stop();
     }
 
     @Override
@@ -34,8 +57,7 @@ public class EmbeddedEvoMasterController extends EmbeddedSutController {
     }
 
     @Override
-    public String getUrlOfSwaggerJSON() {
-        return "http://localhost:" + getSutPort() + getSwaggerJsonPath();
+    public void resetStateOfSUT() {
     }
 
     @Override
@@ -43,7 +65,6 @@ public class EmbeddedEvoMasterController extends EmbeddedSutController {
         return null;
     }
 
-    @Override
     public Connection getConnection() {
         return null;
     }
@@ -54,35 +75,23 @@ public class EmbeddedEvoMasterController extends EmbeddedSutController {
     }
 
     @Override
-    public List<String> getEndpointsToSkip() {
-        return null;
+    public ProblemInfo getProblemInfo() {
+        return new RestProblem(
+            "http://localhost:" + getSutPort() + getSwaggerJsonPath(),
+            null
+        );
     }
 
     @Override
-    public String startSut() {
-        ctx = SpringApplication.run(BankingProductsApplication.class);
-        return "http://localhost:" + getSutPort();
-    }
-
-    @Override
-    public void stopSut() {
-        ctx.stop();
-    }
-
-    @Override
-    public void resetStateOfSUT() {
-
+    public SutInfoDto.OutputFormat getPreferredOutputFormat() {
+        return SutInfoDto.OutputFormat.JAVA_JUNIT_5;
     }
 
     private Map getSource(String s) {
         return (Map) ctx.getEnvironment().getPropertySources().get(s).getSource();
     }
 
-    protected int getSutPort() {
-        return (Integer) getSource("server.ports").get("local.server.port");
-    }
-
-    protected String getSwaggerJsonPath() {
+    private String getSwaggerJsonPath() {
         return getSource("applicationConfig: [classpath:/application.properties]")
             .get("springfox.documentation.swagger.v2.path").toString();
     }
