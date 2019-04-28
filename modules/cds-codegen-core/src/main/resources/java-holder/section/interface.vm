@@ -1,3 +1,4 @@
+#include("java-common/header.vm")
 package $packageName;
 
 import io.swagger.annotations.*;

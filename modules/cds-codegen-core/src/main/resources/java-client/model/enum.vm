@@ -1,8 +1,12 @@
 #include("java-common/header.vm")
 package $packageName;
 
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonValue;
+import com.google.gson.TypeAdapter;
+import com.google.gson.annotations.JsonAdapter;
+import com.google.gson.stream.JsonReader;
+import com.google.gson.stream.JsonWriter;
+
+import java.io.IOException;
 
 /**
 * $definitionName
@@ -12,6 +16,7 @@ import com.fasterxml.jackson.annotation.JsonValue;
 * ", false)
 * #end
 */
+@JsonAdapter(${definitionName}.Adapter.class)
 public enum $definitionName {
 #foreach($field in $fieldList)
     #parse("common/datadefinition.vm")
@@ -25,12 +30,14 @@ public enum $definitionName {
     }
     
     @Override
-    @JsonValue
     public String toString() {
       return String.valueOf(value);
     }
+    
+    public String getValue() {
+        return value;
+    }
 
-    @JsonCreator
     public static $definitionName fromValue(String value) {
       for ($definitionName b : ${definitionName}.values()) {
         if (b.value.equals(value)) {
@@ -38,5 +45,18 @@ public enum $definitionName {
         }
       }
       throw new IllegalArgumentException("Unexpected value '" + value + "'");
+    }
+    
+    public static class Adapter extends TypeAdapter<$definitionName> {
+        @Override
+        public void write(final JsonWriter jsonWriter, final $definitionName enumeration) throws IOException {
+          jsonWriter.value(enumeration.getValue());
+        }
+        
+        @Override
+        public $definitionName read(final JsonReader jsonReader) throws IOException {
+          String value = jsonReader.nextString();
+          return ${definitionName}.fromValue(value);
+        }
     }
 }

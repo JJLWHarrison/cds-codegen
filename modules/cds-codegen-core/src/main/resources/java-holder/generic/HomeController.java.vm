@@ -1,4 +1,4 @@
-#include("java-holder/shared/header.vm")
+#include("java-common/header.vm")
 package ${packageName}.configuration;
 
 import org.springframework.stereotype.Controller;

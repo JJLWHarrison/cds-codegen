@@ -1,0 +1,81 @@
+{
+    "globalVariables": {
+        "basePackageName": "au.org.consumerdatastandards.client",
+        "basePackagePath": "au/org/consumerdatastandards/client",
+        "basePath": "/cds-au/v1"
+    },
+    "handlers": [
+        {
+            "type": "GenericHandler",
+            "baseDirectory": "src/main/java",
+            "fileMapping": {
+                "java-client/generic/ApiCallback.java.vm": "${basePackagePath}/ApiCallback.java",
+                "java-client/generic/ApiClient.java.vm": "${basePackagePath}/ApiClient.java",
+                "java-client/generic/ApiException.java.vm": "${basePackagePath}/ApiException.java",
+                "java-client/generic/ApiResponse.java.vm": "${basePackagePath}/ApiResponse.java",
+                "java-client/generic/Configuration.java.vm": "${basePackagePath}/Configuration.java",
+                "java-client/generic/GzipRequestInterceptor.java.vm": "${basePackagePath}/GzipRequestInterceptor.java",
+                "java-client/generic/JSON.java.vm": "${basePackagePath}/JSON.java",
+                "java-client/generic/Pair.java.vm": "${basePackagePath}/Pair.java",
+                "java-client/generic/ProgressRequestBody.java.vm": "${basePackagePath}/ProgressRequestBody.java",
+                "java-client/generic/ProgressResponseBody.java.vm": "${basePackagePath}/ProgressResponseBody.java",
+                "java-client/generic/StringUtil.java.vm": "${basePackagePath}/StringUtil.java",                
+                "java-client/generic/pom.xml.vm": "../../../pom.xml"
+            },
+            "additionalAttributes": {
+                "packageName": "${basePackageName}",
+                "modelPackage":  "${basePackageName}.model",
+                "apiPackage": "${basePackageName}.api",
+                "titleName": "Consumer Data Standards",
+                "titleDescription": "API sets created by the Australian Consumer Data Standards to meet the needs of the Consumer Data Right",                
+                "licenseName": "MIT License",
+                "licenseUrl": "https://opensource.org/licenses/MIT",
+                "contactName": "Data61",
+                "contactUrl": "https://consumerdatastandards.org.au",
+                "contactEmail": "cdr-data61@csiro.au",
+                "tosUrl": "https://www.csiro.au/en/About/Footer/Legal-notice"
+            }            
+        },
+        {
+            "type": "DataDefinitionHandler",
+            "baseDirectory": "src/main/java",
+            "modelTemplate": "java-client/model/model.vm",
+            "enumTemplate": "java-client/model/enum.vm",
+            "fileName": "${cds.getDefinitionName()}.java",
+            "filePath": "${basePackagePath}/model",
+            "additionalAttributes": {
+                "packageName": "${basePackageName}.model"
+            }
+        },
+        {
+            "type": "SectionHandler",
+            "baseDirectory": "src/main/java",
+            "templateFile": "java-client/section/impl.vm",
+            "fileName": "${cds.getInterfaceName()}.java",
+            "filePath": "${basePackagePath}/api",
+            "additionalAttributes": {
+                "packageName": "${basePackageName}.api",
+                "modelPackage": "${basePackageName}.model"
+            }
+        }, 
+        {
+            "type": "SectionHandler",
+            "baseDirectory": "src/test/java",
+            "templateFile": "java-client/section/test.vm",
+            "fileName": "${cds.getInterfaceName()}Test.java",
+            "filePath": "${basePackagePath}",
+            "additionalAttributes": {
+                "packageName": "${basePackageName}",
+                "apiPackage": "${basePackageName}.api",
+                "modelPackage": "${basePackageName}.model"
+            }
+        }
+    ],
+    "typeMappings": {
+            "String": "String",
+            "List": "List<%s>",
+            "DateTime": "OffsetDateTime",
+            "Date": "Date",
+            "URI": "URI"
+    }
+}

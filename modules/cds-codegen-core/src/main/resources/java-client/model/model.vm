@@ -1,30 +1,19 @@
 #include("java-common/header.vm")
 package $packageName;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
+import com.google.gson.annotations.SerializedName;
 import io.swagger.annotations.ApiModelProperty;
-import org.hibernate.annotations.GenericGenerator;
+import org.threeten.bp.OffsetDateTime;
 
-import javax.persistence.*;
-import javax.validation.Valid;
-import javax.validation.constraints.NotNull;
-import java.time.OffsetDateTime;
 import java.util.Objects;
 import java.net.URI;
 import java.lang.reflect.Field;
 import java.util.List;
 import java.math.BigDecimal;
 
-
 /**
 * $definitionName
-* 
-* #if($definitionDescription)
-* $WordUtils.wrap($definitionDescription, 60, "
-* ", false)
-* #end
 */
-@Entity
 public class $definitionName #if($extendsOn)extends $extendsOn#end {
 #foreach($field in $fieldList)
     #parse("common/datadefinition.vm")
@@ -32,18 +21,14 @@ public class $definitionName #if($extendsOn)extends $extendsOn#end {
     // $WordUtils.wrap($fieldDescription, 60, "
     // ", false)
     #end
-    #if($fieldIsId)
-    @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
-    @GenericGenerator(name="system-uuid", strategy = "uuid2")    
-    #end
-    @JsonProperty("$fieldName")
+    @SerializedName("$fieldName")
     private $fieldType $fieldName;
 #end
 
 #foreach($field in $fieldList)
     #parse("common/datadefinition.vm")
     
+    @ApiModelProperty(value = "$fieldNameDescription")
     public $fieldType get$fieldNameCapital() {
         return $fieldName;
     }
@@ -51,6 +36,12 @@ public class $definitionName #if($extendsOn)extends $extendsOn#end {
     public void set$fieldNameCapital($fieldType $fieldName) {
         this.$fieldName = $fieldName;
     }
+    
+    public $definitionName $fieldName($fieldType $fieldName) {
+        this.$fieldName = $fieldName;
+        return this;
+    }
+    
 #end
 
     @Override
