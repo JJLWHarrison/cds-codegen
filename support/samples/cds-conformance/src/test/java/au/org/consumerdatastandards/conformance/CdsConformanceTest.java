@@ -87,17 +87,17 @@ public class CdsConformanceTest {
                 checkAgainstModel(allProducts, conformanceModel.getResponse("listProducts", ResponseCode.OK).content());
             },
             () -> {
-                checkProductListData(allProducts.getData());
+                if (!allProducts.getData().getProducts().isEmpty()) {
+                    checkProductListData(allProducts.getData());
+                }
             }
         );
     }
 
     private void checkProductListData(ResponseBankingProductListData data) throws ApiException, IllegalAccessException {
-        if (!data.getProducts().isEmpty()) {
-            for (BankingProduct product : data.getProducts()) {
-                ResponseBankingProductById productDetail = api.getProductDetail(product.getProductId());
-                checkAgainstModel(productDetail, conformanceModel.getResponse("getProductDetail", ResponseCode.OK).content());
-            }
+        for (BankingProduct product : data.getProducts()) {
+            ResponseBankingProductById productDetail = api.getProductDetail(product.getProductId());
+            checkAgainstModel(productDetail, conformanceModel.getResponse("getProductDetail", ResponseCode.OK).content());
         }
     }
 
@@ -126,7 +126,7 @@ public class CdsConformanceTest {
                 Class<?> itemType = ReflectionUtil.getItemType(modelFieldType, modelField.getGenericType());
                 if (itemType.isAnnotationPresent(DataDefinition.class)
                     && dataFieldValue != null && !((Collection) dataFieldValue).isEmpty()) {
-                    for (Object value : (Collection)dataFieldValue) {
+                    for (Object value : (Collection) dataFieldValue) {
                         checkAgainstModel(value, itemType);
                     }
                 }
