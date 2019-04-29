@@ -110,6 +110,7 @@ public class CdsConformanceTest {
             dataField.setAccessible(true);
             Object dataFieldValue = dataField.get(data);
             if (modelField.getAnnotation(Property.class).required()) {
+                LOGGER.info("checking field {}", modelField.getName());
                 assertNotNull(dataFieldValue);
             }
             Class<?> modelFieldType = modelField.getType();

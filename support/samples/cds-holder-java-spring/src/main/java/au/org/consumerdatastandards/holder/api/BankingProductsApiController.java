@@ -47,7 +47,8 @@ public class BankingProductsApiController implements BankingProductsApi {
         return new ResponseEntity<>(new ResponseBankingProductById()
             .data(service.getProductDetail(productId))
             .links(new Links()
-                .self(WebUtil.getOriginalUrl(request))), headers, HttpStatus.OK);
+                .self(WebUtil.getOriginalUrl(request)))
+            .meta(new Object()), headers, HttpStatus.OK);
     }
 
     @Override
