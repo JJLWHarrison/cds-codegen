@@ -1,5 +1,5 @@
 #include("java-common/header.vm")
-package $cliPackage;
+package $packageName;
 
 import org.springframework.core.convert.converter.Converter;
 import org.springframework.stereotype.Component;

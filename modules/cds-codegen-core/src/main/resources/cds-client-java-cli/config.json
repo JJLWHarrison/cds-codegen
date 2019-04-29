@@ -9,13 +9,15 @@
             "type": "GenericHandler",
             "baseDirectory": "src/main/java",
             "fileMapping": {
-                "java-client-cli/generic/CdsClientShell.java.vm": "${basePackagePath}/cli/CdsClientShell.java",
-                "java-client-cli/generic/OffsetDateTimeConverter.java.vm": "${basePackagePath}/cli/OffsetDateTimeConverter.java",
-                "java-client-cli/generic/pom.xml.vm": "../../../pom.xml"
+                "cds-client-java-cli/generic/CdsClientShell.java.vm": "${basePackagePath}/cli/CdsClientShell.java",
+                "cds-client-java-cli/generic/ApiClientOptions.java.vm": "${basePackagePath}/cli/ApiClientOptions.java",
+                "cds-client-java-cli/generic/ApiUtil.java.vm": "${basePackagePath}/cli/ApiUtil.java",
+                "cds-client-java-cli/generic/OffsetDateTimeConverter.java.vm": "${basePackagePath}/cli/OffsetDateTimeConverter.java",
+                "cds-client-java-cli/generic/banner.txt.vm": "../resources/banner.txt",
+                "cds-client-java-cli/generic/pom.xml.vm": "../../../pom.xml"
             },
             "additionalAttributes": {
-                "packageName": "${basePackageName}",
-                "cliPackage":  "${basePackageName}.cli",
+                "packageName": "${basePackageName}.cli",
                 "modelPackage":  "${basePackageName}.model",
                 "apiPackage": "${basePackageName}.api",                
                 "titleName": "Consumer Data Standards",
@@ -31,11 +33,12 @@
         {
             "type": "SectionHandler",
             "baseDirectory": "src/main/java",
-            "templateFile": "java-client-cli/section/impl.vm",
+            "templateFile": "cds-client-java-cli/section/impl.vm",
             "fileName": "${cds.getInterfaceName()}Cli.java",
             "filePath": "${basePackagePath}/cli",
             "additionalAttributes": {
                 "packageName": "${basePackageName}.cli",
+                "apiPackage": "${basePackageName}.api",                
                 "sectionName": "${cds.getName()}",
                 "interfaceName": "${cds.getInterfaceName()}",
                 "modelPackage": "${basePackageName}.model"

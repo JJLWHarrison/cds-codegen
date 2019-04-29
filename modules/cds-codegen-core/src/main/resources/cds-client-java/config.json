@@ -9,18 +9,18 @@
             "type": "GenericHandler",
             "baseDirectory": "src/main/java",
             "fileMapping": {
-                "java-client/generic/ApiCallback.java.vm": "${basePackagePath}/ApiCallback.java",
-                "java-client/generic/ApiClient.java.vm": "${basePackagePath}/ApiClient.java",
-                "java-client/generic/ApiException.java.vm": "${basePackagePath}/ApiException.java",
-                "java-client/generic/ApiResponse.java.vm": "${basePackagePath}/ApiResponse.java",
-                "java-client/generic/Configuration.java.vm": "${basePackagePath}/Configuration.java",
-                "java-client/generic/GzipRequestInterceptor.java.vm": "${basePackagePath}/GzipRequestInterceptor.java",
-                "java-client/generic/JSON.java.vm": "${basePackagePath}/JSON.java",
-                "java-client/generic/Pair.java.vm": "${basePackagePath}/Pair.java",
-                "java-client/generic/ProgressRequestBody.java.vm": "${basePackagePath}/ProgressRequestBody.java",
-                "java-client/generic/ProgressResponseBody.java.vm": "${basePackagePath}/ProgressResponseBody.java",
-                "java-client/generic/StringUtil.java.vm": "${basePackagePath}/StringUtil.java",                
-                "java-client/generic/pom.xml.vm": "../../../pom.xml"
+                "cds-client-java/generic/ApiCallback.java.vm": "${basePackagePath}/ApiCallback.java",
+                "cds-client-java/generic/ApiClient.java.vm": "${basePackagePath}/ApiClient.java",
+                "cds-client-java/generic/ApiException.java.vm": "${basePackagePath}/ApiException.java",
+                "cds-client-java/generic/ApiResponse.java.vm": "${basePackagePath}/ApiResponse.java",
+                "cds-client-java/generic/Configuration.java.vm": "${basePackagePath}/Configuration.java",
+                "cds-client-java/generic/GzipRequestInterceptor.java.vm": "${basePackagePath}/GzipRequestInterceptor.java",
+                "cds-client-java/generic/JSON.java.vm": "${basePackagePath}/JSON.java",
+                "cds-client-java/generic/Pair.java.vm": "${basePackagePath}/Pair.java",
+                "cds-client-java/generic/ProgressRequestBody.java.vm": "${basePackagePath}/ProgressRequestBody.java",
+                "cds-client-java/generic/ProgressResponseBody.java.vm": "${basePackagePath}/ProgressResponseBody.java",
+                "cds-client-java/generic/StringUtil.java.vm": "${basePackagePath}/StringUtil.java",                
+                "cds-client-java/generic/pom.xml.vm": "../../../pom.xml"
             },
             "additionalAttributes": {
                 "packageName": "${basePackageName}",
@@ -39,8 +39,8 @@
         {
             "type": "DataDefinitionHandler",
             "baseDirectory": "src/main/java",
-            "modelTemplate": "java-client/model/model.vm",
-            "enumTemplate": "java-client/model/enum.vm",
+            "modelTemplate": "cds-client-java/model/model.vm",
+            "enumTemplate": "cds-client-java/model/enum.vm",
             "fileName": "${cds.getDefinitionName()}.java",
             "filePath": "${basePackagePath}/model",
             "additionalAttributes": {
@@ -50,7 +50,7 @@
         {
             "type": "SectionHandler",
             "baseDirectory": "src/main/java",
-            "templateFile": "java-client/section/impl.vm",
+            "templateFile": "cds-client-java/section/impl.vm",
             "fileName": "${cds.getInterfaceName()}.java",
             "filePath": "${basePackagePath}/api",
             "additionalAttributes": {
@@ -61,7 +61,7 @@
         {
             "type": "SectionHandler",
             "baseDirectory": "src/test/java",
-            "templateFile": "java-client/section/test.vm",
+            "templateFile": "cds-client-java/section/test.vm",
             "fileName": "${cds.getInterfaceName()}Test.java",
             "filePath": "${basePackagePath}",
             "additionalAttributes": {

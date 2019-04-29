@@ -1,21 +1,28 @@
 #include("java-common/header.vm")
-package $cliPackage;
+package $packageName;
 
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.UUID;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.shell.standard.ShellCommandGroup;
 import org.springframework.shell.standard.ShellComponent;
 import org.springframework.shell.standard.ShellMethod;
 import org.springframework.shell.standard.ShellOption;
 import org.threeten.bp.OffsetDateTime;
 
+import au.org.consumerdatastandards.client.ApiException;
 import ${apiPackage}.*;
 import ${modelPackage}.*;
 
+@ShellComponent
 @ShellCommandGroup("${sectionName}")
 public class ${interfaceName}Cli {
 
+    @Autowired
+    ApiClientOptions apiClientOptions;
+    
     private final ${interfaceName} api = new ${interfaceName}(); 
 
 #foreach($endpoint in $cds.getEndpointModels())
@@ -32,10 +39,8 @@ public class ${interfaceName}Cli {
     #end    
     ) throws ApiException {
 
-        if (this.serverUrl == null) {
-            System.out.println("Please use `server` command to set Server URL first");
-            return;
-        }
+        api.setApiClient(ApiUtil.getApiClient(apiClientOptions.getServerUrl()));
+        
         try {
             $endpointDefaultResponse response = api.${endpointOperationId}(
         #foreach($oneParam in $endpoint.getPathParams())
