@@ -31,7 +31,26 @@
             <organizationUrl>https://data61.csiro.au/</organizationUrl>
         </developer>
     </developers>
+    <parent>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-starter-parent</artifactId>
+        <version>2.1.4.RELEASE</version>
+    </parent>
     <dependencies>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.shell</groupId>
+            <artifactId>spring-shell-core</artifactId>
+            <version>${spring-shell-version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.shell</groupId>
+            <artifactId>spring-shell-starter</artifactId>
+            <version>${spring-shell-version}</version>
+        </dependency>
         <dependency>
             <groupId>org.junit.jupiter</groupId>
             <artifactId>junit-jupiter</artifactId>
@@ -52,12 +71,13 @@
     <build>
         <resources>
             <resource>
-                <directory>src/test/resources</directory>
+                <directory>src/main/resources</directory>
             </resource>
         </resources>
     </build>
     <properties>
         <java.version>1.8</java.version>
+        <spring-shell-version>2.0.1.RELEASE</spring-shell-version>
         <cds-client-java-version>0.0.1</cds-client-java-version>
         <junit-jupiter.version>5.4.0</junit-jupiter.version>
         <maven.compiler.source>${java.version}</maven.compiler.source>

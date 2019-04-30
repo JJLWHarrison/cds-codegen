@@ -23,7 +23,6 @@ import org.slf4j.LoggerFactory;
 import java.io.IOException;
 import java.io.InputStream;
 import java.lang.reflect.Field;
-import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.math.BigDecimal;
 import java.util.*;
@@ -363,7 +362,7 @@ public class ModelSwaggerConverter {
             arrayProperty.description(property.description());
         }
         Type genericType = field.getGenericType();
-        Class<?> itemType = getItemType(field.getType(), genericType);
+        Class<?> itemType = ReflectionUtil.getItemType(field.getType(), genericType);
         Map<PropertyBuilder.PropertyId, Object> args = argsFromField(field, true);
         arrayProperty.setItems(convertItemToProperty(swagger, itemType, genericType, typeFormat.format, args));
         return arrayProperty;
@@ -380,7 +379,7 @@ public class ModelSwaggerConverter {
             return buildObjectProperty(swagger, type);
         } else if (ArrayProperty.isType(typeFormat.type)) {
             ArrayProperty arrayProperty = new ArrayProperty();
-            Class<?> itemType = getItemType(type, genericType);
+            Class<?> itemType = ReflectionUtil.getItemType(type, genericType);
             arrayProperty.setItems(convertItemToProperty(swagger, itemType, genericType, typeFormat.format, args));
             return arrayProperty;
         }
@@ -396,7 +395,7 @@ public class ModelSwaggerConverter {
     private static SwaggerTypeFormat getSwaggerTypeFormat(Class<?> type) {
 
         SwaggerTypeFormat swaggerTypeFormat = new SwaggerTypeFormat();
-        if (type.isArray() || isSetOrList(type)) {
+        if (type.isArray() || ReflectionUtil.isSetOrList(type)) {
             swaggerTypeFormat.type = ArrayProperty.TYPE;
         } else if (type.isEnum()) {
             swaggerTypeFormat.type = StringProperty.TYPE;
@@ -424,10 +423,10 @@ public class ModelSwaggerConverter {
         Map<PropertyBuilder.PropertyId, Object> args
     ) {
         SwaggerTypeFormat typeFormat = getSwaggerTypeFormat(type);
-        if (!type.isArray() && !isSetOrList(type) && !StringUtils.isBlank(format)) {
+        if (!type.isArray() && !ReflectionUtil.isSetOrList(type) && !StringUtils.isBlank(format)) {
             typeFormat.format = format;
         }
-        if (!type.isArray() && !isSetOrList(type)) {
+        if (!type.isArray() && !ReflectionUtil.isSetOrList(type)) {
             setEnum(type, args);
         }
         return buildItemsProperty(swagger, type, genericType, typeFormat, args);
@@ -559,23 +558,5 @@ public class ModelSwaggerConverter {
     private static void setVendorExtensions(Field field, Map<PropertyBuilder.PropertyId, Object> args) {
 
         args.put(PropertyBuilder.PropertyId.VENDOR_EXTENSIONS, CustomAttributesUtil.getGroupedAttributes(field));
-    }
-
-    private static boolean isSetOrList(Class<?> type) {
-
-        return Set.class.isAssignableFrom(type) || List.class.isAssignableFrom(type);
-    }
-
-    private static Class<?> getItemType(Class<?> type, Type genericType) {
-
-        if (type.isArray()) {
-            return type.getComponentType();
-        }
-        if (genericType instanceof ParameterizedType) {
-            ParameterizedType aType = (ParameterizedType) genericType;
-            Type[] fieldArgTypes = aType.getActualTypeArguments();
-            return (Class<?>) fieldArgTypes[0];
-        }
-        return Object.class;
     }
 }
