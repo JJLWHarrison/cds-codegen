@@ -106,12 +106,11 @@ public class CdsConformanceTest {
         List<Field> properties = FieldUtils.getFieldsListWithAnnotation(model, Property.class);
         for (Field modelField : properties) {
             Field dataField = FieldUtils.getField(data.getClass(), modelField.getName(), true);
-            assertNotNull(dataField);
+            assertNotNull(dataField, model.getSimpleName() + "." + modelField.getName() + " is missing from data " + data);
             dataField.setAccessible(true);
             Object dataFieldValue = dataField.get(data);
             if (modelField.getAnnotation(Property.class).required()) {
-                LOGGER.info("checking field {}", modelField.getName());
-                assertNotNull(dataFieldValue);
+                assertNotNull(dataFieldValue, model.getSimpleName() + "." + modelField.getName() + " is required");
             }
             Class<?> modelFieldType = modelField.getType();
             if (modelFieldType.isArray()) {
