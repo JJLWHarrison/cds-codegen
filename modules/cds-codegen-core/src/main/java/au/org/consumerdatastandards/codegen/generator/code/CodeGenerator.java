@@ -3,6 +3,7 @@ package au.org.consumerdatastandards.codegen.generator.code;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.InputStream;
+import java.util.List;
 import java.util.Set;
 
 import org.apache.logging.log4j.LogManager;
@@ -101,4 +102,9 @@ public class CodeGenerator extends AbstractGenerator<CodeGeneratorOptions> {
     protected CodeGeneratorOptions createOptions() {
         return new CodeGeneratorOptions();
     }
+    
+    public void setOptions(List<String> includedInit, List<String> excludedInit, String targetPath, String outputPath) {
+        options = new CodeGeneratorOptions(includedInit, excludedInit, targetPath, outputPath);
+    }
+
 }

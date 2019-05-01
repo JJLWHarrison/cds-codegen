@@ -1,6 +1,9 @@
 package au.org.consumerdatastandards.codegen.generator.code;
 
 import au.org.consumerdatastandards.codegen.generator.Options;
+
+import java.util.List;
+
 import com.beust.jcommander.Parameter;
 import com.beust.jcommander.Parameters;
 
@@ -23,5 +26,16 @@ public class CodeGeneratorOptions extends Options {
 
     public String getOutputPath() {
         return outputPath;
-    }    
+    }
+    
+    public CodeGeneratorOptions() {
+        super();
+    }
+    public CodeGeneratorOptions(List<String> includedInit, List<String> excludedInit, String targetPath, String outputPath) {
+        super();
+        this.targetPath = targetPath;
+        this.outputPath = outputPath;
+        excludedSections = excludedInit;
+        includedSections = includedInit;
+    }
 }

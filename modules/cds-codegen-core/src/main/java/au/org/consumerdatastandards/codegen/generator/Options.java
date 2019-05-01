@@ -18,8 +18,8 @@ public class Options {
     @Parameter(names = {"--excluded", "-e"}, description = "Exclude Section (comma separated)", order = 3)
     private String excludedSectionsString;
     
-    private List<String> includedSections = new ArrayList<>();
-    private List<String> excludedSections = new ArrayList<>();
+    protected List<String> includedSections = new ArrayList<>();
+    protected List<String> excludedSections = new ArrayList<>();
 
     @Parameter(names = {"--help", "-?", "-h" }, help = true)
     private boolean help;

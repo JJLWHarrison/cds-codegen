@@ -16,7 +16,10 @@ public class CodegenCLI {
     private static final Logger LOG = LogManager.getLogger(CodegenCLI.class);
 
     public static void main(String[] args) throws Exception {
-
+        executeFromArgs(args);
+    }
+    
+    public static void executeFromArgs(String[] args) {
         Options options = new Options();
         JCommander commander = JCommander.newBuilder().addObject(options).build();
         commander.setProgramName(CodegenCLI.class.getSimpleName());
@@ -52,7 +55,7 @@ public class CodegenCLI {
         }
     }
 
-    private static AbstractGenerator<?> getGenerator(String generatorClassName, APIModel apiModel) {
+    public static AbstractGenerator<?> getGenerator(String generatorClassName, APIModel apiModel) {
 
         if (StringUtils.isBlank(generatorClassName)) {
             throw new ParameterException("You must supply a generator name");
