@@ -1,7 +1,9 @@
 package au.org.consumerdatastandards.codegen.plugin;
 
+import au.org.consumerdatastandards.codegen.CodegenCLI;
 import au.org.consumerdatastandards.codegen.ModelBuilder;
 import au.org.consumerdatastandards.codegen.generator.code.CodeGenerator;
+import au.org.consumerdatastandards.codegen.generator.AbstractGenerator;
 import au.org.consumerdatastandards.codegen.generator.Options;
 import au.org.consumerdatastandards.codegen.generator.openapi.SwaggerGenerator;
 import au.org.consumerdatastandards.codegen.model.APIModel;
@@ -119,11 +121,11 @@ public class CodeGenMojo extends AbstractMojo {
                 throw new MojoExecutionException(
                         "cds-codegen attempted to execute swagger-codegen and failed, see details above");
             }
-        } else if(generatorEngine.equals(GENERATOR.CDS_CODEGEN)) {
-            
-            CodeGenerator myGenerator = new CodeGenerator(apiModel);
+        } else if(generatorEngine.equals(GENERATOR.CDS_CODEGEN)) {            
             try {
-                myGenerator.generate();
+                CodeGenerator generator = new CodeGenerator(apiModel);
+                generator.setOptions(includedSections, excludedSections, language, outputDirectory.getAbsolutePath());
+                generator.generate();
             } catch (Exception e) {
                 throw new MojoExecutionException(e.toString());
             }
@@ -131,7 +133,6 @@ public class CodeGenMojo extends AbstractMojo {
         } else {
             throw new MojoExecutionException(
                     "cds-codegen attempted to execute with unknown generatorEngine");
-      
         }
 
     }
