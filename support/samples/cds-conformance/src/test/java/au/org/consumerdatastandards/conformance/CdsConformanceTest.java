@@ -49,7 +49,7 @@ public class CdsConformanceTest {
         List<String> includedSectionList = new ArrayList<>();
         List<String> excludedSectionList = new ArrayList<>();
         Properties props = new Properties();
-        InputStream is = CdsConformanceTest.class.getResourceAsStream("/src/main/resources/conformance.properties");
+        InputStream is = CdsConformanceTest.class.getResourceAsStream("/conformance.properties");
 
         try {
             props.load(is);
@@ -83,9 +83,7 @@ public class CdsConformanceTest {
 
         ResponseBankingProductList allProducts = api.listProducts("ALL", null, null, null, null, null);
         assertAll("Proper responses",
-            () -> {
-                checkAgainstModel(allProducts, conformanceModel.getResponse("listProducts", ResponseCode.OK).content());
-            },
+            () -> checkAgainstModel(allProducts, conformanceModel.getResponse("listProducts", ResponseCode.OK).content()),
             () -> {
                 if (!allProducts.getData().getProducts().isEmpty()) {
                     checkProductListData(allProducts.getData());
