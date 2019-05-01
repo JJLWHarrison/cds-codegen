@@ -46,10 +46,10 @@ public class $interfaceName {
     /**
      * Build call for ${endpointOperationId}
     #foreach($oneParam in $endpoint.getPathParams())
-     * @param $oneParam.getCamelCaseName() $oneParam.getParam().getDescription()
+     * @param $oneParam.getCamelCaseName() $oneParam.getParam().description()
     #end
     #foreach($oneParam in $endpoint.getQueryParams())
-     * @param $oneParam.getCamelCaseName() $oneParam.getParam().getDescription()
+     * @param $oneParam.getCamelCaseName() $oneParam.getParam().description()
     #end
      * @return Call to execute
      * @throws ApiException If fail to serialize the request body object    
@@ -119,10 +119,10 @@ public class $interfaceName {
      * ", false)
      * #end
     #foreach($oneParam in $endpoint.getPathParams())
-     * @param $oneParam.getCamelCaseName() $oneParam.getParam().getDescription() (required)
+     * @param $oneParam.getCamelCaseName() $oneParam.getParam().description() (required)
     #end
     #foreach($oneParam in $endpoint.getQueryParams())
-     * @param $oneParam.getCamelCaseName() $oneParam.getParam().getDescription()
+     * @param $oneParam.getCamelCaseName() $oneParam.getParam().description()
     #end
      * @return $endpointDefaultResponse
      * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
@@ -154,10 +154,10 @@ public class $interfaceName {
      * ", false)
      * #end
     #foreach($oneParam in $endpoint.getPathParams())
-     * @param $oneParam.getCamelCaseName() $oneParam.getParam().getDescription() (required)
+     * @param $oneParam.getCamelCaseName() $oneParam.getParam().description() (required)
     #end
     #foreach($oneParam in $endpoint.getQueryParams())
-     * @param $oneParam.getCamelCaseName() $oneParam.getParam().getDescription()
+     * @param $oneParam.getCamelCaseName() $oneParam.getParam().description()
     #end
      * @return ApiResponse&lt;$endpointDefaultResponse&gt;
      * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
@@ -191,10 +191,10 @@ public class $interfaceName {
      * ", false)
      * #end
     #foreach($oneParam in $endpoint.getPathParams())
-     * @param $oneParam.getCamelCaseName() $oneParam.getParam().getDescription() (required)
+     * @param $oneParam.getCamelCaseName() $oneParam.getParam().description() (required)
     #end
     #foreach($oneParam in $endpoint.getQueryParams())
-     * @param $oneParam.getCamelCaseName() $oneParam.getParam().getDescription()
+     * @param $oneParam.getCamelCaseName() $oneParam.getParam().description()
     #end
      * @param _callback The callback to be executed when the API call finishes
      * @return The request call

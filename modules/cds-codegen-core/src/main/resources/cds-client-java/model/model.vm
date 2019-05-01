@@ -28,7 +28,7 @@ public class $definitionName #if($extendsOn)extends $extendsOn#end {
 #foreach($field in $fieldList)
     #parse("common/datadefinition.vm")
     
-    @ApiModelProperty(value = "$fieldNameDescription")
+    @ApiModelProperty(value = "$fieldDescription", required = $fieldRequired)
     public $fieldType get$fieldNameCapital() {
         return $fieldName;
     }
@@ -72,19 +72,19 @@ public class $definitionName #if($extendsOn)extends $extendsOn#end {
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();
-        sb.append(String.format("class %s {\n", getClass()));
-
-        for (Field oneField : getClass().getFields()) {
-            oneField.setAccessible(true);
-            try {
-                sb.append(String.format("    %s: %s\n", oneField.getName(), (oneField.get(Object.class) == null ? "null"
-                        : oneField.get(Object.class).toString().replace("\n", "\n    "))));
-            } catch (IllegalArgumentException | IllegalAccessException e) {
-                // I guess we won't print it
-                sb.append(String.format("    %s, [unreadable]\n", oneField.getName()));
-            }
-        }
+        sb.append(String.format("class %s {\n", getClass()));        
+        #foreach($field in $fieldList)
+        #parse("common/datadefinition.vm")
+        sb.append("    $fieldName: ").append(toIndentedString($fieldName)).append("\n");
+        #end
         sb.append("}");
         return sb.toString();
+    }
+    
+    private String toIndentedString(java.lang.Object o) {
+      if (o == null) {
+        return "null";
+      }
+      return o.toString().replace("\n", "\n    ");
     }
 }

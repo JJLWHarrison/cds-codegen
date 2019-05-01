@@ -102,6 +102,7 @@ public class ParamModel extends ModelBase implements Comparable<ParamModel> {
     public boolean hasAllowableValues() {
         return allowableValues != null && !allowableValues.isEmpty();
     }
+
     
     
 }

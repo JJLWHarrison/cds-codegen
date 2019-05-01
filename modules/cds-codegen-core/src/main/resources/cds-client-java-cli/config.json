@@ -12,6 +12,7 @@
                 "cds-client-java-cli/generic/CdsClientShell.java.vm": "${basePackagePath}/cli/CdsClientShell.java",
                 "cds-client-java-cli/generic/ApiClientOptions.java.vm": "${basePackagePath}/cli/ApiClientOptions.java",
                 "cds-client-java-cli/generic/ApiUtil.java.vm": "${basePackagePath}/cli/ApiUtil.java",
+                "cds-client-java-cli/generic/CommonCli.java.vm": "${basePackagePath}/cli/CommonCli.java",
                 "cds-client-java-cli/generic/OffsetDateTimeConverter.java.vm": "${basePackagePath}/cli/OffsetDateTimeConverter.java",
                 "cds-client-java-cli/generic/banner.txt.vm": "../resources/banner.txt",
                 "cds-client-java-cli/generic/pom.xml.vm": "../../../pom.xml"
