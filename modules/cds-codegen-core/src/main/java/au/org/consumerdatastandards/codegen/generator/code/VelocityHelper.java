@@ -4,7 +4,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.Map.Entry;
 import java.util.Set;
 
@@ -20,7 +20,7 @@ import au.org.consumerdatastandards.codegen.generator.velocity.model.VelocityFil
 
 public class VelocityHelper {
 
-    public Set<VelocityFile> velocityFiles = new HashSet<VelocityFile>();
+    public Set<VelocityFile> velocityFiles = new LinkedHashSet<VelocityFile>();
     public String basePath;
     public String packagePathSeparator;
     public String classExtension;

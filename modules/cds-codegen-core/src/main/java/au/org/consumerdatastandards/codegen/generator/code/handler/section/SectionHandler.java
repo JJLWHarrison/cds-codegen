@@ -1,7 +1,7 @@
 package au.org.consumerdatastandards.codegen.generator.code.handler.section;
 
 import java.io.IOException;
-import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.Set;
 
 import org.apache.logging.log4j.LogManager;
@@ -33,7 +33,7 @@ public class SectionHandler extends AbstractHandler<SectionHandlerConfig> {
     }
     
     public SectionModel postProcessSectionModel(SectionModel oneSection) {
-        Set<EndpointModel> newEndpointModelSet = new HashSet<EndpointModel>();
+        Set<EndpointModel> newEndpointModelSet = new LinkedHashSet<EndpointModel>();
         
         for(EndpointModel oneEndpoint : oneSection.getEndpointModels()) {
             // Perform type mapping on default response

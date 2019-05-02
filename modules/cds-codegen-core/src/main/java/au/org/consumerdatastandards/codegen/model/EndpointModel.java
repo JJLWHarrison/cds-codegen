@@ -35,7 +35,7 @@ public class EndpointModel extends ModelBase implements Comparable<EndpointModel
     public void addParamModel(ParamModel paramModel) {
 
         paramModels.add(paramModel);
-        paramsByLocation.computeIfAbsent(paramModel.getParam().in(), k -> new HashSet<>());
+        paramsByLocation.computeIfAbsent(paramModel.getParam().in(), k -> new LinkedHashSet<>());
         paramsByLocation.get(paramModel.getParam().in()).add(paramModel);
     }
 
