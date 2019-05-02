@@ -11,7 +11,6 @@ import au.org.consumerdatastandards.conformance.PayloadType;
 import au.org.consumerdatastandards.support.EndpointResponse;
 import au.org.consumerdatastandards.support.ResponseCode;
 import au.org.consumerdatastandards.support.data.DataDefinition;
-import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.lang3.reflect.FieldUtils;
 
 import java.lang.reflect.Field;
@@ -31,7 +30,6 @@ public class ModelConformanceConverter {
         }
         conformanceModel.setResponseMap(responseMap);
         conformanceModel.setPayloadMap(payloadMap);
-        conformanceModel.setFieldsClassMap(mapClassByFields(payloadMap.keySet()));
         conformanceModel.setNameClassMap(mapClassByName(payloadMap.keySet()));
         return conformanceModel;
     }
@@ -42,37 +40,6 @@ public class ModelConformanceConverter {
             classMap.put(clazz.getSimpleName(), clazz);
         }
         return classMap;
-    }
-
-    private static Map<String, Class<?>> mapClassByFields(Set<Class<?>> classes) {
-        Map<String, Class<?>> classMap = new HashMap<>();
-        for (Class<?> clazz: classes) {
-            classMap.put(generateKey(getAllFieldNames(clazz)), clazz);
-        }
-        return classMap;
-    }
-
-    private static String generateKey(Set<String> ss) {
-        StringBuilder sb = new StringBuilder();
-        for (String s : ss) {
-            sb.append(s);
-        }
-        return DigestUtils.sha256Hex(sb.toString());
-    }
-
-    private static Set<String> getAllFieldNames(Class<?> clazz) {
-        Set<String> fieldNames = new TreeSet<>();
-        Field[] allFields = FieldUtils.getAllFields(clazz);
-        for (Field field: allFields) {
-            fieldNames.add(field.getName());
-        }
-        DataDefinition dataDefinition = clazz.getAnnotation(DataDefinition.class);
-        if (dataDefinition != null && dataDefinition.allOf().length > 0) {
-            for (Class<?> aClass : dataDefinition.allOf()) {
-                fieldNames.addAll(getAllFieldNames(aClass));
-            }
-        }
-        return fieldNames;
     }
 
     private static void add(EndpointModel endpointModel,
@@ -129,16 +96,19 @@ public class ModelConformanceConverter {
                     addPayload(endpointModel, fieldType, payloadMap);
                     processDataDefinition(endpointModel, fieldType, payloadMap, processedClasses);
                 } else if (ReflectionUtil.isSetOrList(fieldType)) {
+                    addPayload(endpointModel, fieldType, payloadMap);
                     Class<?> itemType = ReflectionUtil.getItemType(fieldType, field.getGenericType());
                     if (itemType.isAnnotationPresent(DataDefinition.class) && !itemType.isEnum()) {
                         addPayload(endpointModel, itemType, payloadMap);
                         processDataDefinition(endpointModel, itemType, payloadMap, processedClasses);
                     }
-                } else if (fieldType.isArray()
-                    && fieldType.getComponentType().isAnnotationPresent(DataDefinition.class)
-                    && !fieldType.getComponentType().isEnum()) {
-                    addPayload(endpointModel, fieldType.getComponentType(), payloadMap);
-                    processDataDefinition(endpointModel, fieldType.getComponentType(), payloadMap, processedClasses);
+                } else if (fieldType.isArray()) {
+                    addPayload(endpointModel, fieldType, payloadMap);
+                    if(fieldType.getComponentType().isAnnotationPresent(DataDefinition.class)
+                        && !fieldType.getComponentType().isEnum()) {
+                        addPayload(endpointModel, fieldType.getComponentType(), payloadMap);
+                        processDataDefinition(endpointModel, fieldType.getComponentType(), payloadMap, processedClasses);
+                    }
                 }
             }
             DataDefinition dataDefinition = dataType.getAnnotation(DataDefinition.class);

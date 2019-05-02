@@ -4,13 +4,13 @@ import au.org.consumerdatastandards.support.EndpointResponse;
 import au.org.consumerdatastandards.support.ResponseCode;
 
 import java.util.Map;
+import java.util.Set;
 import java.util.TreeMap;
 
 public class ConformanceModel {
 
     private Map<String, Map<ResponseCode, EndpointResponse>> responseMap;
     private Map<Class<?>, Payload> payloadMap;
-    private Map<String, Class<?>> fieldsClassMap;
     private TreeMap<String, Class<?>> nameClassMap;
 
     public void setResponseMap(Map<String, Map<ResponseCode, EndpointResponse>> responseMap) {
@@ -19,10 +19,6 @@ public class ConformanceModel {
 
     public void setPayloadMap(Map<Class<?>, Payload> payloadMap) {
         this.payloadMap = payloadMap;
-    }
-
-    public void setFieldsClassMap(Map<String, Class<?>> fieldsClassMap) {
-        this.fieldsClassMap = fieldsClassMap;
     }
 
     public void setNameClassMap(TreeMap<String, Class<?>> nameClassMap) {
@@ -37,11 +33,11 @@ public class ConformanceModel {
         return nameClassMap.get(name);
     }
 
-    public Class<?> getClassByFields(String fields) {
-        return fieldsClassMap.get(fields);
-    }
-
     public Payload getPlayload(Class<?> clazz) {
         return payloadMap.get(clazz);
+    }
+
+    public Set<Class<?>> getPayloadModels() {
+        return payloadMap.keySet();
     }
 }

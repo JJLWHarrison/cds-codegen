@@ -7,6 +7,7 @@ import au.org.consumerdatastandards.client.model.*;
 import au.org.consumerdatastandards.codegen.ModelBuilder;
 import au.org.consumerdatastandards.codegen.generator.Options;
 import au.org.consumerdatastandards.codegen.util.ReflectionUtil;
+import au.org.consumerdatastandards.conformance.util.ConformanceUtil;
 import au.org.consumerdatastandards.conformance.util.ModelConformanceConverter;
 import au.org.consumerdatastandards.support.ResponseCode;
 import au.org.consumerdatastandards.support.data.DataDefinition;
@@ -115,7 +116,7 @@ public class CdsConformanceTest {
                 if (modelFieldType.getComponentType().isAnnotationPresent(DataDefinition.class)
                     && dataFieldValue != null
                     && Array.getLength(dataFieldValue) > 0) {
-                    Object[] values = unpack(dataFieldValue);
+                    Object[] values = ConformanceUtil.unpack(dataFieldValue);
                     for (Object value : values) {
                         checkAgainstModel(value, modelFieldType.getComponentType());
                     }
@@ -133,12 +134,5 @@ public class CdsConformanceTest {
                 checkAgainstModel(dataFieldValue, modelFieldType);
             }
         }
-    }
-
-    private Object[] unpack(Object array) {
-        Object[] values = new Object[Array.getLength(array)];
-        for (int i = 0; i < values.length; i++)
-            values[i] = Array.get(array, i);
-        return values;
     }
 }

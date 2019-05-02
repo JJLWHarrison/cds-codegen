@@ -34,9 +34,8 @@
     <properties>
         <java.version>1.8</java.version>
         <spring-shell.version>2.0.1.RELEASE</spring-shell.version>
-        <commons-codec.version>1.12</commons-codec.version>
         <cds-client-java.version>0.0.1</cds-client-java.version>
-        <cds-codegen-core.version>0.0.2-SNAPSHOT</cds-codegen-core.version>
+        <cds-codegen-core.version>0.0.3-SNAPSHOT</cds-codegen-core.version>
         <junit-jupiter.version>5.4.0</junit-jupiter.version>
         <maven.compiler.source>${java.version}</maven.compiler.source>
         <maven.compiler.target>${java.version}</maven.compiler.target>
@@ -78,9 +77,16 @@
             <version>${cds-client-java.version}</version>
         </dependency>
         <dependency>
-            <groupId>commons-codec</groupId>
-            <artifactId>commons-codec</artifactId>
-            <version>${commons-codec.version}</version>
+            <groupId>com.fasterxml.jackson.module</groupId>
+            <artifactId>jackson-module-parameter-names</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.fasterxml.jackson.datatype</groupId>
+            <artifactId>jackson-datatype-jdk8</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.fasterxml.jackson.datatype</groupId>
+            <artifactId>jackson-datatype-jsr310</artifactId>
         </dependency>
     </dependencies>
     <build>
