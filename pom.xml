@@ -22,7 +22,8 @@
 
     <modules>
         <module>modules/cds-codegen-core</module>
-        <module>modules/cds-codegen-maven-plugin</module>
+    	<module>modules/cds-codegen-maven-plugin</module>
+    	<module>support/samples/cds-holder-java-spring</module>
     </modules>
 
     <distributionManagement>

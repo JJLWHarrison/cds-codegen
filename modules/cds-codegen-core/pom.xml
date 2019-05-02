@@ -135,7 +135,7 @@
         <dependency>
             <groupId>au.org.consumerdatastandards</groupId>
             <artifactId>cds-models</artifactId>
-            <version>0.0.3-SNAPSHOT</version>
+            <version>0.0.4-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>com.beust</groupId>
