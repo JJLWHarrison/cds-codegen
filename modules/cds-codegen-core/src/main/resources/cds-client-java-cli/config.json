@@ -15,7 +15,8 @@
                 "cds-client-java-cli/generic/CommonCli.java.vm": "${basePackagePath}/cli/CommonCli.java",
                 "cds-client-java-cli/generic/OffsetDateTimeConverter.java.vm": "${basePackagePath}/cli/OffsetDateTimeConverter.java",
                 "cds-client-java-cli/generic/banner.txt.vm": "../resources/banner.txt",
-                "cds-client-java-cli/generic/pom.xml.vm": "../../../pom.xml"
+                "cds-client-java-cli/generic/pom.xml.vm": "../../../pom.xml",
+                "cds-client-java-cli/generic/Dockerfile.vm": "../../../Dockerfile"
             },
             "additionalAttributes": {
                 "packageName": "${basePackageName}.cli",
