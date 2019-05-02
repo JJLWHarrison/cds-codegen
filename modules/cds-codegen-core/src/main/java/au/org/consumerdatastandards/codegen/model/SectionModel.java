@@ -3,7 +3,7 @@ package au.org.consumerdatastandards.codegen.model;
 import au.org.consumerdatastandards.support.Section;
 
 import java.lang.reflect.Field;
-import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.Set;
 import java.util.TreeSet;
 
@@ -55,7 +55,7 @@ public class SectionModel extends ModelBase implements Comparable<SectionModel> 
     }
 
     public Set<EndpointModel> getEndpointModelsWithDataOperations() {
-        Set<EndpointModel> allModels = new HashSet<>();
+        Set<EndpointModel> allModels = new LinkedHashSet<>();
         for (EndpointModel thisEndpoint : endpointModels) {
             if (thisEndpoint.hasDataOperation()) {
                 allModels.add(thisEndpoint);

@@ -11,7 +11,7 @@ import org.springframework.shell.jline.PromptProvider;
 public class PayloadValidatorShell {
 
     public static void main(String[] args) {
-        SpringApplication.run(PayloadValidator.class, args);
+        SpringApplication.run(PayloadValidatorShell.class, args);
     }
 
     @Bean
