@@ -1,0 +1,52 @@
+#include("java-common/header.vm")
+package $packageName;
+
+import ${modelPackage}.*;
+import ${repositoryPackage}.*;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
+import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
+
+import javax.persistence.criteria.Predicate;
+import java.time.OffsetDateTime;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
+
+@Service
+public class ${interfaceName}Service {
+
+#foreach($endpoint in $cds.getEndpointModelsWithDataOperations())
+    #parse("common/endpointdefinition.vm")
+    private final ${dataOperationDefinition}Repository $dataOperationDefinitionCamelised;
+#end
+
+    @Autowired
+    public ${interfaceName}Service(
+#foreach($endpoint in $cds.getEndpointModelsWithDataOperations())
+        #parse("common/endpointdefinition.vm")
+        ${dataOperationDefinition}Repository $dataOperationDefinitionCamelised#if( $foreach.hasNext ),#end
+#end
+    ) {
+#foreach($endpoint in $cds.getEndpointModelsWithDataOperations())
+        #parse("common/endpointdefinition.vm")
+        this.$dataOperationDefinitionCamelised = $dataOperationDefinitionCamelised;
+#end
+    }
+    
+#foreach($endpoint in $cds.getEndpointModelsWithDataOperations())
+    #parse("common/endpointdefinition.vm")
+    // Endpoint Operation: $endpointOperationId | Data Operation: $dataOperationType
+    #if($dataOperationType == "GET_BY_ID")
+    public ${dataOperationDefinition} get${dataOperationDefinition}ById(String inputId) {
+        Optional<${dataOperationDefinition}> byId = ${dataOperationDefinitionCamelised}.findById(inputId);
+        return byId.orElse(null);
+    }
+    #end
+#end
+
+}

@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<Configuration status="INFO">
+<Configuration status="ERROR">
     <Appenders>
         <Console name="Console" target="SYSTEM_OUT">
             <PatternLayout pattern="%d{HH:mm:ss.SSS} [%t] %-5level %logger{36} - %msg%n"/>
@@ -12,5 +12,23 @@
         <Logger name="org.reflections.Reflections" level="ERROR">
             <AppenderRef ref="Console"/>
         </Logger>
+        <Logger name="au.org.consumerdatastandards.codegen.generator.code.CodeGenerator" level="DEBUG">
+            
+        </Logger>
+        <Logger name="au.org.consumerdatastandards.codegen.generator.code.handler.datadefinition.DataDefinitionHandler" level="DEBUG">
+            
+        </Logger>
+        <Logger name="au.org.consumerdatastandards.codegen.ModelBuilder" level="DEBUG">
+            
+        </Logger>
+        <Logger name="au.org.consumerdatastandards.codegen.util.ModelCodegenConverter" level="DEBUG">
+            
+        </Logger>
+        <Logger name="au.org.consumerdatastandards.codegen.generator.code.handler.generic.GenericHandler" level="DEBUG">
+            
+        </Logger>
+        <Logger name="au.org.consumerdatastandards.codegen.generator.code.handler.section.SectionHandler" level="DEBUG">
+            
+        </Logger>      
     </Loggers>
 </Configuration>

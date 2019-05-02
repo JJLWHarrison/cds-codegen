@@ -7,6 +7,14 @@ import au.org.consumerdatastandards.support.data.Pattern;
 import au.org.consumerdatastandards.support.data.StringFormat;
 
 import java.lang.reflect.Parameter;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Set;
+import java.util.TreeSet;
+
+import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.text.CaseUtils;
+import org.apache.logging.log4j.util.Strings;
 
 public class ParamModel extends ModelBase implements Comparable<ParamModel> {
 
@@ -14,7 +22,7 @@ public class ParamModel extends ModelBase implements Comparable<ParamModel> {
 
     private String name;
 
-    private Class paramDataType;
+    private Class<?> paramDataType;
 
     private CDSDataType cdsDataType;
 
@@ -23,15 +31,26 @@ public class ParamModel extends ModelBase implements Comparable<ParamModel> {
     private Pattern pattern;
 
     private IntegerRange integerRange;
+    
+    private List<String> allowableValues;
 
     public ParamModel(Parameter parameter) {
         this.param = parameter.getAnnotation(Param.class);
-        this.name = parameter.getName();
+        this.name = this.param.name();
         this.paramDataType = parameter.getType();
         this.cdsDataType = parameter.getAnnotation(CDSDataType.class);
         this.stringFormat = parameter.getAnnotation(StringFormat.class);
         this.pattern = parameter.getAnnotation(Pattern.class);
         this.integerRange = parameter.getAnnotation(IntegerRange.class);
+        
+        // If the type is an enum, populate allowedValues
+        if(parameter.getType().isEnum()) {
+            Object[] enumConstants = parameter.getType().getEnumConstants();
+            allowableValues = new ArrayList<String>();
+            for (Object enumConstant : enumConstants) {
+                allowableValues.add(((Enum<?>) enumConstant).name());
+            }            
+        }
     }
 
     public StringFormat getStringFormat() {
@@ -50,7 +69,7 @@ public class ParamModel extends ModelBase implements Comparable<ParamModel> {
         return param;
     }
 
-    public Class getParamDataType() {
+    public Class<?> getParamDataType() {
         return paramDataType;
     }
 
@@ -63,4 +82,27 @@ public class ParamModel extends ModelBase implements Comparable<ParamModel> {
 
         return name.compareTo(paramModel.name);
     }
+    
+    public String getName() {
+        return name;
+    }
+    
+    public String getCamelCaseName() {
+        if(param.name().indexOf("-") != -1) {
+            return CaseUtils.toCamelCase(param.name(), false, new char[]{'-'});
+        } else {
+            return param.name();
+        }
+    }
+    
+    public List<String> getAllowableValues() {
+        return allowableValues;
+    }
+    
+    public boolean hasAllowableValues() {
+        return allowableValues != null && !allowableValues.isEmpty();
+    }
+
+    
+    
 }

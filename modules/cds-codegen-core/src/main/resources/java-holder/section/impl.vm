@@ -1,0 +1,83 @@
+#include("java-common/header.vm")
+package $packageName;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Controller;
+import org.springframework.util.StringUtils;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.context.request.NativeWebRequest;
+import ${modelPackage}.*;
+import ${servicePackage}.*;
+import ${utilPackage}.*;
+
+
+import javax.validation.Valid;
+import java.time.OffsetDateTime;
+import java.util.Optional;
+
+@Controller
+@RequestMapping("$basePath")
+public class ${interfaceName}Controller implements $interfaceName {
+
+    private final ${interfaceName}Service service;
+
+    private final NativeWebRequest request;
+
+    @Autowired
+    public ${interfaceName}Controller(NativeWebRequest request, ${interfaceName}Service service) {
+        this.request = request;
+        this.service = service;
+    }
+
+    @Override
+    public Optional<NativeWebRequest> getRequest() {
+        return Optional.ofNullable(request);
+    }
+    
+#foreach($endpoint in $cds.getEndpointModelsWithDataOperations())
+    #parse("common/endpointdefinition.vm")
+    @Override
+    public ResponseEntity<$endpointDefaultResponse> ${endpointOperationId}(
+    #foreach($oneParam in $endpoint.getPathParams())
+                @Valid $oneParam.getParamDataType().getSimpleName() $oneParam.getCamelCaseName()#if( $foreach.hasNext ),#end
+    #end
+    #if($endpoint.getPathParams() and $endpoint.getPathParams().size() > 0 and $endpoint.getQueryParams() and $endpoint.getQueryParams().size() > 0),#end
+    #foreach($oneParam in $endpoint.getQueryParams())
+        @Valid $oneParam.getParamDataType().getSimpleName() $oneParam.getCamelCaseName()#if( $foreach.hasNext ),#end
+    #end
+    ) {
+        if (!WebUtil.hasSupportedVersion(request)) {
+            return ResponseEntity.status(HttpStatus.NOT_ACCEPTABLE).build();
+        }
+        HttpHeaders headers = WebUtil.processHeaders(request);
+        
+        
+        #if( $dataOperation )
+        #if($dataOperationType == "GET_BY_ID")
+        ${dataOperationDefinition} databaseResult = service.get${dataOperationDefinition}ById($dataOperationAttributes.get(0).getRequestParameter());
+        ${endpointDefaultResponse} responseObject = new ${endpointDefaultResponse}();
+        responseObject.setData(databaseResult);
+        
+        Links responseLinks = new Links();
+        responseLinks.setSelf(WebUtil.getOriginalUrl(request));
+        responseObject.setLinks(responseLinks);   
+        #end
+        #else
+        // TODO: Need to support more than get by id
+        ${endpointDefaultResponse} responseObject = new ${endpointDefaultResponse}();
+        responseObject.setData(null);
+        #end
+        
+        return new ResponseEntity<$endpointDefaultResponse>(responseObject, headers, HttpStatus.OK);
+    }
+#end
+
+    private Integer getPagingValue(@Valid Integer page, int defaultValue) {
+        return page != null && page > 0 ? page : defaultValue;
+    }
+}

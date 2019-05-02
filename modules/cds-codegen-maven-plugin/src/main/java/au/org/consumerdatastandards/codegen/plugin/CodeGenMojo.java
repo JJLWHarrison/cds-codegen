@@ -1,30 +1,26 @@
 package au.org.consumerdatastandards.codegen.plugin;
 
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
-import org.apache.maven.plugin.AbstractMojo;
-import org.apache.maven.plugin.MojoExecutionException;
-import org.apache.maven.plugins.annotations.LifecyclePhase;
-import org.apache.maven.plugins.annotations.Mojo;
-import org.apache.maven.plugins.annotations.Parameter;
-import org.apache.maven.project.MavenProject;
-
+import au.org.consumerdatastandards.codegen.CodegenCLI;
 import au.org.consumerdatastandards.codegen.ModelBuilder;
+import au.org.consumerdatastandards.codegen.generator.code.CodeGenerator;
+import au.org.consumerdatastandards.codegen.generator.AbstractGenerator;
 import au.org.consumerdatastandards.codegen.generator.Options;
 import au.org.consumerdatastandards.codegen.generator.openapi.SwaggerGenerator;
 import au.org.consumerdatastandards.codegen.model.APIModel;
 import io.swagger.codegen.ClientOptInput;
 import io.swagger.codegen.DefaultGenerator;
 import io.swagger.codegen.config.CodegenConfigurator;
-import io.swagger.models.Swagger;
-import io.swagger.util.Json;
+import org.apache.maven.plugin.AbstractMojo;
+import org.apache.maven.plugin.MojoExecutionException;
+import org.apache.maven.plugins.annotations.LifecyclePhase;
+import org.apache.maven.plugins.annotations.Mojo;
+import org.apache.maven.plugins.annotations.Parameter;
+
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.util.List;
 
 /**
  * Goal which generates sources from cds-models Current Method is: cds-models
@@ -35,7 +31,7 @@ import io.swagger.util.Json;
  * (java client etc)
  *
  */
-@Mojo(name = "generate", defaultPhase = LifecyclePhase.GENERATE_SOURCES)
+@Mojo(name = "generate-sources", defaultPhase = LifecyclePhase.GENERATE_SOURCES)
 public class CodeGenMojo extends AbstractMojo {
 
     public enum GENERATOR {
@@ -69,7 +65,7 @@ public class CodeGenMojo extends AbstractMojo {
     /**
      * What are we using to generate?
      */
-    @Parameter(name = "generatorEngine", required = false, property = "au.org.consumerdatastandards.codegen.maven.plugin.generatorengine")
+    @Parameter(name = "generatorEngine", required = true, property = "au.org.consumerdatastandards.codegen.maven.plugin.generatorengine")
     private GENERATOR generatorEngine = GENERATOR.SWAGGER_CODEGEN;
 
     /**
@@ -118,13 +114,25 @@ public class CodeGenMojo extends AbstractMojo {
 
             try {
                 ClientOptInput inputOptions = configurator.toClientOptInput();
-                // inputOptions.setSwagger(generatedSwagger);
+                //inputOptions.swagger((new SwaggerGenerator(apiModel)).generateSwagger());
                 new DefaultGenerator().opts(inputOptions).generate();
             } catch (Exception e) {
                 getLog().error(e);
                 throw new MojoExecutionException(
                         "cds-codegen attempted to execute swagger-codegen and failed, see details above");
             }
+        } else if(generatorEngine.equals(GENERATOR.CDS_CODEGEN)) {            
+            try {
+                CodeGenerator generator = new CodeGenerator(apiModel);
+                generator.setOptions(includedSections, excludedSections, language, outputDirectory.getAbsolutePath());
+                generator.generate();
+            } catch (Exception e) {
+                throw new MojoExecutionException(e.toString());
+            }
+
+        } else {
+            throw new MojoExecutionException(
+                    "cds-codegen attempted to execute with unknown generatorEngine");
         }
 
     }

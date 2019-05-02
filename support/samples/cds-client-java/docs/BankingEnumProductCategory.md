@@ -1,0 +1,29 @@
+
+
+# BankingEnumProductCategory
+
+## Enum
+
+
+* `CRED_AND_CHRG_CARDS` (value: `"CRED_AND_CHRG_CARDS"`)
+
+* `LEASES` (value: `"LEASES"`)
+
+* `MARGIN_LOANS` (value: `"MARGIN_LOANS"`)
+
+* `PERS_LOANS` (value: `"PERS_LOANS"`)
+
+* `REGULATED_TRUST_ACCOUNTS` (value: `"REGULATED_TRUST_ACCOUNTS"`)
+
+* `RESIDENTIAL_MORTGAGES` (value: `"RESIDENTIAL_MORTGAGES"`)
+
+* `TERM_DEPOSITS` (value: `"TERM_DEPOSITS"`)
+
+* `TRADE_FINANCE` (value: `"TRADE_FINANCE"`)
+
+* `TRANS_AND_SAVINGS_ACCOUNTS` (value: `"TRANS_AND_SAVINGS_ACCOUNTS"`)
+
+* `TRAVEL_CARDS` (value: `"TRAVEL_CARDS"`)
+
+
+

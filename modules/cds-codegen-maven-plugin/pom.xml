@@ -5,11 +5,10 @@
     <parent>
         <groupId>au.org.consumerdatastandards</groupId>
         <artifactId>cds-codegen-project</artifactId>
-        <version>0.0.2-SNAPSHOT</version>
+        <version>0.0.3-SNAPSHOT</version>
         <relativePath>../..</relativePath>
     </parent>
     <artifactId>cds-codegen-maven-plugin</artifactId>
-    <version>0.0.1-SNAPSHOT</version>
     <name>cds-codegen-maven-plugin</name>
     <packaging>maven-plugin</packaging>
     <description>Maven plugin to build source from cds-models the Engineering library of the Consumer Data Standards</description>
@@ -30,7 +29,7 @@
         <dependency>
             <groupId>au.org.consumerdatastandards</groupId>
             <artifactId>cds-codegen-core</artifactId>
-            <version>0.0.2-SNAPSHOT</version>
+            <version>0.0.3-SNAPSHOT</version>
         </dependency>
         <!-- https://mvnrepository.com/artifact/io.swagger/swagger-codegen -->
         <dependency>

@@ -1,0 +1,57 @@
+#include("java-common/header.vm")
+package $packageName;
+
+import org.threeten.bp.OffsetDateTime;
+
+import au.org.consumerdatastandards.client.ApiException;
+import ${apiPackage}.${interfaceName};
+
+import ${modelPackage}.*;
+
+import org.junit.Test;
+import org.junit.Ignore;
+
+/**
+ * API tests for $interfaceName
+ */
+@Ignore
+public class ${interfaceName}Test {
+
+    private final ${interfaceName} api = new ${interfaceName}();
+
+#foreach($endpoint in $cds.getEndpointModels())
+    #parse("common/endpointdefinition.vm")
+    /**
+     * $endpointSummary
+     * #if($endpointDescription)
+     * $WordUtils.wrap($endpointDescription, 60, "
+     * ", false)
+     * #end
+     *
+     * @throws ApiException
+     *          if the Api call fails
+     */
+    @Test
+    public void ${endpointOperationId}Test() throws ApiException {
+    #foreach($oneParam in $endpoint.getPathParams())
+        $oneParam.getParamDataType().getSimpleName() $oneParam.getCamelCaseName() = null;
+    #end
+    #foreach($oneParam in $endpoint.getQueryParams())
+        $oneParam.getParamDataType().getSimpleName() $oneParam.getCamelCaseName() = null;
+    #end
+    
+    $endpointDefaultResponse response = api.${endpointOperationId}(#foreach($oneParam in $endpoint.getPathParams())
+            $oneParam.getCamelCaseName()#if( $foreach.hasNext ),#end
+        #end
+        #if($endpoint.getPathParams() and $endpoint.getPathParams().size() > 0 and $endpoint.getQueryParams() and $endpoint.getQueryParams().size() > 0),#end
+        #foreach($oneParam in $endpoint.getQueryParams())
+            $oneParam.getCamelCaseName()#if( $foreach.hasNext ),#end
+        #end
+    );
+        response.toString();
+        // TODO: test validations
+    }
+
+#end
+
+}
