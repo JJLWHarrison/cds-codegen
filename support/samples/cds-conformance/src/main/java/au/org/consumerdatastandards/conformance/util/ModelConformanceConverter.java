@@ -2,18 +2,162 @@ package au.org.consumerdatastandards.conformance.util;
 
 import au.org.consumerdatastandards.codegen.model.APIModel;
 import au.org.consumerdatastandards.codegen.model.EndpointModel;
+import au.org.consumerdatastandards.codegen.model.ParamModel;
 import au.org.consumerdatastandards.codegen.model.SectionModel;
+import au.org.consumerdatastandards.codegen.util.ReflectionUtil;
 import au.org.consumerdatastandards.conformance.ConformanceModel;
+import au.org.consumerdatastandards.conformance.Payload;
+import au.org.consumerdatastandards.conformance.PayloadType;
+import au.org.consumerdatastandards.support.EndpointResponse;
+import au.org.consumerdatastandards.support.ResponseCode;
+import au.org.consumerdatastandards.support.data.DataDefinition;
+import org.apache.commons.codec.digest.DigestUtils;
+import org.apache.commons.lang3.reflect.FieldUtils;
+
+import java.lang.reflect.Field;
+import java.util.*;
 
 public class ModelConformanceConverter {
 
     public static ConformanceModel convert(APIModel apiModel) {
         ConformanceModel conformanceModel = new ConformanceModel();
+        Map<String, Map<ResponseCode, EndpointResponse>> responseMap = new HashMap<>();
+        Map<Class<?>, Payload> payloadMap = new HashMap<>();
+        Set<Class<?>> processedClasses = new HashSet<>();
         for (SectionModel sectionModel : apiModel.getSectionModels()) {
             for (EndpointModel endpointModel : sectionModel.getEndpointModels()) {
-                conformanceModel.add(endpointModel);
+                add(endpointModel, responseMap, payloadMap, processedClasses);
             }
         }
+        conformanceModel.setResponseMap(responseMap);
+        conformanceModel.setPayloadMap(payloadMap);
+        conformanceModel.setFieldsClassMap(mapClassByFields(payloadMap.keySet()));
+        conformanceModel.setNameClassMap(mapClassByName(payloadMap.keySet()));
         return conformanceModel;
     }
+
+    private static TreeMap<String, Class<?>> mapClassByName(Set<Class<?>> classes) {
+        TreeMap<String, Class<?>> classMap = new TreeMap<>();
+        for (Class<?> clazz: classes) {
+            classMap.put(clazz.getSimpleName(), clazz);
+        }
+        return classMap;
+    }
+
+    private static Map<String, Class<?>> mapClassByFields(Set<Class<?>> classes) {
+        Map<String, Class<?>> classMap = new HashMap<>();
+        for (Class<?> clazz: classes) {
+            classMap.put(generateKey(getAllFieldNames(clazz)), clazz);
+        }
+        return classMap;
+    }
+
+    private static String generateKey(Set<String> ss) {
+        StringBuilder sb = new StringBuilder();
+        for (String s : ss) {
+            sb.append(s);
+        }
+        return DigestUtils.sha256Hex(sb.toString());
+    }
+
+    private static Set<String> getAllFieldNames(Class<?> clazz) {
+        Set<String> fieldNames = new TreeSet<>();
+        Field[] allFields = FieldUtils.getAllFields(clazz);
+        for (Field field: allFields) {
+            fieldNames.add(field.getName());
+        }
+        DataDefinition dataDefinition = clazz.getAnnotation(DataDefinition.class);
+        if (dataDefinition != null && dataDefinition.allOf().length > 0) {
+            for (Class<?> aClass : dataDefinition.allOf()) {
+                fieldNames.addAll(getAllFieldNames(aClass));
+            }
+        }
+        return fieldNames;
+    }
+
+    private static void add(EndpointModel endpointModel,
+                            Map<String, Map<ResponseCode, EndpointResponse>> responseMap,
+                            Map<Class<?>, Payload> payloadMap,
+                            Set<Class<?>> processedClasses) {
+        Set<ParamModel> bodyParams = endpointModel.getBodyParams();
+        if (bodyParams != null && !bodyParams.isEmpty()) {
+            processBodyParams(endpointModel, bodyParams, payloadMap, processedClasses);
+        }
+        String operationId = endpointModel.getEndpoint().operationId();
+        for (EndpointResponse response : endpointModel.getEndpoint().responses()) {
+            responseMap.computeIfAbsent(operationId, k -> new HashMap<>());
+            responseMap.get(operationId).put(response.responseCode(), response);
+            processResponseBody(endpointModel, response, payloadMap, processedClasses);
+        }
+    }
+
+    private static void processBodyParams(EndpointModel endpointModel,
+                                          Set<ParamModel> bodyParams,
+                                          Map<Class<?>, Payload> payloadMap,
+                                          Set<Class<?>> processedClasses) {
+        for (ParamModel bodyParam : bodyParams) {
+            Payload payload = new Payload();
+            payload.setPayloadType(PayloadType.REQUEST_BODY);
+            payload.setEndpointModel(endpointModel);
+            payloadMap.put(bodyParam.getParamDataType(), payload);
+            processDataDefinition(endpointModel, bodyParam.getParamDataType(), payloadMap, processedClasses);
+        }
+    }
+
+    private static void processResponseBody(EndpointModel endpointModel,
+                                            EndpointResponse response,
+                                            Map<Class<?>, Payload> payloadMap,
+                                            Set<Class<?>> processedClasses) {
+        if (!response.content().equals(Void.class)) {
+            Payload payload = new Payload();
+            payload.setPayloadType(PayloadType.RESPONSE_BODY);
+            payload.setEndpointModel(endpointModel);
+            payload.setEndpointResponse(response);
+            payloadMap.put(response.content(), payload);
+            processDataDefinition(endpointModel, response.content(), payloadMap, processedClasses);
+        }
+    }
+
+    private static void processDataDefinition(EndpointModel endpointModel,
+                                              Class<?> dataType,
+                                              Map<Class<?>, Payload> payloadMap,
+                                              Set<Class<?>> processedClasses) {
+        if (!processedClasses.contains(dataType)) {
+            for (Field field : FieldUtils.getAllFields(dataType)) {
+                Class<?> fieldType = field.getType();
+                if (fieldType.isAnnotationPresent(DataDefinition.class) && !fieldType.isEnum()) {
+                    addPayload(endpointModel, fieldType, payloadMap);
+                    processDataDefinition(endpointModel, fieldType, payloadMap, processedClasses);
+                } else if (ReflectionUtil.isSetOrList(fieldType)) {
+                    Class<?> itemType = ReflectionUtil.getItemType(fieldType, field.getGenericType());
+                    if (itemType.isAnnotationPresent(DataDefinition.class) && !itemType.isEnum()) {
+                        addPayload(endpointModel, itemType, payloadMap);
+                        processDataDefinition(endpointModel, itemType, payloadMap, processedClasses);
+                    }
+                } else if (fieldType.isArray()
+                    && fieldType.getComponentType().isAnnotationPresent(DataDefinition.class)
+                    && !fieldType.getComponentType().isEnum()) {
+                    addPayload(endpointModel, fieldType.getComponentType(), payloadMap);
+                    processDataDefinition(endpointModel, fieldType.getComponentType(), payloadMap, processedClasses);
+                }
+            }
+            DataDefinition dataDefinition = dataType.getAnnotation(DataDefinition.class);
+            if (dataDefinition != null && dataDefinition.allOf().length > 0) {
+                for (Class<?> clazz : dataDefinition.allOf()) {
+                    processDataDefinition(endpointModel, clazz, payloadMap, processedClasses);
+                }
+            }
+            processedClasses.add(dataType);
+        }
+    }
+
+    private static void addPayload(EndpointModel endpointModel, Class<?> dataType, Map<Class<?>, Payload> payloadMap) {
+        if (payloadMap.get(dataType) == null) {
+            Payload payload = new Payload();
+            payload.setPayloadType(PayloadType.EMBEDDED_DATA);
+            payload.setEndpointModel(endpointModel);
+            payloadMap.put(dataType, payload);
+        }
+    }
+
 }

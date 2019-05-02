@@ -34,4 +34,9 @@ public class Payload {
     public void setEndpointResponse(EndpointResponse endpointResponse) {
         this.endpointResponse = endpointResponse;
     }
+
+    public String getDescription() {
+        // TODO add endpoint / response info
+        return payloadType.toString();
+    }
 }
