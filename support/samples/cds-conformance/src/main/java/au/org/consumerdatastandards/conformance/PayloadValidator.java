@@ -1,9 +1,13 @@
 package au.org.consumerdatastandards.conformance;
 
+import au.org.consumerdatastandards.api.models.BankingProductBundle;
 import au.org.consumerdatastandards.codegen.ModelBuilder;
 import au.org.consumerdatastandards.codegen.generator.Options;
 import au.org.consumerdatastandards.conformance.util.ConformanceUtil;
 import au.org.consumerdatastandards.conformance.util.ModelConformanceConverter;
+import com.fasterxml.jackson.annotation.JsonAutoDetect;
+import com.fasterxml.jackson.annotation.PropertyAccessor;
+import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jdk8.Jdk8Module;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
@@ -32,7 +36,7 @@ public class PayloadValidator {
     }
 
     @ShellMethod("Validate json payload(s) against cds-model")
-    public void validate(@ShellOption(value = "-f", help = "payload file or folder") String fileOrFolder) throws IOException {
+    public void validate(@ShellOption(value = "-f", help = "payload file or folder", defaultValue = "/home/yan149/IdeaProjects/cds-codegen/support/samples/cds-conformance/payloads/products") String fileOrFolder) throws IOException {
         File file = new File(fileOrFolder);
         if (!file.exists()) {
             System.out.println("Cannot find " + fileOrFolder);
@@ -49,16 +53,17 @@ public class PayloadValidator {
     }
 
     private boolean validate(File jsonFile) throws IOException {
-        System.out.println("Validating " + jsonFile.getAbsolutePath());
+        System.out.println("\nValidating " + jsonFile.getAbsolutePath());
         byte[] jsonData = Files.readAllBytes(Paths.get(jsonFile.getCanonicalPath()));
         for(Class<?> modelClass : conformanceModel.getPayloadModels()) {
             // TODO handle models with allOf annotation
-            System.out.println("Trying " + modelClass.getSimpleName());
             try {
                 ObjectMapper objectMapper = new ObjectMapper()
                     .registerModule(new ParameterNamesModule())
                     .registerModule(new Jdk8Module())
-                    .registerModule(new JavaTimeModule());
+                    .registerModule(new JavaTimeModule())
+                    .setVisibility(PropertyAccessor.ALL, JsonAutoDetect.Visibility.NONE)
+                    .setVisibility(PropertyAccessor.FIELD, JsonAutoDetect.Visibility.ANY);
                 Object data = objectMapper.readValue(jsonData, modelClass);
                 System.out.println("Found matching model " + modelClass.getSimpleName());
                 List<String> errors = new ArrayList<>();
@@ -71,8 +76,8 @@ public class PayloadValidator {
                     System.out.println("Errors found:");
                     errors.forEach(System.out::println);
                 }
-            } catch (Exception e) {
-                System.out.println(e.getMessage());
+            } catch (JsonMappingException e) {
+                // ignored
             }
         }
         return false;
