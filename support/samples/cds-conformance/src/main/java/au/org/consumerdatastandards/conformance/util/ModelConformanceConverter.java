@@ -65,6 +65,7 @@ public class ModelConformanceConverter {
                                           Set<Class<?>> processedClasses) {
         for (ParamModel bodyParam : bodyParams) {
             Payload payload = new Payload();
+            payload.setDataClass(getPayloadDataClass(bodyParam.getParamDataType()));
             payload.setPayloadType(PayloadType.REQUEST_BODY);
             payload.setEndpointModel(endpointModel);
             payloadMap.put(bodyParam.getParamDataType(), payload);
@@ -78,9 +79,9 @@ public class ModelConformanceConverter {
                                             Set<Class<?>> processedClasses) {
         if (!response.content().equals(Void.class)) {
             Payload payload = new Payload();
+            payload.setDataClass(getPayloadDataClass(response.content()));
             payload.setPayloadType(PayloadType.RESPONSE_BODY);
             payload.setEndpointModel(endpointModel);
-            payload.setEndpointResponse(response);
             payloadMap.put(response.content(), payload);
             processDataDefinition(endpointModel, response.content(), payloadMap, processedClasses);
         }
@@ -125,6 +126,7 @@ public class ModelConformanceConverter {
     private static void addPayload(EndpointModel endpointModel, Class<?> dataType, Map<Class<?>, Payload> payloadMap) {
         if (payloadMap.get(dataType) == null) {
             Payload payload = new Payload();
+            payload.setDataClass(getPayloadDataClass(dataType));
             payload.setPayloadType(PayloadType.EMBEDDED_DATA);
             payload.setEndpointModel(endpointModel);
             payloadMap.put(dataType, payload);
@@ -132,13 +134,24 @@ public class ModelConformanceConverter {
     }
 
     private static void addArrayPayload(EndpointModel endpointModel, Class<?> dataType, Map<Class<?>, Payload> payloadMap) {
+        Class<?> dataClass = getPayloadDataClass(dataType);
+        Class<?> generatedArrayType = Array.newInstance(dataClass, 0).getClass();
         Class<?> arrayType = Array.newInstance(dataType, 0).getClass();
         if (payloadMap.get(arrayType) == null) {
             Payload payload = new Payload();
+            payload.setDataClass(generatedArrayType);
             payload.setPayloadType(PayloadType.EMBEDDED_DATA);
             payload.setEndpointModel(endpointModel);
             payloadMap.put(arrayType, payload);
         }
+    }
+
+    private static Class<?> getPayloadDataClass(Class<?> dataType) {
+        DataDefinition dataDefinition = dataType.getAnnotation(DataDefinition.class);
+        if (dataDefinition != null && dataDefinition.allOf().length > 0) {
+            return ConformanceUtil.combine(dataType, dataDefinition.allOf());
+        }
+        return dataType;
     }
 
 }

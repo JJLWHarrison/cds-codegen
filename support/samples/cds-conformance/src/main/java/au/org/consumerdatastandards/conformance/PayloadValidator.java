@@ -1,6 +1,5 @@
 package au.org.consumerdatastandards.conformance;
 
-import au.org.consumerdatastandards.api.models.BankingProductBundle;
 import au.org.consumerdatastandards.codegen.ModelBuilder;
 import au.org.consumerdatastandards.codegen.generator.Options;
 import au.org.consumerdatastandards.conformance.util.ConformanceUtil;
@@ -33,10 +32,15 @@ public class PayloadValidator {
     public void init() {
         ModelBuilder modelBuilder = new ModelBuilder(new Options());
         conformanceModel = ModelConformanceConverter.convert(modelBuilder.build());
+        for (Class<?> clazz : conformanceModel.getPayloadModels()) {
+            if (conformanceModel.getPlayload(clazz).getDataClass() == null) {
+                System.out.println(clazz.getSimpleName());
+            }
+        }
     }
 
     @ShellMethod("Validate json payload(s) against cds-model")
-    public void validate(@ShellOption(value = "-f", help = "payload file or folder", defaultValue = "/home/yan149/IdeaProjects/cds-codegen/support/samples/cds-conformance/payloads/products") String fileOrFolder) throws IOException {
+    public void validate(@ShellOption(value = "-f", help = "payload file or folder") String fileOrFolder) throws IOException {
         File file = new File(fileOrFolder);
         if (!file.exists()) {
             System.out.println("Cannot find " + fileOrFolder);
@@ -56,7 +60,6 @@ public class PayloadValidator {
         System.out.println("\nValidating " + jsonFile.getAbsolutePath());
         byte[] jsonData = Files.readAllBytes(Paths.get(jsonFile.getCanonicalPath()));
         for(Class<?> modelClass : conformanceModel.getPayloadModels()) {
-            // TODO handle models with allOf annotation
             try {
                 ObjectMapper objectMapper = new ObjectMapper()
                     .registerModule(new ParameterNamesModule())
@@ -64,12 +67,12 @@ public class PayloadValidator {
                     .registerModule(new JavaTimeModule())
                     .setVisibility(PropertyAccessor.ALL, JsonAutoDetect.Visibility.NONE)
                     .setVisibility(PropertyAccessor.FIELD, JsonAutoDetect.Visibility.ANY);
-                Object data = objectMapper.readValue(jsonData, modelClass);
+                Payload payload = conformanceModel.getPlayload(modelClass);
+                Object data = objectMapper.readValue(jsonData, payload.getDataClass());
                 System.out.println("Found matching model " + modelClass.getSimpleName());
                 List<String> errors = new ArrayList<>();
                 ConformanceUtil.checkAgainstModel(data, modelClass, errors);
                 if (errors.isEmpty()) {
-                    Payload payload = conformanceModel.getPlayload(modelClass);
                     System.out.println(payload.getDescription());
                     return true;
                 } else {

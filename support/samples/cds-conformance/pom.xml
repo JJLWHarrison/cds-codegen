@@ -70,6 +70,16 @@
             <groupId>au.org.consumerdatastandards</groupId>
             <artifactId>cds-codegen-core</artifactId>
             <version>${cds-codegen-core.version}</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.slf4j</groupId>
+                    <artifactId>slf4j-api</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>org.apache.logging.log4j</groupId>
+                    <artifactId>log4j-slf4j-impl</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
         <dependency>
             <groupId>au.org.consumerdatastandards</groupId>
