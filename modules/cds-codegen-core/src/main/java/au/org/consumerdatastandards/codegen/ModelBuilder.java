@@ -68,7 +68,7 @@ public class ModelBuilder {
     private EndpointModel buildEndpointModel(Method method) {
         Endpoint endpoint = method.getAnnotation(Endpoint.class);
         EndpointModel endpointModel = new EndpointModel(endpoint);
-        LOG.debug("Default response for {} is {}", method.getName(), method.getReturnType().getSimpleName());
+        // LOG.debug("Default response for {} is {}", method.getName(), method.getReturnType().getSimpleName());
         endpointModel.setDefaultResponse(method.getReturnType().getSimpleName());
         CustomAttributesUtil.addCustomAttributes(method, endpointModel);
         Parameter[] parameters = method.getParameters();
