@@ -41,8 +41,7 @@ public class PayloadValidator {
     }
 
     @ShellMethod("Validate json payload(s) against cds-model")
-    public void validate(@ShellOption(value = "-f", help = "payload file or folder",
-        defaultValue = "/home/yan149/IdeaProjects/cds-codegen/support/samples/cds-conformance/payloads/products") String fileOrFolder) throws IOException {
+    public void validate(@ShellOption(value = "-f", help = "payload file or folder") String fileOrFolder) throws IOException {
         File file = new File(fileOrFolder);
         if (!file.exists()) {
             System.out.println("Cannot find " + fileOrFolder);
