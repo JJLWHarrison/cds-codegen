@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0"
-         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>au.org.consumerdatastandards</groupId>
     <artifactId>cds-conformance</artifactId>
-    <version>0.0.1</version>
+    <version>0.0.1-SNAPSHOT</version>
     <packaging>jar</packaging>
     <name>cds-conformance</name>
     <url>https://github.com/ConsumerDataStandardsAustralia/cds-conformance</url>
@@ -34,12 +34,22 @@
     <properties>
         <java.version>1.8</java.version>
         <spring-shell.version>2.0.1.RELEASE</spring-shell.version>
-        <cds-client-java.version>0.0.1</cds-client-java.version>
+        <cds-client-java.version>0.0.2-SNAPSHOT</cds-client-java.version>
         <cds-codegen-core.version>0.0.3-SNAPSHOT</cds-codegen-core.version>
         <junit-jupiter.version>5.4.0</junit-jupiter.version>
         <maven.compiler.source>${java.version}</maven.compiler.source>
         <maven.compiler.target>${java.version}</maven.compiler.target>
     </properties>
+    <distributionManagement>
+        <snapshotRepository>
+            <id>ossrh</id>
+            <url>https://oss.sonatype.org/content/repositories/snapshots</url>
+        </snapshotRepository>
+        <repository>
+            <id>ossrh</id>
+            <url>https://oss.sonatype.org/service/local/staging/deploy/maven2/</url>
+        </repository>
+    </distributionManagement>
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
@@ -70,6 +80,16 @@
             <groupId>au.org.consumerdatastandards</groupId>
             <artifactId>cds-codegen-core</artifactId>
             <version>${cds-codegen-core.version}</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.slf4j</groupId>
+                    <artifactId>slf4j-api</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>org.apache.logging.log4j</groupId>
+                    <artifactId>log4j-slf4j-impl</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
         <dependency>
             <groupId>au.org.consumerdatastandards</groupId>
@@ -96,4 +116,33 @@
             </resource>
         </resources>
     </build>
+    <profiles>
+        <profile>
+            <id>snapshot</id>
+            <activation>
+                <activeByDefault>true</activeByDefault>
+            </activation>
+            <repositories>
+                <repository>
+                    <snapshots>
+                        <enabled>true</enabled>
+                    </snapshots>
+                    <id>central</id>
+                    <name>Maven Repository Switchboard</name>
+                    <url>http://repo1.maven.org/maven2</url>
+                </repository>
+                <repository>
+                    <id>sonatype-snapshots</id>
+                    <url>http://oss.sonatype.org/content/repositories/snapshots</url>
+                    <layout>default</layout>
+                    <releases>
+                        <enabled>false</enabled>
+                    </releases>
+                    <snapshots>
+                        <enabled>true</enabled>
+                    </snapshots>
+                </repository>
+            </repositories>
+        </profile>
+    </profiles>
 </project>

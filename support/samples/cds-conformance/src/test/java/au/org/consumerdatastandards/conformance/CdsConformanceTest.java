@@ -2,7 +2,7 @@ package au.org.consumerdatastandards.conformance;
 
 import au.org.consumerdatastandards.client.ApiClient;
 import au.org.consumerdatastandards.client.ApiException;
-import au.org.consumerdatastandards.client.api.BankingProductsApi;
+import au.org.consumerdatastandards.client.api.BankingProductsAPI;
 import au.org.consumerdatastandards.client.model.*;
 import au.org.consumerdatastandards.codegen.ModelBuilder;
 import au.org.consumerdatastandards.codegen.generator.Options;
@@ -33,7 +33,7 @@ public class CdsConformanceTest {
 
     private final static String serverUrl = "http://localhost:8080/cds-au/v1";
 
-    private static BankingProductsApi api;
+    private static BankingProductsAPI api;
 
     private static ConformanceModel conformanceModel;
 
@@ -43,7 +43,7 @@ public class CdsConformanceTest {
         conformanceModel = ModelConformanceConverter.convert(modelBuilder.build());
         ApiClient client = new ApiClient();
         client.setBasePath(serverUrl);
-        api = new BankingProductsApi(client);
+        api = new BankingProductsAPI(client);
     }
 
     private static Options loadModelBuilderOptions() {
@@ -82,7 +82,7 @@ public class CdsConformanceTest {
     @Test
     public void positiveCases() throws ApiException {
 
-        ResponseBankingProductList allProducts = api.listProducts("ALL", null, null, null, null, null);
+        ResponseBankingProductList allProducts = api.listProducts(ParamEffective.ALL, null, null, null, null, null);
         assertAll("Proper responses",
             () -> checkAgainstModel(allProducts, conformanceModel.getResponse("listProducts", ResponseCode.OK).content()),
             () -> {

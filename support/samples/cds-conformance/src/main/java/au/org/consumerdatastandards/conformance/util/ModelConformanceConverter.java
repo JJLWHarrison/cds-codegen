@@ -13,6 +13,7 @@ import au.org.consumerdatastandards.support.ResponseCode;
 import au.org.consumerdatastandards.support.data.DataDefinition;
 import org.apache.commons.lang3.reflect.FieldUtils;
 
+import java.lang.reflect.Array;
 import java.lang.reflect.Field;
 import java.util.*;
 
@@ -64,6 +65,7 @@ public class ModelConformanceConverter {
                                           Set<Class<?>> processedClasses) {
         for (ParamModel bodyParam : bodyParams) {
             Payload payload = new Payload();
+            payload.setDataClass(getPayloadDataClass(bodyParam.getParamDataType()));
             payload.setPayloadType(PayloadType.REQUEST_BODY);
             payload.setEndpointModel(endpointModel);
             payloadMap.put(bodyParam.getParamDataType(), payload);
@@ -77,9 +79,9 @@ public class ModelConformanceConverter {
                                             Set<Class<?>> processedClasses) {
         if (!response.content().equals(Void.class)) {
             Payload payload = new Payload();
+            payload.setDataClass(getPayloadDataClass(response.content()));
             payload.setPayloadType(PayloadType.RESPONSE_BODY);
             payload.setEndpointModel(endpointModel);
-            payload.setEndpointResponse(response);
             payloadMap.put(response.content(), payload);
             processDataDefinition(endpointModel, response.content(), payloadMap, processedClasses);
         }
@@ -96,14 +98,14 @@ public class ModelConformanceConverter {
                     addPayload(endpointModel, fieldType, payloadMap);
                     processDataDefinition(endpointModel, fieldType, payloadMap, processedClasses);
                 } else if (ReflectionUtil.isSetOrList(fieldType)) {
-                    addPayload(endpointModel, fieldType, payloadMap);
                     Class<?> itemType = ReflectionUtil.getItemType(fieldType, field.getGenericType());
+                    addArrayPayload(endpointModel, itemType, payloadMap);
                     if (itemType.isAnnotationPresent(DataDefinition.class) && !itemType.isEnum()) {
                         addPayload(endpointModel, itemType, payloadMap);
                         processDataDefinition(endpointModel, itemType, payloadMap, processedClasses);
                     }
                 } else if (fieldType.isArray()) {
-                    addPayload(endpointModel, fieldType, payloadMap);
+                    addArrayPayload(endpointModel, fieldType.getComponentType(), payloadMap);
                     if(fieldType.getComponentType().isAnnotationPresent(DataDefinition.class)
                         && !fieldType.getComponentType().isEnum()) {
                         addPayload(endpointModel, fieldType.getComponentType(), payloadMap);
@@ -124,10 +126,32 @@ public class ModelConformanceConverter {
     private static void addPayload(EndpointModel endpointModel, Class<?> dataType, Map<Class<?>, Payload> payloadMap) {
         if (payloadMap.get(dataType) == null) {
             Payload payload = new Payload();
+            payload.setDataClass(getPayloadDataClass(dataType));
             payload.setPayloadType(PayloadType.EMBEDDED_DATA);
             payload.setEndpointModel(endpointModel);
             payloadMap.put(dataType, payload);
         }
+    }
+
+    private static void addArrayPayload(EndpointModel endpointModel, Class<?> dataType, Map<Class<?>, Payload> payloadMap) {
+        Class<?> dataClass = getPayloadDataClass(dataType);
+        Class<?> generatedArrayType = Array.newInstance(dataClass, 0).getClass();
+        Class<?> arrayType = Array.newInstance(dataType, 0).getClass();
+        if (payloadMap.get(arrayType) == null) {
+            Payload payload = new Payload();
+            payload.setDataClass(generatedArrayType);
+            payload.setPayloadType(PayloadType.EMBEDDED_DATA);
+            payload.setEndpointModel(endpointModel);
+            payloadMap.put(arrayType, payload);
+        }
+    }
+
+    private static Class<?> getPayloadDataClass(Class<?> dataType) {
+        DataDefinition dataDefinition = dataType.getAnnotation(DataDefinition.class);
+        if (dataDefinition != null && dataDefinition.allOf().length > 0) {
+            return ConformanceUtil.combine(dataType, dataDefinition.allOf());
+        }
+        return dataType;
     }
 
 }

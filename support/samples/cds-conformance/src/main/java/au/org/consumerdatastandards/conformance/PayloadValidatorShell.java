@@ -16,6 +16,6 @@ public class PayloadValidatorShell {
 
     @Bean
     public PromptProvider myPromptProvider() {
-        return () -> new AttributedString("cds-shell:>", AttributedStyle.DEFAULT.foreground(AttributedStyle.YELLOW));
+        return () -> new AttributedString("cds-conformance:>", AttributedStyle.DEFAULT.foreground(AttributedStyle.YELLOW));
     }
 }
