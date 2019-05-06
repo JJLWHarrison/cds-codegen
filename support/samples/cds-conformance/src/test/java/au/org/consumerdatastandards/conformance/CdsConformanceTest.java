@@ -102,7 +102,7 @@ public class CdsConformanceTest {
 
     private void checkAgainstModel(Object data, Class<?> model) throws IllegalAccessException {
         LOGGER.info("Checking {} against {}", data, model);
-        List<Field> properties = FieldUtils.getFieldsListWithAnnotation(model, Property.class);
+        List<Field> properties = ConformanceUtil.getAllProperties(model);
         for (Field modelField : properties) {
             Field dataField = FieldUtils.getField(data.getClass(), modelField.getName(), true);
             assertNotNull(dataField, model.getSimpleName() + "." + modelField.getName() + " is missing from data " + data);
