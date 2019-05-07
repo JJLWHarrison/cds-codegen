@@ -8,6 +8,7 @@ import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.PropertyAccessor;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.module.SimpleModule;
 import com.fasterxml.jackson.datatype.jdk8.Jdk8Module;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.fasterxml.jackson.module.paramnames.ParameterNamesModule;
@@ -65,20 +66,21 @@ public class PayloadValidator {
                     .registerModule(new ParameterNamesModule())
                     .registerModule(new Jdk8Module())
                     .registerModule(new JavaTimeModule())
+                    .registerModule(new SimpleModule().setDeserializerModifier(new CglibBeanDeserializerModifier()))
                     .setVisibility(PropertyAccessor.ALL, JsonAutoDetect.Visibility.NONE)
                     .setVisibility(PropertyAccessor.FIELD, JsonAutoDetect.Visibility.ANY);
                 Payload payload = conformanceModel.getPlayload(modelClass);
                 Object data = objectMapper.readValue(jsonData, payload.getDataClass());
                 System.out.println("Found matching model " + modelClass.getSimpleName());
-                List<String> errors = new ArrayList<>();
+                List<ConformanceError> errors = new ArrayList<>();
                 ConformanceUtil.checkAgainstModel(data, modelClass, errors);
                 if (errors.isEmpty()) {
                     System.out.println(payload.getDescription());
-                    return true;
                 } else {
                     System.out.println("Errors found:");
-                    errors.forEach(System.out::println);
+                    errors.forEach(conformanceError -> System.out.println(conformanceError.getDescription()));
                 }
+                return true;
             } catch (JsonMappingException e) {
                 // ignored
             }
