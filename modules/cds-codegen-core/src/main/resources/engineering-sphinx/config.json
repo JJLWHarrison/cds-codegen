@@ -1,0 +1,17 @@
+{
+    "globalVariables": {
+        "dockerJavaCliVersion": "consumerdatastandardsaustralia/cds-client-java-cli:0.0.2-SNAPSHOT",
+        "mavenJavaClientVersion": "0.0.2-SNAPSHOT"
+    },
+    "handlers": [
+        {
+            "type": "GenericHandler",
+            "baseDirectory": "source/artefacts",
+            "fileMapping": {
+                "engineering-sphinx/generic/cds-client-java-quickstart.rst": "client/client-java/quickstart.rst"
+             },
+            "additionalAttributes": {
+            }            
+        }
+    ]
+}
